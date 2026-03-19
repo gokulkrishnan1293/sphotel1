@@ -4,7 +4,7 @@ WORKDIR /app
 
 FROM base AS deps
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir -e ".[dev]"
+RUN pip install --no-cache-dir --root-user-action=ignore -e ".[dev]"
 
 FROM base AS production
 COPY --from=deps /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
