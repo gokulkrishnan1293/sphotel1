@@ -1,11 +1,11 @@
 # Single production deployment file.
-# Routing is handled by Dokploy's built-in Traefik — no separate Traefik service needed.
+# Domain routing is managed via Dokploy's Domains UI — no Traefik labels needed.
 #
 # Required environment variables (set in Dokploy dashboard, never committed):
 #   DOMAIN          — e.g. sphotel.yourdomain.com
 #   POSTGRES_USER
 #   POSTGRES_PASSWORD
-#   VALKEY_PASSWORD — used for Valkey auth; also set in VALKEY_URL
+#   VALKEY_PASSWORD
 
 services:
   backend:
@@ -20,19 +20,6 @@ services:
       valkey:
         condition: service_healthy
     restart: unless-stopped
-    networks:
-      - dokploy-network
-      - default
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.backend.loadbalancer.server.port=8000"
-      - "traefik.http.routers.backend-ws.rule=Host(`${DOMAIN}`) && PathPrefix(`/ws`)"
-      - "traefik.http.routers.backend-ws.entrypoints=websecure"
-      - "traefik.http.routers.backend-ws.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.backend-ws.service=backend"
 
   frontend:
     build:
@@ -42,15 +29,6 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-    networks:
-      - dokploy-network
-      - default
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
 
   db:
     image: postgres:16-alpine
@@ -92,7 +70,3 @@ services:
 volumes:
   postgres_data:
   valkey_data:
-
-networks:
-  dokploy-network:
-    external: true
