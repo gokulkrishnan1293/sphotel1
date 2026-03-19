@@ -1,6 +1,4 @@
 """ESC/POS receipt and KOT formatter matching sphotel thermal slip format."""
-from __future__ import annotations
-
 from datetime import datetime
 
 from config.agent_config import agent_settings as cfg
@@ -64,7 +62,7 @@ def format_kot(payload: dict) -> str:
         except ValueError:
             pass
 
-    lines: list[str] = []
+    lines = []
     lines.append(printed_at)
     if kot_number:
         lines.append(f"KOT - {kot_number}")
@@ -130,7 +128,7 @@ def format_receipt(payload: dict) -> str:
         except ValueError:
             pass
 
-    lines: list[str] = []
+    lines = []
 
     # ── Header ──
     if tmpl.get("restaurant_name"):

@@ -144,7 +144,7 @@ Copy `agent.exe` (built from `print-agent/`) to the Windows machine:
 C:\sphotel-agent\agent.exe
 ```
 
-> **Windows 7?** Skip to section 2.7 — the exe requires Windows 10+. Windows 7 uses Python directly.
+> **Windows 7?** Skip to section 2.7 — the exe requires Windows 10+. Windows 7 uses Python 3.6.8 directly.
 
 ### 2.3 Configure the Agent
 
@@ -214,15 +214,21 @@ launcher.exe start
 
 The agent will now start automatically on every boot without needing a logged-in user.
 
-### 2.7 Windows 7 (Legacy) — Run from Python Source
+### 2.7 Windows 7 (Legacy) — Run from Python 3.6.8
 
-The `agent.exe` bundles Python 3.9+ which does not run on Windows 7. Instead, run the agent directly from Python 3.8.
+The `agent.exe` bundles Python 3.9+ which does not run on Windows 7. The agent has been downgraded to support **Python 3.6.8** — the only version installable on Windows 7 without SP1 update issues.
 
-#### Step 1 — Install Python 3.8
+#### Step 1 — Install Python 3.6.8
 
-Download: `https://www.python.org/ftp/python/3.8.20/python-3.8.20-amd64.exe`
+Download: `https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe`
 
 During install: ✅ check **"Add Python to PATH"**
+
+Verify in Command Prompt:
+```cmd
+python --version
+# Should print: Python 3.6.8
+```
 
 #### Step 2 — Copy the print-agent folder to the machine
 
@@ -283,7 +289,7 @@ C:\nssm\nssm.exe install SphotelPrintAgent
 
 | Field | Value |
 |---|---|
-| Path | `C:\Python38\python.exe` |
+| Path | `C:\Python36\python.exe` |
 | Startup directory | `C:\sphotel-agent` |
 | Arguments | `-m agent` |
 
