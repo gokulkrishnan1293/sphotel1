@@ -2,7 +2,8 @@
 set -e
 
 # Validate required environment variables
-: "${DATABASE_URL:?DATABASE_URL is required}"
+: "${POSTGRES_USER:?POSTGRES_USER is required}"
+: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
 : "${R2_BUCKET_NAME:?R2_BUCKET_NAME is required}"
 : "${R2_ACCESS_KEY_ID:?R2_ACCESS_KEY_ID is required}"
 : "${R2_SECRET_ACCESS_KEY:?R2_SECRET_ACCESS_KEY is required}"
@@ -14,7 +15,7 @@ BACKUP_FILE="/tmp/sphotel_${TIMESTAMP}.sql"
 ENCRYPTED_FILE="${BACKUP_FILE}.gpg"
 
 echo "[backup] Starting pg_dump at ${TIMESTAMP}"
-pg_dump "${DATABASE_URL}" > "${BACKUP_FILE}"
+pg_dump "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/sphotel" > "${BACKUP_FILE}"
 echo "[backup] pg_dump complete ($(wc -c < "${BACKUP_FILE}") bytes)"
 
 echo "[backup] Encrypting with GPG (AES256)"

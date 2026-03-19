@@ -36,6 +36,9 @@ composeFile: docker-compose.prod.yml
 #   VITE_API_URL            https://${DOMAIN}
 #   VITE_WS_URL             wss://${DOMAIN}
 #
+# Backups:
+#   GPG_PASSPHRASE          passphrase for AES256 encryption of DB backups before R2 upload
+#
 # Optional integrations (leave empty to disable):
 #   SENTRY_DSN
 #   VITE_SENTRY_DSN
