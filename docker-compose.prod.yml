@@ -79,6 +79,15 @@ services:
       - valkey_data:/data
     restart: unless-stopped
 
+  backup:
+    build:
+      context: ./infra/backup
+    env_file:
+      - .env
+    depends_on:
+      - db
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   valkey_data:
