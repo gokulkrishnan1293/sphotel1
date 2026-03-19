@@ -57,7 +57,7 @@ def format_kot(payload: dict) -> str:
     printed_at = payload.get("printed_at", "")
     if printed_at:
         try:
-            dt = datetime.fromisoformat(printed_at.replace("Z", "+00:00"))
+            dt = datetime.strptime(printed_at[:16], "%Y-%m-%dT%H:%M")
             printed_at = dt.strftime("%d/%m/%y %H:%M")
         except ValueError:
             pass
@@ -123,7 +123,7 @@ def format_receipt(payload: dict) -> str:
     printed_at = payload.get("printed_at", "")
     if printed_at:
         try:
-            dt = datetime.fromisoformat(printed_at.replace("Z", "+00:00"))
+            dt = datetime.strptime(printed_at[:16], "%Y-%m-%dT%H:%M")
             printed_at = dt.strftime("%d/%m/%y %H:%M")
         except ValueError:
             pass
