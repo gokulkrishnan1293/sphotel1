@@ -7,6 +7,7 @@ import type {
   CloseBillRequest,
   KotTicketResponse,
   OpenBillRequest,
+  PaymentMethod,
   UpdateItemRequest,
 } from '../types/bills'
 
