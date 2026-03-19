@@ -32,7 +32,7 @@ export function WaiterCard({ data, config, onUpdateConfig }: Props) {
   function preview() {
     openPdfPreview('Waiter Performance', 'Last 7 days', [{
       title: 'Revenue by Waiter',
-      rows: data.map((w) => ({ label: w.waiter_name, value: fmt(w.revenue_paise) })),
+      rows: data!.map((w) => ({ label: w.waiter_name, value: fmt(w.revenue_paise) })),
     }])
   }
 

@@ -54,7 +54,7 @@ export function TenantCodePage() {
           </button>
           <p className="text-center text-xs text-text-muted">
             Super admin?{' '}
-            <Link Key="login" to ="/login" className="underline">Sign in here</Link>
+            <Link key="login" to="/login" className="underline">Sign in here</Link>
           </p>
         </form>
       </div>
