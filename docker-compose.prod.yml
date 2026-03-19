@@ -1,32 +1,13 @@
 # Single production deployment file.
+# Routing is handled by Dokploy's built-in Traefik — no separate Traefik service needed.
 #
 # Required environment variables (set in Dokploy dashboard, never committed):
 #   DOMAIN          — e.g. sphotel.yourdomain.com
-#   ACME_EMAIL      — Let's Encrypt registration email
 #   POSTGRES_USER
 #   POSTGRES_PASSWORD
+#   VALKEY_PASSWORD — used for Valkey auth; also set in VALKEY_URL
 
 services:
-  traefik:
-    image: traefik:v3.1
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - traefik_certs:/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    restart: unless-stopped
-
   backend:
     build:
       context: ./backend
@@ -34,9 +15,14 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
-      - valkey
+      db:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - dokploy-network
+      - default
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
@@ -56,6 +42,9 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - dokploy-network
+      - default
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
@@ -72,12 +61,23 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d sphotel"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   valkey:
     image: valkey/valkey:8-alpine
+    command: ["valkey-server", "--requirepass", "${VALKEY_PASSWORD}"]
     volumes:
       - valkey_data:/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "valkey-cli", "-a", "${VALKEY_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backup:
     build:
@@ -85,10 +85,14 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
   postgres_data:
   valkey_data:
-  traefik_certs:
+
+networks:
+  dokploy-network:
+    external: true

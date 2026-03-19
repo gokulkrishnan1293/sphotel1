@@ -17,7 +17,6 @@ composeFile: docker-compose.prod.yml
 #
 # Infrastructure:
 #   DOMAIN                  e.g. sphotel.yourdomain.com
-#   ACME_EMAIL              Let's Encrypt registration email
 #
 # Database:
 #   DATABASE_URL            postgresql+asyncpg://user:pass@db:5432/sphotel
@@ -25,7 +24,8 @@ composeFile: docker-compose.prod.yml
 #   POSTGRES_PASSWORD
 #
 # Valkey:
-#   VALKEY_URL              redis://valkey:6379/0
+#   VALKEY_PASSWORD         strong random password for Valkey auth
+#   VALKEY_URL              redis://:${VALKEY_PASSWORD}@valkey:6379/0
 #
 # Application:
 #   SECRET_KEY              long random string, never reuse dev value
