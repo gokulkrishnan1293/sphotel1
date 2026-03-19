@@ -12,7 +12,7 @@ class HealthStatus(BaseModel):
     version: str
 
 
-@router.get("/health", response_model=DataResponse[HealthStatus])
+@router.api_route("/health", methods=["GET", "HEAD"], response_model=DataResponse[HealthStatus])
 async def health_check() -> DataResponse[HealthStatus]:
     """Health check endpoint. Returns status and version."""
     return DataResponse(data=HealthStatus(status="ok", version=settings.VERSION))
