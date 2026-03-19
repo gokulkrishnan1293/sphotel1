@@ -57,7 +57,6 @@ In Dokploy → your service → **Environment** tab, add all of the following (f
 ```env
 # Infrastructure
 DOMAIN=sphotel.yourdomain.com
-ACME_EMAIL=you@yourdomain.com
 
 # Database
 DATABASE_URL=postgresql+asyncpg://postgres:STRONG_PASSWORD@db:5432/sphotel
@@ -65,7 +64,8 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=STRONG_PASSWORD
 
 # Valkey (Redis)
-VALKEY_URL=redis://valkey:6379/0
+VALKEY_PASSWORD=<generate with: openssl rand -hex 24>
+VALKEY_URL=redis://:${VALKEY_PASSWORD}@valkey:6379/0
 
 # Application
 SECRET_KEY=<generate with: openssl rand -hex 32>
