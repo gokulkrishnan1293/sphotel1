@@ -20,6 +20,7 @@ export interface MenuItemResponse {
   category: string
   short_code: number | null
   price_paise: number
+  online_price_paise?: number | null
   parcel_price_paise?: number | null
   food_type: FoodType
   description: string | null
