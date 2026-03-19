@@ -76,14 +76,17 @@ CORS_ORIGINS=https://sphotel.yourdomain.com
 VITE_API_URL=https://sphotel.yourdomain.com
 VITE_WS_URL=wss://sphotel.yourdomain.com
 
+# Backups (required for automated R2 backups)
+GPG_PASSPHRASE=<generate with: openssl rand -hex 32>
+R2_BUCKET_NAME=your-bucket-name
+R2_ACCESS_KEY_ID=your-r2-access-key
+R2_SECRET_ACCESS_KEY=your-r2-secret-key
+R2_ENDPOINT_URL=https://<account-id>.r2.cloudflarestorage.com
+
 # Optional — leave blank to disable
 SENTRY_DSN=
 VITE_SENTRY_DSN=
 TELEGRAM_BOT_TOKEN=
-R2_BUCKET_NAME=
-R2_ACCESS_KEY_ID=
-R2_SECRET_ACCESS_KEY=
-R2_ENDPOINT_URL=
 ```
 
 Generate a secure secret key locally:
