@@ -1,0 +1,40 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      target: production
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - valkey
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      target: production
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: sphotel
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  valkey:
+    image: valkey/valkey:8-alpine
+    volumes:
+      - valkey_data:/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  valkey_data:

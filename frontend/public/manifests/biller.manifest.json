@@ -1,0 +1,9 @@
+{
+  "name": "sphotel Biller",
+  "short_name": "Biller",
+  "start_url": "/billing",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": []
+}

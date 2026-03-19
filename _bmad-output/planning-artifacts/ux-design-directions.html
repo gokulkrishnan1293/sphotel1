@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sphotel — UX Design Directions</title>
+<style>
+  :root {
+    --accent: #8b5cf6;
+    --accent-hover: #a78bfa;
+    --accent-subtle: #2e1065;
+    --bg-base: #09090b;
+    --bg-surface: #18181b;
+    --bg-elevated: #27272a;
+    --border: #3f3f46;
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa;
+    --text-muted: #52525b;
+    --status-success: #10b981;
+    --status-warning: #fbbf24;
+    --status-error: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #000;
+    color: var(--text-primary);
+    font-size: 13px;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: #000; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 24px;
+    flex-wrap: wrap;
+  }
+  .nav-title { color: var(--text-primary); font-weight: 600; font-size: 14px; margin-right: 8px; }
+  .nav-pill {
+    padding: 5px 14px; border-radius: 20px; cursor: pointer; font-size: 12px;
+    border: 1px solid var(--border); background: transparent; color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .nav-pill:hover { border-color: var(--accent); color: var(--text-primary); }
+  .nav-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* accent picker */
+  .accent-picker { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  .accent-label { font-size: 11px; color: var(--text-muted); }
+  .swatch {
+    width: 18px; height: 18px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: border-color 0.15s;
+  }
+  .swatch:hover, .swatch.active { border-color: #fff; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; padding-top: 57px; height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── SHARED STRUCTURE ── */
+  .app-shell {
+    display: flex; flex: 1; overflow: hidden;
+    background: var(--bg-base); height: calc(100vh - 57px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 52px; background: var(--bg-base);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    align-items: center; padding: 12px 0; gap: 4px;
+    flex-shrink: 0;
+  }
+  .sidebar-wide { width: 220px; align-items: stretch; padding: 12px 0; }
+  .sidebar-logo {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--accent); display: flex; align-items: center;
+    justify-content: center; font-weight: 700; font-size: 13px; margin-bottom: 8px;
+  }
+  .sidebar-logo-wide {
+    display: flex; align-items: center; gap: 10px; padding: 0 16px 12px;
+    border-bottom: 1px solid var(--border); margin-bottom: 8px;
+  }
+  .sidebar-logo-wide .logo-box {
+    width: 28px; height: 28px; border-radius: 6px; background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px; flex-shrink: 0;
+  }
+  .sidebar-logo-wide .logo-name { font-weight: 600; font-size: 13px; }
+  .nav-icon {
+    width: 36px; height: 36px; border-radius: 8px; display: flex;
+    align-items: center; justify-content: center; cursor: pointer;
+    color: var(--text-muted); transition: all 0.15s; font-size: 16px;
+  }
+  .nav-icon:hover { background: var(--bg-elevated); color: var(--text-primary); }
+  .nav-icon.active { background: var(--accent-subtle); color: var(--accent); }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 16px; cursor: pointer; color: var(--text-secondary);
+    transition: all 0.15s; border-radius: 0; font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-item:hover { background: var(--bg-surface); color: var(--text-primary); }
+  .nav-item.active {
+    color: var(--accent); background: var(--accent-subtle);
+    border-left-color: var(--accent);
+  }
+  .nav-item .icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+  .sidebar-spacer { flex: 1; }
+  .sidebar-footer { padding: 8px 16px; border-top: 1px solid var(--border); margin-top: 4px; }
+  .user-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border-radius: 6px; cursor: pointer;
+  }
+  .user-pill:hover { background: var(--bg-elevated); }
+  .user-avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent); display: flex; align-items: center;
+    justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0;
+  }
+  .user-name { font-size: 12px; color: var(--text-secondary); }
+
+  /* MAIN AREA */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* BILL TABS */
+  .bill-tabs {
+    display: flex; align-items: center; gap: 2px;
+    padding: 8px 12px 0; background: var(--bg-base);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto; flex-shrink: 0;
+  }
+  .bill-tab {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 6px 6px 0 0;
+    cursor: pointer; font-size: 12px; color: var(--text-muted);
+    background: transparent; border: 1px solid transparent;
+    border-bottom: none; white-space: nowrap; transition: all 0.12s;
+    position: relative; bottom: -1px;
+  }
+  .bill-tab:hover { color: var(--text-secondary); background: var(--bg-surface); }
+  .bill-tab.active {
+    color: var(--text-primary); background: var(--bg-surface);
+    border-color: var(--border); border-bottom-color: var(--bg-surface);
+  }
+  .bill-tab .tab-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--status-warning);
+  }
+  .bill-tab .tab-dot.paid { background: var(--status-success); }
+  .tab-new {
+    width: 28px; height: 28px; display: flex; align-items: center;
+    justify-content: center; border-radius: 6px; cursor: pointer;
+    color: var(--text-muted); font-size: 18px; margin-left: 4px;
+    transition: all 0.12s;
+  }
+  .tab-new:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+  /* BILLING CANVAS */
+  .billing-canvas {
+    flex: 1; display: flex; gap: 0; overflow: hidden;
+    background: var(--bg-surface);
+  }
+
+  /* ORDER SECTION */
+  .order-section {
+    flex: 1; display: flex; flex-direction: column; overflow: hidden;
+    border-right: 1px solid var(--border);
+  }
+  .order-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .order-meta { display: flex; align-items: center; gap: 12px; }
+  .order-id { font-weight: 600; font-size: 13px; }
+  .order-badge {
+    padding: 2px 8px; border-radius: 4px; font-size: 11px;
+    background: var(--accent-subtle); color: var(--accent); font-weight: 500;
+  }
+  .order-badge.kot { background: #451a03; color: var(--status-warning); }
+  .order-actions { display: flex; gap: 6px; }
+  .btn {
+    padding: 5px 12px; border-radius: 5px; cursor: pointer;
+    font-size: 12px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-secondary);
+    transition: all 0.12s; display: flex; align-items: center; gap: 5px;
+  }
+  .btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-kbd {
+    font-size: 10px; opacity: 0.6;
+    padding: 1px 4px; border-radius: 3px; background: rgba(255,255,255,0.08);
+  }
+
+  /* COMMAND PALETTE TRIGGER */
+  .palette-trigger {
+    margin: 10px 16px; padding: 8px 14px; border-radius: 6px;
+    background: var(--bg-elevated); border: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+    transition: border-color 0.12s; flex-shrink: 0;
+  }
+  .palette-trigger:hover { border-color: var(--accent); }
+  .palette-hint { color: var(--text-muted); flex: 1; font-size: 12px; }
+  .palette-shortcut {
+    font-size: 11px; color: var(--text-muted);
+    padding: 2px 6px; border-radius: 4px;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  }
+
+  /* BILL ITEMS */
+  .bill-items { flex: 1; overflow-y: auto; padding: 0 4px; }
+  .bill-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px; border-radius: 4px; transition: background 0.1s;
+  }
+  .bill-item:hover { background: var(--bg-elevated); }
+  .item-num { color: var(--text-muted); font-size: 11px; width: 16px; text-align: right; flex-shrink: 0; }
+  .item-name { flex: 1; font-size: 13px; }
+  .item-qty {
+    display: flex; align-items: center; gap: 4px;
+    color: var(--text-secondary); font-size: 12px;
+  }
+  .qty-btn {
+    width: 20px; height: 20px; border-radius: 4px;
+    background: var(--bg-elevated); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 12px; color: var(--text-secondary);
+    transition: all 0.1s;
+  }
+  .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .item-price { font-family: 'JetBrains Mono', monospace; font-size: 12px; width: 60px; text-align: right; }
+  .item-locked { color: var(--text-muted); font-size: 11px; }
+
+  /* BILL FOOTER */
+  .bill-footer {
+    border-top: 1px solid var(--border); padding: 12px 16px;
+    background: var(--bg-surface); flex-shrink: 0;
+  }
+  .bill-subtotal {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 6px;
+  }
+  .bill-subtotal .label { color: var(--text-secondary); font-size: 12px; }
+  .bill-subtotal .value { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .bill-total {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .bill-total .label { font-weight: 600; font-size: 14px; }
+  .bill-total .value { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 600; }
+  .footer-actions { display: flex; gap: 8px; }
+  .footer-actions .btn { flex: 1; justify-content: center; }
+
+  /* ACTIVE BILLS PANEL */
+  .active-bills {
+    width: 260px; flex-shrink: 0; display: flex; flex-direction: column;
+    background: var(--bg-base); border-left: 1px solid var(--border);
+  }
+  .panel-header {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .panel-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+  .panel-count { font-size: 11px; color: var(--text-muted); }
+  .active-bill-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px; cursor: pointer; transition: background 0.1s;
+    border-bottom: 1px solid rgba(63,63,70,0.4);
+  }
+  .active-bill-row:hover { background: var(--bg-surface); }
+  .active-bill-row.current { background: var(--accent-subtle); }
+  .ab-fkey {
+    width: 22px; height: 18px; border-radius: 3px;
+    background: var(--bg-elevated); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; color: var(--text-muted); flex-shrink: 0; font-family: monospace;
+  }
+  .active-bill-row.current .ab-fkey { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+  .ab-info { flex: 1; min-width: 0; }
+  .ab-name { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ab-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .ab-right { text-align: right; flex-shrink: 0; }
+  .ab-amount { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .ab-status { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; }
+  .ab-status.draft { background: var(--text-muted); }
+  .ab-status.kot { background: var(--status-warning); }
+  .ab-status.paid { background: var(--status-success); }
+
+  /* COMMAND PALETTE OVERLAY */
+  .palette-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.7);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding-top: 120px; z-index: 50;
+  }
+  .palette-box {
+    width: 520px; background: var(--bg-elevated);
+    border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 24px 48px rgba(0,0,0,0.6); overflow: hidden;
+  }
+  .palette-input-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+  }
+  .palette-icon { color: var(--text-muted); font-size: 15px; }
+  .palette-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--text-primary); font-size: 14px; font-family: inherit;
+  }
+  .palette-input::placeholder { color: var(--text-muted); }
+  .palette-esc {
+    font-size: 11px; color: var(--text-muted);
+    padding: 2px 6px; border-radius: 4px;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  }
+  .palette-results { padding: 6px; }
+  .palette-result {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 6px; cursor: pointer; transition: background 0.1s;
+  }
+  .palette-result:hover, .palette-result.selected { background: var(--accent-subtle); }
+  .pr-name { flex: 1; font-size: 13px; }
+  .pr-code {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--accent); background: var(--accent-subtle);
+    padding: 2px 6px; border-radius: 4px;
+  }
+  .pr-price { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-secondary); width: 56px; text-align: right; }
+  .palette-hint-row {
+    display: flex; gap: 16px; padding: 8px 16px;
+    border-top: 1px solid var(--border); background: rgba(0,0,0,0.3);
+  }
+  .ph-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
+  .ph-key {
+    padding: 1px 5px; border-radius: 3px; background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border); font-size: 10px; font-family: monospace;
+  }
+
+  /* KITCHEN SCREEN */
+  .kitchen-grid {
+    flex: 1; padding: 16px; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px; overflow-y: auto; align-content: start;
+    background: var(--bg-base);
+  }
+  .kot-card {
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; transition: border-color 0.15s;
+  }
+  .kot-card:hover { border-color: var(--text-muted); }
+  .kot-card.urgent { border-color: var(--status-warning); }
+  .kot-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    background: var(--bg-elevated);
+  }
+  .kot-table { font-weight: 700; font-size: 16px; }
+  .kot-time { font-size: 12px; color: var(--text-muted); }
+  .kot-timer { font-size: 12px; color: var(--status-warning); font-weight: 600; }
+  .kot-items { padding: 8px 0; }
+  .kot-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px; font-size: 14px;
+  }
+  .kot-item-qty {
+    width: 24px; height: 24px; border-radius: 5px;
+    background: var(--accent-subtle); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; flex-shrink: 0;
+  }
+  .kot-item-name { flex: 1; font-size: 15px; font-weight: 500; }
+  .kot-item-done { opacity: 0.4; text-decoration: line-through; }
+  .kot-item-check {
+    width: 24px; height: 24px; border-radius: 5px; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .kot-item-check:hover { border-color: var(--status-success); background: rgba(16,185,129,0.1); }
+  .kot-item-check.checked { border-color: var(--status-success); background: var(--status-success); }
+  .kot-footer {
+    padding: 10px 14px; border-top: 1px solid var(--border);
+    display: flex; gap: 8px;
+  }
+
+  /* OWNER DASHBOARD */
+  .owner-content { flex: 1; overflow-y: auto; padding: 20px; background: var(--bg-base); }
+  .section-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; }
+  .stat-delta { font-size: 11px; color: var(--status-success); margin-top: 4px; }
+  .report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .report-card {
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px;
+  }
+  .report-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .report-title { font-size: 13px; font-weight: 600; }
+  .report-actions { display: flex; gap: 6px; align-items: center; }
+  .tg-badge {
+    display: flex; align-items: center; gap: 4px; font-size: 11px;
+    color: #0088cc; background: rgba(0,136,204,0.1);
+    border: 1px solid rgba(0,136,204,0.2); border-radius: 4px; padding: 2px 7px;
+  }
+  .chart-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .chart-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .chart-label { width: 110px; color: var(--text-secondary); flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chart-bar-bg { flex: 1; height: 8px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; }
+  .chart-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+  .chart-val { width: 44px; text-align: right; font-family: 'JetBrains Mono', monospace; color: var(--text-secondary); }
+
+  /* DIRECTION LABEL */
+  .direction-label {
+    position: fixed; bottom: 16px; right: 16px;
+    background: var(--bg-elevated); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; font-size: 12px;
+    color: var(--text-secondary); z-index: 90;
+  }
+  .direction-label strong { color: var(--text-primary); }
+
+  /* SCREEN LABEL */
+  .screen-nav {
+    display: flex; gap: 6px; padding: 8px 12px;
+    background: var(--bg-surface); border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .screen-tab {
+    padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;
+    color: var(--text-muted); transition: all 0.12s;
+  }
+  .screen-tab:hover { color: var(--text-primary); background: var(--bg-elevated); }
+  .screen-tab.active { color: var(--accent); background: var(--accent-subtle); }
+
+  /* OFFLINE INDICATOR */
+  .status-bar {
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 16px; height: 28px; background: var(--bg-base);
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
+    font-size: 11px; color: var(--text-muted);
+  }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--status-success); }
+  .status-dot.offline { background: var(--text-muted); }
+  .status-item { display: flex; align-items: center; gap: 5px; }
+  .status-spacer { flex: 1; }
+  .status-time { font-family: 'JetBrains Mono', monospace; }
+
+  /* SECTION DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* D1 SPECIFIC: compact icon sidebar */
+  #d1 .sidebar { width: 52px; }
+
+  /* D2 SPECIFIC: wide sidebar */
+  #d2 .sidebar { width: 220px; }
+
+  /* D3 SPECIFIC: top nav instead of sidebar */
+  #d3 .app-shell { flex-direction: column; }
+  #d3 .top-nav {
+    display: flex; align-items: center; gap: 2px;
+    padding: 0 16px; border-bottom: 1px solid var(--border);
+    background: var(--bg-base); flex-shrink: 0; height: 44px;
+  }
+  #d3 .top-nav-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 12px; height: 44px; cursor: pointer;
+    color: var(--text-muted); font-size: 13px; border-bottom: 2px solid transparent;
+    transition: all 0.12s;
+  }
+  #d3 .top-nav-item:hover { color: var(--text-primary); }
+  #d3 .top-nav-item.active { color: var(--accent); border-bottom-color: var(--accent); }
+  #d3 .main-body { display: flex; flex: 1; overflow: hidden; }
+
+  /* RELATIVE CONTAINER FOR OVERLAYS */
+  .relative { position: relative; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <span class="nav-title">sphotel — Design Directions</span>
+  <button class="nav-pill active" onclick="showScreen('d1')">D1 · Icon Sidebar</button>
+  <button class="nav-pill" onclick="showScreen('d2')">D2 · Wide Sidebar</button>
+  <button class="nav-pill" onclick="showScreen('d3')">D3 · Top Nav</button>
+  <button class="nav-pill" onclick="showScreen('d4')">D4 · Kitchen Display</button>
+  <button class="nav-pill" onclick="showScreen('d5')">D5 · Owner Dashboard</button>
+  <button class="nav-pill" onclick="showScreen('d6')">D6 · Command Palette</button>
+
+  <div class="accent-picker">
+    <span class="accent-label">Accent</span>
+    <div class="swatch active" style="background:#8b5cf6" onclick="setAccent('#8b5cf6','#a78bfa','#2e1065')" title="Violet"></div>
+    <div class="swatch" style="background:#3b82f6" onclick="setAccent('#3b82f6','#60a5fa','#1e3a5f')" title="Blue"></div>
+    <div class="swatch" style="background:#10b981" onclick="setAccent('#10b981','#34d399','#022c22')" title="Emerald"></div>
+    <div class="swatch" style="background:#f59e0b" onclick="setAccent('#f59e0b','#fbbf24','#451a03')" title="Amber"></div>
+    <div class="swatch" style="background:#ef4444" onclick="setAccent('#ef4444','#f87171','#450a0a')" title="Red"></div>
+    <div class="swatch" style="background:#ec4899" onclick="setAccent('#ec4899','#f472b6','#500724')" title="Pink"></div>
+    <div class="swatch" style="background:#14b8a6" onclick="setAccent('#14b8a6','#2dd4bf','#042f2e')" title="Teal"></div>
+    <div class="swatch" style="background:#f97316" onclick="setAccent('#f97316','#fb923c','#431407')" title="Orange"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     D1 · ICON SIDEBAR + BILLING CANVAS
+     ═══════════════════════════════════════════════════════ -->
+<div id="d1" class="screen active">
+  <div class="app-shell">
+    <!-- Icon sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-logo">S</div>
+      <div class="nav-icon active" title="Billing">⚡</div>
+      <div class="nav-icon" title="Kitchen">🍳</div>
+      <div class="nav-icon" title="Staff">👤</div>
+      <div class="nav-icon" title="Menu">📋</div>
+      <div class="nav-icon" title="Reports">📊</div>
+      <div class="sidebar-spacer"></div>
+      <div class="nav-icon" title="Settings">⚙️</div>
+      <div class="nav-icon" title="Shortcuts">?</div>
+    </div>
+
+    <!-- Main billing area -->
+    <div class="main">
+      <div class="status-bar">
+        <div class="status-item"><div class="status-dot"></div>Online</div>
+        <div class="status-item">🖨 Printer ready</div>
+        <div class="status-spacer"></div>
+        <div>Ravi · Biller</div>
+        <div class="status-time">18:42</div>
+      </div>
+      <!-- Bill tabs -->
+      <div class="bill-tabs">
+        <div class="bill-tab active"><div class="tab-dot kot"></div>T-3 · Table 3</div>
+        <div class="bill-tab"><div class="tab-dot"></div>T-1 · Table 1</div>
+        <div class="bill-tab"><div class="tab-dot paid"></div>TW-2 · Takeaway</div>
+        <div class="bill-tab"><div class="tab-dot"></div>T-7 · Table 7</div>
+        <div class="tab-new">+</div>
+      </div>
+
+      <!-- Billing canvas -->
+      <div class="billing-canvas">
+        <div class="order-section">
+          <div class="order-header">
+            <div class="order-meta">
+              <span class="order-id">Bill #0047</span>
+              <span class="order-badge kot">KOT Fired</span>
+              <span style="font-size:11px;color:var(--text-muted)">Waiter: Priya · 18:21</span>
+            </div>
+            <div class="order-actions">
+              <button class="btn"><span>KOT</span><span class="btn-kbd">⌃K</span></button>
+              <button class="btn btn-primary"><span>Bill</span><span class="btn-kbd">⌃B</span></button>
+            </div>
+          </div>
+
+          <div class="palette-trigger">
+            <span style="color:var(--text-muted);font-size:14px">⌕</span>
+            <span class="palette-hint">Type item name, shortcode, or "CF 2 BT 1"…</span>
+            <span class="palette-shortcut">Space</span>
+          </div>
+
+          <div class="bill-items">
+            <div class="bill-item">
+              <span class="item-num">1</span>
+              <span class="item-name">Chicken Biryani</span>
+              <span class="item-locked" title="KOT fired — locked">🔒</span>
+              <span class="item-qty">
+                <span class="qty-btn" style="opacity:0.3;cursor:not-allowed">−</span>
+                <span style="width:20px;text-align:center">2</span>
+                <span class="qty-btn" style="opacity:0.3;cursor:not-allowed">+</span>
+              </span>
+              <span class="item-price">₹360</span>
+            </div>
+            <div class="bill-item">
+              <span class="item-num">2</span>
+              <span class="item-name">Butter Naan</span>
+              <span class="item-locked">🔒</span>
+              <span class="item-qty">
+                <span class="qty-btn" style="opacity:0.3;cursor:not-allowed">−</span>
+                <span style="width:20px;text-align:center">4</span>
+                <span class="qty-btn" style="opacity:0.3;cursor:not-allowed">+</span>
+              </span>
+              <span class="item-price">₹120</span>
+            </div>
+            <div class="bill-item">
+              <span class="item-num">3</span>
+              <span class="item-name">Masala Chai</span>
+              <span style="width:14px"></span>
+              <span class="item-qty">
+                <span class="qty-btn">−</span>
+                <span style="width:20px;text-align:center">3</span>
+                <span class="qty-btn">+</span>
+              </span>
+              <span class="item-price">₹90</span>
+            </div>
+            <div class="bill-item">
+              <span class="item-num">4</span>
+              <span class="item-name">Gulab Jamun</span>
+              <span style="width:14px"></span>
+              <span class="item-qty">
+                <span class="qty-btn">−</span>
+                <span style="width:20px;text-align:center">2</span>
+                <span class="qty-btn">+</span>
+              </span>
+              <span class="item-price">₹80</span>
+            </div>
+          </div>
+
+          <div class="bill-footer">
+            <div class="bill-subtotal"><span class="label">Subtotal</span><span class="value">₹650</span></div>
+            <div class="bill-subtotal"><span class="label">GST (5%)</span><span class="value">₹32.50</span></div>
+            <div class="bill-total">
+              <span class="label">Total</span>
+              <span class="value">₹682.50</span>
+            </div>
+            <div class="footer-actions">
+              <button class="btn">Void <span class="btn-kbd">⌃V</span></button>
+              <button class="btn">Split</button>
+              <button class="btn btn-primary">Collect Payment <span class="btn-kbd">⌃B</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active bills panel -->
+        <div class="active-bills">
+          <div class="panel-header">
+            <span class="panel-title">Active Bills</span>
+            <span class="panel-count">4 open</span>
+          </div>
+          <div class="active-bill-row current">
+            <div class="ab-fkey">F1</div>
+            <div class="ab-info">
+              <div class="ab-name">T-3 · Table 3</div>
+              <div class="ab-meta">4 items · Priya · 21 min</div>
+            </div>
+            <div class="ab-right">
+              <div class="ab-amount">₹682</div>
+              <div class="ab-status kot" style="margin:0 0 0 auto;display:block;width:6px;height:6px;border-radius:50%;"></div>
+            </div>
+          </div>
+          <div class="active-bill-row">
+            <div class="ab-fkey">F2</div>
+            <div class="ab-info">
+              <div class="ab-name">T-1 · Table 1</div>
+              <div class="ab-meta">2 items · Rahul · 8 min</div>
+            </div>
+            <div class="ab-right">
+              <div class="ab-amount">₹240</div>
+              <div class="ab-status draft"></div>
+            </div>
+          </div>
+          <div class="active-bill-row">
+            <div class="ab-fkey">F3</div>
+            <div class="ab-info">
+              <div class="ab-name">TW-2 · Takeaway</div>
+              <div class="ab-meta">3 items · — · 5 min</div>
+            </div>
+            <div class="ab-right">
+              <div class="ab-amount">₹420</div>
+              <div class="ab-status paid"></div>
+            </div>
+          </div>
+          <div class="active-bill-row">
+            <div class="ab-fkey">F4</div>
+            <div class="ab-info">
+              <div class="ab-name">T-7 · Table 7</div>
+              <div class="ab-meta">1 item · Priya · 2 min</div>
+            </div>
+            <div class="ab-right">
+              <div class="ab-amount">₹180</div>
+              <div class="ab-status draft"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="direction-label"><strong>D1</strong> · Icon sidebar · Compact · Three-panel billing canvas</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     D2 · WIDE SIDEBAR (MANAGER/OWNER VIEW)
+     ═══════════════════════════════════════════════════════ -->
+<div id="d2" class="screen">
+  <div class="app-shell">
+    <div class="sidebar sidebar-wide">
+      <div class="sidebar-logo-wide">
+        <div class="logo-box">S</div>
+        <span class="logo-name">sphotel</span>
+      </div>
+      <div class="nav-item active"><span class="icon">⚡</span>Billing</div>
+      <div class="nav-item"><span class="icon">🍳</span>Kitchen Queue</div>
+      <div class="divider" style="margin:4px 16px"></div>
+      <div class="nav-item"><span class="icon">📋</span>Menu Management</div>
+      <div class="nav-item"><span class="icon">✓</span>Void Approvals<span style="margin-left:auto;background:var(--status-error);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px">2</span></div>
+      <div class="nav-item"><span class="icon">👥</span>Staff & Payroll</div>
+      <div class="nav-item"><span class="icon">🧾</span>Supplier Expenses</div>
+      <div class="divider" style="margin:4px 16px"></div>
+      <div class="nav-item"><span class="icon">📊</span>Reports</div>
+      <div class="nav-item"><span class="icon">📤</span>Telegram Config</div>
+      <div class="nav-item"><span class="icon">⚙️</span>Settings</div>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar">GK</div>
+          <div>
+            <div class="user-name" style="color:var(--text-primary);font-size:12px">Gokul</div>
+            <div class="user-name">Owner</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="status-bar">
+        <div class="status-item"><div class="status-dot"></div>Online · sphotel Koramangala</div>
+        <div class="status-spacer"></div>
+        <div class="status-item">🖨 2 printers ready</div>
+        <div class="status-time">18:42</div>
+      </div>
+      <div class="bill-tabs">
+        <div class="bill-tab active"><div class="tab-dot kot"></div>T-3 · Table 3</div>
+        <div class="bill-tab"><div class="tab-dot"></div>T-1 · Table 1</div>
+        <div class="bill-tab"><div class="tab-dot paid"></div>TW-2 · Takeaway</div>
+        <div class="tab-new">+</div>
+      </div>
+      <div class="billing-canvas">
+        <div class="order-section">
+          <div class="order-header">
+            <div class="order-meta">
+              <span class="order-id">Bill #0047</span>
+              <span class="order-badge kot">KOT Fired</span>
+            </div>
+            <div class="order-actions">
+              <button class="btn"><span>KOT</span><span class="btn-kbd">⌃K</span></button>
+              <button class="btn btn-primary"><span>Bill</span><span class="btn-kbd">⌃B</span></button>
+            </div>
+          </div>
+          <div class="palette-trigger">
+            <span style="color:var(--text-muted);font-size:14px">⌕</span>
+            <span class="palette-hint">Type item name, shortcode, or "CF 2 BT 1"…</span>
+            <span class="palette-shortcut">Space</span>
+          </div>
+          <div class="bill-items">
+            <div class="bill-item">
+              <span class="item-num">1</span>
+              <span class="item-name">Chicken Biryani</span>
+              <span class="item-locked">🔒</span>
+              <span class="item-qty"><span class="qty-btn" style="opacity:.3">−</span><span style="width:20px;text-align:center">2</span><span class="qty-btn" style="opacity:.3">+</span></span>
+              <span class="item-price">₹360</span>
+            </div>
+            <div class="bill-item">
+              <span class="item-num">2</span>
+              <span class="item-name">Butter Naan</span>
+              <span class="item-locked">🔒</span>
+              <span class="item-qty"><span class="qty-btn" style="opacity:.3">−</span><span style="width:20px;text-align:center">4</span><span class="qty-btn" style="opacity:.3">+</span></span>
+              <span class="item-price">₹120</span>
+            </div>
+            <div class="bill-item">
+              <span class="item-num">3</span>
+              <span class="item-name">Masala Chai</span>
+              <span style="width:14px"></span>
+              <span class="item-qty"><span class="qty-btn">−</span><span style="width:20px;text-align:center">3</span><span class="qty-btn">+</span></span>
+              <span class="item-price">₹90</span>
+            </div>
+          </div>
+          <div class="bill-footer">
+            <div class="bill-subtotal"><span class="label">Subtotal</span><span class="value">₹570</span></div>
+            <div class="bill-subtotal"><span class="label">GST (5%)</span><span class="value">₹28.50</span></div>
+            <div class="bill-total"><span class="label">Total</span><span class="value">₹598.50</span></div>
+            <div class="footer-actions">
+              <button class="btn">Void</button>
+              <button class="btn btn-primary">Collect Payment <span class="btn-kbd">⌃B</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="active-bills">
+          <div class="panel-header"><span class="panel-title">Active Bills</span><span class="panel-count">3 open</span></div>
+          <div class="active-bill-row current">
+            <div class="ab-fkey">F1</div>
+            <div class="ab-info"><div class="ab-name">T-3 · Table 3</div><div class="ab-meta">3 items · 21 min</div></div>
+            <div class="ab-right"><div class="ab-amount">₹598</div></div>
+          </div>
+          <div class="active-bill-row">
+            <div class="ab-fkey">F2</div>
+            <div class="ab-info"><div class="ab-name">T-1 · Table 1</div><div class="ab-meta">2 items · 8 min</div></div>
+            <div class="ab-right"><div class="ab-amount">₹240</div></div>
+          </div>
+          <div class="active-bill-row">
+            <div class="ab-fkey">F3</div>
+            <div class="ab-info"><div class="ab-name">TW-2 · Takeaway</div><div class="ab-meta">3 items · 5 min</div></div>
+            <div class="ab-right"><div class="ab-amount">₹420</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="direction-label"><strong>D2</strong> · Wide labeled sidebar · Full nav visible · Owner/Manager view</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     D3 · TOP NAV (ALTERNATIVE LAYOUT)
+     ═══════════════════════════════════════════════════════ -->
+<div id="d3" class="screen">
+  <div class="app-shell">
+    <div style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+      <!-- Top nav bar -->
+      <div class="top-nav">
+        <div style="display:flex;align-items:center;gap:8px;margin-right:16px;padding-right:16px;border-right:1px solid var(--border)">
+          <div style="width:24px;height:24px;border-radius:5px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px">S</div>
+          <span style="font-weight:600;font-size:13px">sphotel</span>
+        </div>
+        <div class="top-nav-item active">⚡ Billing</div>
+        <div class="top-nav-item">🍳 Kitchen</div>
+        <div class="top-nav-item">📋 Menu</div>
+        <div class="top-nav-item">👥 Staff</div>
+        <div class="top-nav-item">📊 Reports</div>
+        <div style="flex:1"></div>
+        <div class="top-nav-item" style="font-size:11px;color:var(--text-muted)">🖨 Ready</div>
+        <div class="top-nav-item" style="font-size:11px">Ravi · Biller</div>
+      </div>
+
+      <div class="main-body" style="display:flex;flex:1;overflow:hidden">
+        <div class="main">
+          <div class="bill-tabs">
+            <div class="bill-tab active"><div class="tab-dot kot"></div>T-3 · Table 3</div>
+            <div class="bill-tab"><div class="tab-dot"></div>T-1 · Table 1</div>
+            <div class="bill-tab"><div class="tab-dot paid"></div>TW-2 · Takeaway</div>
+            <div class="tab-new">+</div>
+          </div>
+          <div class="billing-canvas">
+            <div class="order-section">
+              <div class="order-header">
+                <div class="order-meta">
+                  <span class="order-id">Bill #0047</span>
+                  <span class="order-badge kot">KOT Fired</span>
+                  <span style="font-size:11px;color:var(--text-muted)">Waiter: Priya</span>
+                </div>
+                <div class="order-actions">
+                  <button class="btn"><span>KOT</span><span class="btn-kbd">⌃K</span></button>
+                  <button class="btn btn-primary"><span>Bill</span><span class="btn-kbd">⌃B</span></button>
+                </div>
+              </div>
+              <div class="palette-trigger">
+                <span style="color:var(--text-muted);font-size:14px">⌕</span>
+                <span class="palette-hint">Type item name, shortcode, or "CF 2 BT 1"…</span>
+                <span class="palette-shortcut">Space</span>
+              </div>
+              <div class="bill-items">
+                <div class="bill-item"><span class="item-num">1</span><span class="item-name">Chicken Biryani</span><span class="item-locked">🔒</span><span class="item-qty"><span class="qty-btn" style="opacity:.3">−</span><span style="width:20px;text-align:center">2</span><span class="qty-btn" style="opacity:.3">+</span></span><span class="item-price">₹360</span></div>
+                <div class="bill-item"><span class="item-num">2</span><span class="item-name">Butter Naan</span><span class="item-locked">🔒</span><span class="item-qty"><span class="qty-btn" style="opacity:.3">−</span><span style="width:20px;text-align:center">4</span><span class="qty-btn" style="opacity:.3">+</span></span><span class="item-price">₹120</span></div>
+                <div class="bill-item"><span class="item-num">3</span><span class="item-name">Masala Chai</span><span style="width:14px"></span><span class="item-qty"><span class="qty-btn">−</span><span style="width:20px;text-align:center">3</span><span class="qty-btn">+</span></span><span class="item-price">₹90</span></div>
+              </div>
+              <div class="bill-footer">
+                <div class="bill-subtotal"><span class="label">Subtotal</span><span class="value">₹570</span></div>
+                <div class="bill-subtotal"><span class="label">GST (5%)</span><span class="value">₹28.50</span></div>
+                <div class="bill-total"><span class="label">Total</span><span class="value">₹598.50</span></div>
+                <div class="footer-actions">
+                  <button class="btn">Void</button>
+                  <button class="btn btn-primary">Collect Payment <span class="btn-kbd">⌃B</span></button>
+                </div>
+              </div>
+            </div>
+            <div class="active-bills">
+              <div class="panel-header"><span class="panel-title">Active Bills</span><span class="panel-count">3 open</span></div>
+              <div class="active-bill-row current"><div class="ab-fkey">F1</div><div class="ab-info"><div class="ab-name">T-3 · Table 3</div><div class="ab-meta">3 items · 21 min</div></div><div class="ab-right"><div class="ab-amount">₹598</div></div></div>
+              <div class="active-bill-row"><div class="ab-fkey">F2</div><div class="ab-info"><div class="ab-name">T-1 · Table 1</div><div class="ab-meta">2 items · 8 min</div></div><div class="ab-right"><div class="ab-amount">₹240</div></div></div>
+              <div class="active-bill-row"><div class="ab-fkey">F3</div><div class="ab-info"><div class="ab-name">TW-2 · Takeaway</div><div class="ab-meta">3 items · 5 min</div></div><div class="ab-right"><div class="ab-amount">₹420</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="direction-label"><strong>D3</strong> · Top navigation bar · No sidebar · Maximum horizontal space</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     D4 · KITCHEN DISPLAY
+     ═══════════════════════════════════════════════════════ -->
+<div id="d4" class="screen">
+  <div class="app-shell" style="flex-direction:column">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--bg-base);flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:28px;height:28px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">S</div>
+        <span style="font-weight:600;font-size:15px">Kitchen Display</span>
+        <span style="font-size:13px;color:var(--text-muted)">sphotel · Chef Kumar</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;font-size:13px">
+        <span style="color:var(--status-warning);font-weight:600">● 3 pending</span>
+        <span style="color:var(--status-success)">● 1 ready</span>
+        <span style="color:var(--text-muted)">18:42</span>
+      </div>
+    </div>
+    <div class="kitchen-grid">
+      <!-- KOT 1 — urgent -->
+      <div class="kot-card urgent">
+        <div class="kot-header">
+          <span class="kot-table">Table 3</span>
+          <span class="kot-timer">⏱ 21 min</span>
+        </div>
+        <div class="kot-items">
+          <div class="kot-item">
+            <div class="kot-item-qty">2</div>
+            <span class="kot-item-name">Chicken Biryani</span>
+            <div class="kot-item-check checked">✓</div>
+          </div>
+          <div class="kot-item">
+            <div class="kot-item-qty">4</div>
+            <span class="kot-item-name">Butter Naan</span>
+            <div class="kot-item-check"></div>
+          </div>
+        </div>
+        <div class="kot-footer">
+          <button class="btn" style="flex:1;justify-content:center;font-size:13px">Mark All Ready</button>
+        </div>
+      </div>
+
+      <!-- KOT 2 -->
+      <div class="kot-card">
+        <div class="kot-header">
+          <span class="kot-table">Table 1</span>
+          <span class="kot-time">18:38</span>
+        </div>
+        <div class="kot-items">
+          <div class="kot-item">
+            <div class="kot-item-qty">1</div>
+            <span class="kot-item-name">Paneer Butter Masala</span>
+            <div class="kot-item-check"></div>
+          </div>
+          <div class="kot-item">
+            <div class="kot-item-qty">2</div>
+            <span class="kot-item-name">Tandoori Roti</span>
+            <div class="kot-item-check"></div>
+          </div>
+        </div>
+        <div class="kot-footer">
+          <button class="btn" style="flex:1;justify-content:center;font-size:13px">Mark All Ready</button>
+        </div>
+      </div>
+
+      <!-- KOT 3 — done -->
+      <div class="kot-card" style="opacity:0.5">
+        <div class="kot-header">
+          <span class="kot-table">Takeaway 2</span>
+          <span style="font-size:12px;color:var(--status-success);font-weight:600">✓ Ready</span>
+        </div>
+        <div class="kot-items">
+          <div class="kot-item">
+            <div class="kot-item-qty" style="opacity:.5">3</div>
+            <span class="kot-item-name kot-item-done">Veg Fried Rice</span>
+            <div class="kot-item-check checked">✓</div>
+          </div>
+        </div>
+        <div class="kot-footer">
+          <button class="btn" style="flex:1;justify-content:center;font-size:13px;color:var(--text-muted)">Served</button>
+        </div>
+      </div>
+
+      <!-- KOT 4 -->
+      <div class="kot-card">
+        <div class="kot-header">
+          <span class="kot-table">Table 7</span>
+          <span class="kot-time">18:41</span>
+        </div>
+        <div class="kot-items">
+          <div class="kot-item">
+            <div class="kot-item-qty">2</div>
+            <span class="kot-item-name">Masala Dosa</span>
+            <div class="kot-item-check"></div>
+          </div>
+        </div>
+        <div class="kot-footer">
+          <button class="btn" style="flex:1;justify-content:center;font-size:13px">Mark Ready</button>
+        </div>
+      </div>
+
+      <!-- Item availability panel -->
+      <div class="kot-card" style="border-color:var(--text-muted)">
+        <div class="kot-header">
+          <span class="kot-table" style="font-size:13px">Item Availability</span>
+        </div>
+        <div class="kot-items">
+          <div class="kot-item" style="justify-content:space-between">
+            <span class="kot-item-name" style="font-size:14px">Chicken Biryani</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:12px;color:var(--status-success)">Available</span>
+              <div style="width:36px;height:20px;border-radius:10px;background:var(--status-success);position:relative;cursor:pointer">
+                <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;right:2px;top:2px"></div>
+              </div>
+            </div>
+          </div>
+          <div class="kot-item" style="justify-content:space-between">
+            <span class="kot-item-name" style="font-size:14px">Fish Curry</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:12px;color:var(--text-muted)">86'd</span>
+              <div style="width:36px;height:20px;border-radius:10px;background:var(--bg-elevated);border:1px solid var(--border);position:relative;cursor:pointer">
+                <div style="width:16px;height:16px;border-radius:50%;background:var(--text-muted);position:absolute;left:2px;top:1px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="direction-label"><strong>D4</strong> · Kitchen Display · Large cards · Touch-first · Item availability controls</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     D5 · OWNER DASHBOARD
+     ═══════════════════════════════════════════════════════ -->
+<div id="d5" class="screen">
+  <div class="app-shell">
+    <div class="sidebar sidebar-wide">
+      <div class="sidebar-logo-wide">
+        <div class="logo-box">S</div>
+        <span class="logo-name">sphotel</span>
+      </div>
+      <div class="nav-item"><span class="icon">⚡</span>Billing</div>
+      <div class="nav-item"><span class="icon">🍳</span>Kitchen Queue</div>
+      <div class="divider" style="margin:4px 16px"></div>
+      <div class="nav-item"><span class="icon">📋</span>Menu Management</div>
+      <div class="nav-item"><span class="icon">✓</span>Void Approvals</div>
+      <div class="nav-item"><span class="icon">👥</span>Staff & Payroll</div>
+      <div class="nav-item"><span class="icon">🧾</span>Supplier Expenses</div>
+      <div class="divider" style="margin:4px 16px"></div>
+      <div class="nav-item active"><span class="icon">📊</span>Reports</div>
+      <div class="nav-item"><span class="icon">📤</span>Telegram Config</div>
+      <div class="nav-item"><span class="icon">⚙️</span>Settings</div>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar">GK</div>
+          <div><div class="user-name" style="color:var(--text-primary);font-size:12px">Gokul</div><div class="user-name">Owner</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="owner-content">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div>
+          <div style="font-size:18px;font-weight:700">Dashboard</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Today · Friday, 13 March 2026</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn">+ New Report</button>
+          <button class="btn btn-primary">Close Day ⌃D</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Today's Revenue</div>
+          <div class="stat-value">₹18,240</div>
+          <div class="stat-delta">↑ 12% vs yesterday</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Bills Closed</div>
+          <div class="stat-value">47</div>
+          <div class="stat-delta">↑ 5 vs avg</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Bill Value</div>
+          <div class="stat-value" style="font-size:18px">₹388</div>
+          <div class="stat-delta" style="color:var(--status-error)">↓ 3% vs avg</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Voids Today</div>
+          <div class="stat-value" style="color:var(--status-warning)">2</div>
+          <div class="stat-delta" style="color:var(--text-muted)">Within normal range</div>
+        </div>
+      </div>
+
+      <!-- Report cards -->
+      <div class="report-grid">
+        <div class="report-card">
+          <div class="report-header">
+            <span class="report-title">Top Items Today</span>
+            <div class="report-actions">
+              <div class="tg-badge">📤 Daily 8pm</div>
+              <button class="btn" style="font-size:11px;padding:3px 8px">⋯</button>
+            </div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-row"><span class="chart-label">Chicken Biryani</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:90%"></div></div><span class="chart-val">₹4,320</span></div>
+            <div class="chart-row"><span class="chart-label">Butter Naan</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:68%"></div></div><span class="chart-val">₹2,160</span></div>
+            <div class="chart-row"><span class="chart-label">Masala Chai</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:55%"></div></div><span class="chart-val">₹1,650</span></div>
+            <div class="chart-row"><span class="chart-label">Paneer Butter Masala</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:42%"></div></div><span class="chart-val">₹1,260</span></div>
+            <div class="chart-row"><span class="chart-label">Gulab Jamun</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:30%"></div></div><span class="chart-val">₹900</span></div>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-header">
+            <span class="report-title">Waiter Performance</span>
+            <div class="report-actions">
+              <div class="tg-badge">📤 Weekly Mon</div>
+              <button class="btn" style="font-size:11px;padding:3px 8px">⋯</button>
+            </div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-row"><span class="chart-label">Priya</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:85%"></div></div><span class="chart-val">₹7,840</span></div>
+            <div class="chart-row"><span class="chart-label">Rahul</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:60%"></div></div><span class="chart-val">₹5,520</span></div>
+            <div class="chart-row"><span class="chart-label">Anita</span><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:45%"></div></div><span class="chart-val">₹4,140</span></div>
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted)">
+            Rewards auto-calculated at day close · Formula: 1% of billed value
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-header">
+            <span class="report-title">Payment Breakdown</span>
+            <div class="report-actions">
+              <button class="btn" style="font-size:11px;padding:3px 8px">Configure</button>
+              <button class="btn" style="font-size:11px;padding:3px 8px">⋯</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <div style="flex:1;padding:10px;background:var(--bg-elevated);border-radius:6px;text-align:center">
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Cash</div>
+              <div style="font-family:monospace;font-size:16px;font-weight:600">₹8,400</div>
+              <div style="font-size:11px;color:var(--text-muted)">46%</div>
+            </div>
+            <div style="flex:1;padding:10px;background:var(--bg-elevated);border-radius:6px;text-align:center">
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">UPI</div>
+              <div style="font-family:monospace;font-size:16px;font-weight:600">₹9,120</div>
+              <div style="font-size:11px;color:var(--text-muted)">50%</div>
+            </div>
+            <div style="flex:1;padding:10px;background:var(--bg-elevated);border-radius:6px;text-align:center">
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Card</div>
+              <div style="font-family:monospace;font-size:16px;font-weight:600">₹720</div>
+              <div style="font-size:11px;color:var(--text-muted)">4%</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:6px">
+            <span style="color:var(--status-success)">✓</span> Cash session reconciled · ₹8,400 expected = ₹8,400 actual
+          </div>
+        </div>
+
+        <div class="report-card" style="border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:160px;cursor:pointer;transition:border-color 0.12s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:24px;color:var(--text-muted)">+</div>
+          <div style="font-size:13px;color:var(--text-muted)">Add custom report</div>
+          <div style="font-size:11px;color:var(--text-muted)">Choose metrics, chart type, Telegram schedule</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="direction-label"><strong>D5</strong> · Owner Dashboard · Stats + Report cards with Telegram toggles · + Custom report</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     D6 · COMMAND PALETTE OVERLAY
+     ═══════════════════════════════════════════════════════ -->
+<div id="d6" class="screen">
+  <div class="app-shell" style="position:relative">
+    <div class="sidebar">
+      <div class="sidebar-logo">S</div>
+      <div class="nav-icon active">⚡</div>
+      <div class="nav-icon">🍳</div>
+      <div class="nav-icon">📊</div>
+      <div class="sidebar-spacer"></div>
+      <div class="nav-icon">?</div>
+    </div>
+    <div class="main">
+      <div class="status-bar">
+        <div class="status-item"><div class="status-dot"></div>Online</div>
+        <div class="status-spacer"></div>
+        <div class="status-time">18:42</div>
+      </div>
+      <div class="bill-tabs">
+        <div class="bill-tab active"><div class="tab-dot kot"></div>T-3 · Table 3</div>
+        <div class="bill-tab"><div class="tab-dot"></div>T-1 · Table 1</div>
+        <div class="tab-new">+</div>
+      </div>
+      <div class="billing-canvas" style="position:relative">
+        <!-- Background blurred bill -->
+        <div class="order-section" style="filter:blur(1px);opacity:0.4">
+          <div class="order-header">
+            <div class="order-meta"><span class="order-id">Bill #0047</span><span class="order-badge kot">KOT Fired</span></div>
+          </div>
+          <div class="bill-items">
+            <div class="bill-item"><span class="item-num">1</span><span class="item-name">Chicken Biryani</span><span class="item-price">₹360</span></div>
+            <div class="bill-item"><span class="item-num">2</span><span class="item-name">Butter Naan</span><span class="item-price">₹120</span></div>
+          </div>
+        </div>
+        <!-- COMMAND PALETTE -->
+        <div class="palette-overlay">
+          <div class="palette-box">
+            <div class="palette-input-row">
+              <span class="palette-icon">⌕</span>
+              <input class="palette-input" placeholder='Type item name, shortcode, or "CF 2 BT 1"…' value="chick">
+              <span class="palette-esc">Esc</span>
+            </div>
+            <div class="palette-results">
+              <div class="palette-result selected">
+                <span class="pr-name">Chicken Biryani</span>
+                <span class="pr-code">CB</span>
+                <span class="pr-price">₹180</span>
+              </div>
+              <div class="palette-result">
+                <span class="pr-name">Chicken Fried Rice</span>
+                <span class="pr-code">CF</span>
+                <span class="pr-price">₹160</span>
+              </div>
+              <div class="palette-result">
+                <span class="pr-name">Chicken Tikka Masala</span>
+                <span class="pr-code">CT</span>
+                <span class="pr-price">₹220</span>
+              </div>
+              <div class="palette-result">
+                <span class="pr-name">Chicken 65</span>
+                <span class="pr-code">C6</span>
+                <span class="pr-price">₹190</span>
+              </div>
+              <div class="palette-result" style="opacity:0.4;cursor:not-allowed">
+                <span class="pr-name" style="text-decoration:line-through">Chicken Chettinad</span>
+                <span style="font-size:11px;color:var(--status-error)">86'd</span>
+                <span class="pr-price" style="text-decoration:line-through">₹240</span>
+              </div>
+            </div>
+            <div class="palette-hint-row">
+              <div class="ph-item"><span class="ph-key">↑↓</span> navigate</div>
+              <div class="ph-item"><span class="ph-key">↵</span> add to bill</div>
+              <div class="ph-item"><span class="ph-key">CF 2</span> add qty 2</div>
+              <div class="ph-item"><span class="ph-key">Esc</span> close</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="direction-label"><strong>D6</strong> · Command Palette · The defining interaction · Fuzzy search + shortcodes + 86'd items</div>
+</div>
+
+<script>
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function setAccent(accent, accentHover, accentSubtle) {
+    document.documentElement.style.setProperty('--accent', accent);
+    document.documentElement.style.setProperty('--accent-hover', accentHover);
+    document.documentElement.style.setProperty('--accent-subtle', accentSubtle);
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+</script>
+</body>
+</html>

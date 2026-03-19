@@ -1,0 +1,6 @@
+python-escpos>=3.0
+pyinstaller>=6.0
+pydantic-settings>=2.3
+requests>=2.31
+websockets>=12.0
+passlib[bcrypt]>=1.7

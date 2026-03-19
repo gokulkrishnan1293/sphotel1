@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#09090b" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="manifest" id="manifest-link" href="/manifests/biller.webmanifest" />
+    <title>sphotel</title>
+    <script>
+      (function () {
+        var t = localStorage.getItem('sphotel-theme')
+        var h = document.documentElement
+        h.classList.remove('dark', 'high-contrast')
+        h.removeAttribute('data-theme')
+        if (t === 'dark') {
+          h.classList.add('dark')
+          h.setAttribute('data-theme', 'dark')
+        } else if (t === 'high_contrast') {
+          h.classList.add('dark', 'high-contrast')
+          h.setAttribute('data-theme', 'high_contrast')
+        } else if (t === 'light') {
+          h.setAttribute('data-theme', 'light')
+        } else {
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            h.classList.add('dark')
+            h.setAttribute('data-theme', 'dark')
+          } else {
+            h.setAttribute('data-theme', 'light')
+          }
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

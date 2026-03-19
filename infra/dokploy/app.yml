@@ -1,0 +1,47 @@
+# Dokploy application configuration for sphotel
+#
+# Setup steps:
+#   1. In Dokploy dashboard: create a new "Docker Compose" application
+#   2. Connect this GitHub repository
+#   3. Set composeFile and composeOverrideFile as below
+#   4. Configure all required environment variables in the Dokploy env panel
+#   5. Generate a webhook URL in Dokploy and save as GitHub secret DOKPLOY_WEBHOOK_URL
+#   6. First deploy: run `make migrate` manually on the server after initial stack is up
+#
+# Dokploy merges both compose files: docker-compose.yml (base) + docker-compose.prod.yml (prod overlay)
+
+appName: sphotel
+composeFile: docker-compose.yml
+composeOverrideFile: docker-compose.prod.yml
+
+# Required environment variables — configure in Dokploy dashboard (never commit values):
+#
+# Infrastructure:
+#   DOMAIN                  e.g. sphotel.yourdomain.com
+#   ACME_EMAIL              Let's Encrypt registration email
+#
+# Database:
+#   DATABASE_URL            postgresql+asyncpg://user:pass@db:5432/sphotel
+#   POSTGRES_USER
+#   POSTGRES_PASSWORD
+#
+# Valkey:
+#   VALKEY_URL              redis://valkey:6379/0
+#
+# Application:
+#   SECRET_KEY              long random string, never reuse dev value
+#   ENVIRONMENT             production
+#   CORS_ORIGINS            https://${DOMAIN}
+#
+# Frontend (Vite — must be set at build time via Dokploy build args or .env.production):
+#   VITE_API_URL            https://${DOMAIN}
+#   VITE_WS_URL             wss://${DOMAIN}
+#
+# Optional integrations (leave empty to disable):
+#   SENTRY_DSN
+#   VITE_SENTRY_DSN
+#   TELEGRAM_BOT_TOKEN
+#   R2_BUCKET_NAME
+#   R2_ACCESS_KEY_ID
+#   R2_SECRET_ACCESS_KEY
+#   R2_ENDPOINT_URL

@@ -1,0 +1,13 @@
+{
+  "name": "sphotel Kitchen",
+  "short_name": "Kitchen",
+  "description": "sphotel kitchen display system",
+  "start_url": "/kitchen",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "orientation": "landscape",
+  "icons": [
+    { "src": "/vite.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

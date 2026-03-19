@@ -1,0 +1,12 @@
+{
+  "name": "sphotel Admin",
+  "short_name": "Admin",
+  "description": "sphotel administration panel",
+  "start_url": "/admin",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "icons": [
+    { "src": "/vite.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

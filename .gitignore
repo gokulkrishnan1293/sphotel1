@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+.venv/
+venv/
+.virtualenv/
+dist/
+build/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.hypothesis/
+
+# Node
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+
+# Build output
+dist/
+build/
+*.js.map
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.production
+.env.staging
+.env.*.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.orig
+*~
+.DS_Store
+Thumbs.db
+
+# OS
+Desktop.ini
+.Spotlight-V100
+.Trashes
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+.dockerignore
+
+# Alembic generated (keep versions tracked)
+# backend/alembic/versions/ is NOT ignored
+
+# PyInstaller
+*.spec
+print-agent/dist/
+print-agent/build/
+
+# Temp / misc
+*.tmp
+*.bak
+*.bak2
+.cache/
+
+#plan
+_bmad
+.claude
+.github

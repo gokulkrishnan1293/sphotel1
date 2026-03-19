@@ -1,0 +1,189 @@
+# generated: 2026-03-17
+# project: sphotel
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories are worked in order (schema → service → API → UI per project convention)
+# - SM creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context recommended)
+# - Story files live at: _bmad-output/implementation-artifacts/{story-key}.md
+
+generated: 2026-03-17
+project: sphotel
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 1: Project Foundation & Infrastructure Setup
+  # FRs: FR88 + Architecture technical requirements
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-1: in-progress
+  1-1-monorepo-scaffold-docker-dev-environment: review
+  1-2-database-migration-framework-schema-conventions: review
+  1-3-backend-module-scaffold-api-baseline-health-endpoint: review
+  1-4-frontend-module-scaffold-pwa-config-design-system-bootstrap: review
+  1-5-cicd-pipeline-production-deployment: review
+  1-6-feature-flag-infrastructure: review
+  1-7-base-security-hardening-observability-setup: review
+  epic-1-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 2: Authentication & Role-Based Access Control
+  # FRs: FR32, FR33, FR34, FR37, FR72, FR74, FR84, FR85, FR86, FR87, FR89, FR90, FR93
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-2: done
+  2-1-role-permission-schema-server-side-rbac-middleware: done
+  2-2-pin-authentication-for-operational-roles: done
+  2-3-admin-super-admin-email-totp-authentication: done
+  2-4-staff-pin-management-admin: done
+  2-5-session-management-credential-self-service: done
+  2-6-per-user-display-theme-preference: review
+  epic-2-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 3: Tenant Setup & Full Admin Configuration
+  # FRs: FR28, FR29, FR30, FR51, FR57, FR58, FR59, FR60, FR75, FR83, FR92
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-3: in-progress
+  3-1-tenant-provisioning-data-isolation-super-admin: review
+  3-2-admin-onboarding-checklist: review
+  3-3-menu-item-management: review
+  3-4-menu-csv-import-export: backlog
+  3-5-table-section-layout-configuration: backlog
+  3-6-gst-rate-configuration: backlog
+  3-7-print-template-configuration: backlog
+  3-8-tenant-data-export-feature-flag-admin-ui: backlog
+  epic-3-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 4: Core Billing Engine with Offline Resilience
+  # FRs: FR1–FR10, FR13, FR22, FR54–FR56, FR61–FR64, FR66–FR67, FR76, FR79
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-4: backlog
+  4-1-bill-bill-item-schema-state-machine-service: backlog
+  4-2-bill-crud-api-endpoints: backlog
+  4-3-indexeddb-offline-layer-service-worker: backlog
+  4-4-crash-recovery-active-bill-state-restore: backlog
+  4-5-command-palette-item-search-add: backlog
+  4-6-multi-tab-bill-management-active-bills-panel: backlog
+  4-7-kot-fire-partial-kot: backlog
+  4-8-void-request-by-biller: backlog
+  4-9-bill-templates-discounts-keyboard-shortcut-overlay: backlog
+  epic-4-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 5: Payment, Cash & Void Management
+  # FRs: FR19, FR21, FR23, FR35, FR36, FR77, FR82
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-5: backlog
+  5-1-payment-schema-shift-session-schema: backlog
+  5-2-multi-method-payment-collection-api: backlog
+  5-3-payment-collection-ui-ctrl-b: backlog
+  5-4-shift-open-close-cash-reconciliation: backlog
+  5-5-void-approval-workflow-admin-manager: backlog
+  5-6-bill-audit-history-view-admin: backlog
+  epic-5-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 6: Async Print System & Print Agent
+  # FRs: FR24, FR25, FR26, FR27, FR65, FR78
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-6: backlog
+  6-1-print-job-schema-server-side-print-queue: backlog
+  6-2-print-agent-registration-authentication: backlog
+  6-3-print-agent-windows-service-escpos-printing: backlog
+  6-4-async-print-trigger-reprint: backlog
+  epic-6-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 7: Kitchen Display & Real-Time Operations
+  # FRs: FR14, FR15, FR16, FR17, FR18, FR31
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-7: backlog
+  7-1-websocket-real-time-infrastructure-kitchen-schema: backlog
+  7-2-kot-feed-api-kitchen-display-ui: backlog
+  7-3-mark-items-orders-ready: backlog
+  7-4-item-availability-control-real-time-propagation: backlog
+  epic-7-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 8: Staff Management, Payroll & Expense Tracking
+  # FRs: FR38, FR39, FR40, FR41, FR42, FR43, FR44, FR71
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-8: backlog
+  8-1-staff-attendance-expense-schema: backlog
+  8-2-attendance-recording-reward-formula-configuration: backlog
+  8-3-payroll-calculation-summary-view: backlog
+  8-4-waiter-performance-stats: backlog
+  8-5-supplier-vendor-directory-management: backlog
+  epic-8-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 9: Telegram Notifications & Intelligent Alerting
+  # FRs: FR45, FR46, FR47, FR48
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-9: backlog
+  9-1-telegram-alert-queue-schema-worker-infrastructure: backlog
+  9-2-telegram-integration-configuration-admin: backlog
+  9-3-real-time-financial-alerts: backlog
+  9-4-daily-eod-report-backup-confirmation: backlog
+  epic-9-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 10: Analytics, Reporting & GST Compliance
+  # FRs: FR49, FR50, FR52, FR53, FR73, FR80, FR81, FR94
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-10: backlog
+  10-1-hot-archive-partition-architecture-retention-policy: backlog
+  10-2-live-operations-dashboard: backlog
+  10-3-bill-history-search-export: backlog
+  10-4-historical-analytics: backlog
+  10-5-gst-report-generation-bill-exclusion: backlog
+  epic-10-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 11: Waiter Mode (Feature-flagged — waiter_mode flag)
+  # FRs: FR11, FR12
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-11: backlog
+  11-1-waiter-bill-creation-mobile-surface: backlog
+  11-2-bill-transfer-to-billing-counter: backlog
+  epic-11-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # EPIC 12: Smart Suggestions & Intelligent Features (Feature-flagged — suggestion_engine flag)
+  # FRs: FR69, FR95
+  # ─────────────────────────────────────────────────────────────────────────────
+  epic-12: backlog
+  12-1-suggestion-engine-schema-async-worker: backlog
+  12-2-co-order-suggestions-in-command-palette: backlog
+  epic-12-retrospective: optional

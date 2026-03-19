@@ -1,0 +1,71 @@
+/* sphotel design tokens — dark-first, overrides shadcn defaults */
+/* Accent token is runtime-configurable via JS: document.documentElement.style.setProperty('--sphotel-accent', color) */
+
+:root {
+  --bg-base: #09090b;        /* zinc-950 — app background */
+  --bg-surface: #18181b;     /* zinc-900 — cards, panels */
+  --bg-elevated: #27272a;    /* zinc-800 — dropdowns, modals */
+  --sphotel-border: #3f3f46; /* zinc-700 — dividers, inputs */
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa; /* zinc-400 */
+  --text-muted: #52525b;     /* zinc-600 */
+
+  /* Accent — configurable per tenant */
+  --sphotel-accent: #8b5cf6;         /* violet-500 default */
+  --sphotel-accent-hover: #a78bfa;   /* violet-400 */
+  --sphotel-accent-subtle: #2e1065;  /* violet-950 */
+  --sphotel-accent-fg: #ffffff;
+
+  /* Status colors */
+  --status-success: #10b981; /* emerald-500 */
+  --status-warning: #fbbf24; /* amber-400 */
+  --status-error: #ef4444;   /* red-500 */
+  --status-offline: #71717a; /* zinc-500 */
+  --status-void: #52525b;    /* zinc-600 */
+
+  /* Override shadcn --primary with violet accent */
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --ring: #8b5cf6;
+}
+
+.dark {
+  /* Repeat overrides so .dark class (from index.html) also gets violet accent */
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --ring: #8b5cf6;
+}
+
+/* ── Light theme ───────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-base: #ffffff;
+  --bg-surface: #f4f4f5;      /* zinc-100 */
+  --bg-elevated: #e4e4e7;     /* zinc-200 */
+  --sphotel-border: #d4d4d8;  /* zinc-300 */
+  --text-primary: #09090b;    /* zinc-950 */
+  --text-secondary: #3f3f46;  /* zinc-700 */
+  --text-muted: #71717a;      /* zinc-500 */
+  --sphotel-accent: #7c3aed;  /* violet-600 — darker for light bg contrast */
+  --sphotel-accent-hover: #6d28d9; /* violet-700 */
+  --sphotel-accent-subtle: #ede9fe; /* violet-100 */
+  --sphotel-accent-fg: #ffffff;
+  --primary: #7c3aed;
+  --ring: #7c3aed;
+}
+
+/* ── High contrast (applied alongside .dark) ───────────────────────────── */
+.high-contrast {
+  --bg-base: #000000;
+  --bg-surface: #0d0d0d;
+  --bg-elevated: #1a1a1a;
+  --sphotel-border: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #e4e4e7;  /* zinc-200 */
+  --text-muted: #a1a1aa;      /* zinc-400 */
+  --sphotel-accent: #a78bfa;  /* violet-400 — higher visibility on black */
+  --sphotel-accent-hover: #c4b5fd; /* violet-300 */
+  --sphotel-accent-subtle: #2e1065; /* violet-950 */
+  --status-success: #34d399;  /* emerald-400 — brighter */
+  --status-warning: #fcd34d;  /* amber-300 — brighter */
+  --status-error: #f87171;    /* red-400 — brighter */
+}
