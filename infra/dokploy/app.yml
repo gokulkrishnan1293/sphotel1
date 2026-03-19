@@ -8,11 +8,10 @@
 #   5. Generate a webhook URL in Dokploy and save as GitHub secret DOKPLOY_WEBHOOK_URL
 #   6. First deploy: run `make migrate` manually on the server after initial stack is up
 #
-# Dokploy merges both compose files: docker-compose.yml (base) + docker-compose.prod.yml (prod overlay)
+# Single production compose file — no override needed.
 
 appName: sphotel
-composeFile: docker-compose.yml
-composeOverrideFile: docker-compose.prod.yml
+composeFile: docker-compose.prod.yml
 
 # Required environment variables — configure in Dokploy dashboard (never commit values):
 #

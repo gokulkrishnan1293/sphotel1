@@ -47,8 +47,7 @@ Access the dashboard at `http://<hetzner-ip>:3000` and complete the admin accoun
 2. Inside the project → **New Service** → **Docker Compose**
 3. **Source**: Connect your GitHub repo
 4. Set:
-   - **Compose file**: `docker-compose.yml`
-   - **Compose override file**: `docker-compose.prod.yml`
+   - **Compose file**: `docker-compose.prod.yml`
    - **Branch**: `main`
 
 ### 1.5 Set Environment Variables
