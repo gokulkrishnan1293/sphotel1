@@ -10,4 +10,6 @@ FROM base AS production
 COPY --from=deps /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=deps /usr/local/bin /usr/local/bin
 COPY . .
+RUN groupadd -r app && useradd -r -g app app
+USER app
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
