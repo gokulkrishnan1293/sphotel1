@@ -237,15 +237,27 @@ def print_receipt(payload: dict) -> None:
 
     ptype = cfg.PRINTER_TYPE.lower()
     try:
+        if ptype == "win32":
+            # Use win32print directly — Win32Raw not available in escpos 2.x
+            import win32print
+            name = cfg.WIN32_PRINTER_NAME or win32print.GetDefaultPrinter()
+            raw = text.encode("cp437", errors="replace") + b"\x1d\x56\x00"
+            h = win32print.OpenPrinter(name)
+            try:
+                win32print.StartDocPrinter(h, 1, ("Receipt", None, "RAW"))
+                win32print.StartPagePrinter(h)
+                win32print.WritePrinter(h, raw)
+                win32print.EndPagePrinter(h)
+                win32print.EndDocPrinter(h)
+            finally:
+                win32print.ClosePrinter(h)
+            return
         if ptype == "network":
             from escpos.printer import Network
             p = Network(cfg.PRINTER_HOST, cfg.PRINTER_PORT)
         elif ptype == "serial":
             from escpos.printer import Serial
             p = Serial(cfg.SERIAL_PORT)
-        elif ptype == "win32":
-            from escpos.printer import Win32Raw
-            p = Win32Raw(cfg.WIN32_PRINTER_NAME)
         elif ptype == "file":
             from escpos.printer import File
             p = File(cfg.PRINTER_FILE)
@@ -257,4 +269,4 @@ def print_receipt(payload: dict) -> None:
         p.cut()
         p.close()
     except Exception as exc:
-        raise RuntimeError(f"Printer error ({ptype}): {exc}") from exc
+        raise RuntimeError("Printer error ({}): {}".format(ptype, exc))
