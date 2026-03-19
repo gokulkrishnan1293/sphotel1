@@ -70,7 +70,7 @@ VALKEY_URL=redis://:${VALKEY_PASSWORD}@valkey:6379/0
 # Application
 SECRET_KEY=<generate with: openssl rand -hex 32>
 ENVIRONMENT=production
-CORS_ORIGINS=https://sphotel.yourdomain.com
+CORS_ORIGINS=["https://sphotel.yourdomain.com"]
 
 # Frontend (build-time)
 VITE_API_URL=https://sphotel.yourdomain.com
