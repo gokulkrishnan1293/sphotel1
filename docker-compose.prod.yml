@@ -1,10 +1,10 @@
-# Production overlay — merge with docker-compose.yml via:
-#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-# Dokploy handles this merge automatically via app.yml config.
+# Single production deployment file.
 #
 # Required environment variables (set in Dokploy dashboard, never committed):
 #   DOMAIN          — e.g. sphotel.yourdomain.com
 #   ACME_EMAIL      — Let's Encrypt registration email
+#   POSTGRES_USER
+#   POSTGRES_PASSWORD
 
 services:
   traefik:
@@ -28,14 +28,21 @@ services:
     restart: unless-stopped
 
   backend:
+    build:
+      context: ./backend
+      target: production
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - valkey
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      # REST API
       - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
-      # WebSocket (same backend service, separate router — FR88 WSS-only via TLS entrypoint)
       - "traefik.http.routers.backend-ws.rule=Host(`${DOMAIN}`) && PathPrefix(`/ws`)"
       - "traefik.http.routers.backend-ws.entrypoints=websecure"
       - "traefik.http.routers.backend-ws.tls.certresolver=letsencrypt"
@@ -46,13 +53,33 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
       target: production
+    depends_on:
+      - backend
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: sphotel
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  valkey:
+    image: valkey/valkey:8-alpine
+    volumes:
+      - valkey_data:/data
     restart: unless-stopped
 
 volumes:
+  postgres_data:
+  valkey_data:
   traefik_certs:

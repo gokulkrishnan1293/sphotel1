@@ -62,7 +62,7 @@ Production runs on Hetzner VPS via [Dokploy](https://dokploy.com) (self-hosted P
 
 1. Provision a Hetzner VPS (CX31 recommended) and install Dokploy
 2. In Dokploy dashboard, create a "Docker Compose" application pointing to this repo
-3. Set `composeFile: docker-compose.yml` and `composeOverrideFile: docker-compose.prod.yml`
+3. Set `composeFile: docker-compose.prod.yml` (no override file needed)
 4. Configure all environment variables from `.env.example` in the Dokploy env panel — set `ENVIRONMENT=production`, `CORS_ORIGINS=https://<DOMAIN>`, `VITE_API_URL=https://<DOMAIN>`, `VITE_WS_URL=wss://<DOMAIN>`
 5. Generate a Dokploy webhook URL and save it as GitHub repository secret `DOKPLOY_WEBHOOK_URL`
 6. Deploy once manually from Dokploy, then run migrations: `docker compose exec backend alembic upgrade head`
