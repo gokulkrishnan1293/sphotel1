@@ -1,34 +1,29 @@
-"""Print Agent Configuration."""
-from pydantic_settings import BaseSettings, SettingsConfigDict
+"""Print Agent Configuration — plain os.environ, compatible with Python 3.6."""
+import os
+from pathlib import Path
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path('.env'))
+except ImportError:
+    pass
 
 
-class AgentSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
-
-    SPHOTEL_API_URL: str = "http://localhost:8000"
-    AGENT_API_KEY: str = ""          # must match backend PRINT_AGENT_KEY
-    PRINTER_NAME: str = ""           # label shown in backend; optional filter
-
-    # Printer type: usb | network | serial | win32 | file
-    PRINTER_TYPE: str = "usb"
-    # USB printer (Epson TM-T20 defaults)
-    USB_VENDOR_ID: int = 1208   # 0x04b8 Epson
-    USB_PRODUCT_ID: int = 514   # 0x0202 TM-T20
-    # Network/WiFi printer
-    PRINTER_HOST: str = "192.168.1.100"
-    PRINTER_PORT: int = 9100
-    # Bluetooth (maps to COM port on Windows via Bluetooth Serial Profile)
-    SERIAL_PORT: str = "COM5"
-    # Windows print queue (fallback for non-ESC/POS or shared printers)
-    WIN32_PRINTER_NAME: str = ""
-    # File/CUPS printer path (Linux)
-    PRINTER_FILE: str = "/dev/usb/lp0"
-
-    # Local offline WS server port (127.0.0.1 only — not network accessible)
-    LOCAL_WS_PORT: int = 8765
-
-    POLL_INTERVAL_SECONDS: int = 3
-    RECEIPT_WIDTH: int = 32          # chars for 58mm paper; use 42 for 80mm
+class AgentSettings:
+    SPHOTEL_API_URL   = os.environ.get('SPHOTEL_API_URL',   'http://localhost:8000')
+    AGENT_API_KEY     = os.environ.get('AGENT_API_KEY',     '')
+    PRINTER_NAME      = os.environ.get('PRINTER_NAME',      '')
+    PRINTER_TYPE      = os.environ.get('PRINTER_TYPE',      'usb')
+    USB_VENDOR_ID     = int(os.environ.get('USB_VENDOR_ID',  '1208'))
+    USB_PRODUCT_ID    = int(os.environ.get('USB_PRODUCT_ID', '514'))
+    PRINTER_HOST      = os.environ.get('PRINTER_HOST',      '192.168.1.100')
+    PRINTER_PORT      = int(os.environ.get('PRINTER_PORT',  '9100'))
+    SERIAL_PORT       = os.environ.get('SERIAL_PORT',       'COM5')
+    WIN32_PRINTER_NAME = os.environ.get('WIN32_PRINTER_NAME', '')
+    PRINTER_FILE      = os.environ.get('PRINTER_FILE',      '/dev/usb/lp0')
+    LOCAL_WS_PORT     = int(os.environ.get('LOCAL_WS_PORT',          '8765'))
+    POLL_INTERVAL_SECONDS = int(os.environ.get('POLL_INTERVAL_SECONDS', '3'))
+    RECEIPT_WIDTH     = int(os.environ.get('RECEIPT_WIDTH',           '32'))
 
 
 agent_settings = AgentSettings()

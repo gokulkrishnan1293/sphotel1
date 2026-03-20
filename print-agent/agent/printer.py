@@ -1,7 +1,18 @@
 """ESC/POS receipt and KOT formatter matching sphotel thermal slip format."""
-from __future__ import annotations
+from datetime import datetime, timedelta, timezone
 
-from datetime import datetime
+_IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def _to_ist(iso: str) -> str:
+    """Parse a UTC ISO timestamp and return it formatted in IST."""
+    try:
+        dt = datetime.fromisoformat(iso)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(_IST).strftime("%d/%m/%y %H:%M")
+    except ValueError:
+        return iso
 
 from config.agent_config import agent_settings as cfg
 
@@ -31,7 +42,7 @@ def _format_rupees(paise: int) -> str:
 
 
 def _now_str() -> str:
-    return datetime.now().strftime("%d/%m/%y %H:%M")
+    return datetime.now(_IST).strftime("%d/%m/%y %H:%M")
 
 
 # ── KOT Slip format (small, no totals) ───────────────────────────────────────
@@ -56,15 +67,9 @@ def format_kot(payload: dict) -> str:
     }.get(bill_type, bill_type.replace("_", " ").title() if bill_type else "")
 
     kot_number = payload.get("kot_number", "")
-    printed_at = payload.get("printed_at", "")
-    if printed_at:
-        try:
-            dt = datetime.fromisoformat(printed_at.replace("Z", "+00:00"))
-            printed_at = dt.strftime("%d/%m/%y %H:%M")
-        except ValueError:
-            pass
+    printed_at = _to_ist(payload.get("printed_at", "")) if payload.get("printed_at") else ""
 
-    lines: list[str] = []
+    lines = []
     lines.append(printed_at)
     if kot_number:
         lines.append(f"KOT - {kot_number}")
@@ -122,15 +127,9 @@ def format_receipt(payload: dict) -> str:
         "pickup": "Pick Up",
     }.get(bill_type, bill_type.replace("_", " ").title() if bill_type else "")
 
-    printed_at = payload.get("printed_at", "")
-    if printed_at:
-        try:
-            dt = datetime.fromisoformat(printed_at.replace("Z", "+00:00"))
-            printed_at = dt.strftime("%d/%m/%y %H:%M")
-        except ValueError:
-            pass
+    printed_at = _to_ist(payload.get("printed_at", "")) if payload.get("printed_at") else ""
 
-    lines: list[str] = []
+    lines = []
 
     # ── Header ──
     if tmpl.get("restaurant_name"):
@@ -239,15 +238,27 @@ def print_receipt(payload: dict) -> None:
 
     ptype = cfg.PRINTER_TYPE.lower()
     try:
+        if ptype == "win32":
+            # Use win32print directly — Win32Raw not available in escpos 2.x
+            import win32print
+            name = cfg.WIN32_PRINTER_NAME or win32print.GetDefaultPrinter()
+            raw = text.encode("cp437", errors="replace") + b"\x1d\x56\x00"
+            h = win32print.OpenPrinter(name)
+            try:
+                win32print.StartDocPrinter(h, 1, ("Receipt", None, "RAW"))
+                win32print.StartPagePrinter(h)
+                win32print.WritePrinter(h, raw)
+                win32print.EndPagePrinter(h)
+                win32print.EndDocPrinter(h)
+            finally:
+                win32print.ClosePrinter(h)
+            return
         if ptype == "network":
             from escpos.printer import Network
             p = Network(cfg.PRINTER_HOST, cfg.PRINTER_PORT)
         elif ptype == "serial":
             from escpos.printer import Serial
             p = Serial(cfg.SERIAL_PORT)
-        elif ptype == "win32":
-            from escpos.printer import Win32Raw
-            p = Win32Raw(cfg.WIN32_PRINTER_NAME)
         elif ptype == "file":
             from escpos.printer import File
             p = File(cfg.PRINTER_FILE)
@@ -259,4 +270,4 @@ def print_receipt(payload: dict) -> None:
         p.cut()
         p.close()
     except Exception as exc:
-        raise RuntimeError(f"Printer error ({ptype}): {exc}") from exc
+        raise RuntimeError("Printer error ({}): {}".format(ptype, exc))

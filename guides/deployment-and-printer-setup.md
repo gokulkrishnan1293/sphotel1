@@ -132,7 +132,7 @@ Traefik + Let's Encrypt handle SSL automatically.
 
 ### 2.1 Prerequisites
 
-- Windows 10 or 11 on the restaurant counter/POS machine
+- Windows 10/11 (recommended) **or** Windows 7 SP1 (legacy — see section 2.7)
 - Thermal printer connected via USB or LAN/WiFi
 - Network access to `https://sphotel.yourdomain.com`
 
@@ -143,6 +143,8 @@ Copy `agent.exe` (built from `print-agent/`) to the Windows machine:
 ```
 C:\sphotel-agent\agent.exe
 ```
+
+> **Windows 7?** Skip to section 2.7 — the exe requires Windows 10+. Windows 7 uses Python 3.6.8 directly.
 
 ### 2.3 Configure the Agent
 
@@ -211,6 +213,103 @@ launcher.exe start
 ```
 
 The agent will now start automatically on every boot without needing a logged-in user.
+
+### 2.7 Windows 7 (Legacy) — Run from Python 3.6.8
+
+The `agent.exe` bundles Python 3.9+ which does not run on Windows 7. The agent has been downgraded to support **Python 3.6.8** — the only version installable on Windows 7 without SP1 update issues.
+
+#### Step 1 — Install Python 3.6.8
+
+Download: `https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe`
+
+During install: ✅ check **"Add Python to PATH"**
+
+Verify in Command Prompt:
+```cmd
+python --version
+# Should print: Python 3.6.8
+```
+
+#### Step 2 — Copy the print-agent folder to the machine
+
+Place the `print-agent/` folder at `C:\sphotel-agent\`.
+
+#### Step 3 — Install dependencies
+
+Open **Command Prompt** in `C:\sphotel-agent\`:
+
+```cmd
+pip install -r requirements.txt
+```
+
+#### Step 4 — Create the `.env` file
+
+Create `C:\sphotel-agent\.env`:
+
+```env
+SPHOTEL_API_URL=https://sphotel.yourdomain.com
+PRINTER_TYPE=win32
+WIN32_PRINTER_NAME=Your Printer Name Here
+RECEIPT_WIDTH=42
+```
+
+To find the exact printer name:
+
+```cmd
+wmic printer get name
+```
+
+#### Step 5 — Register the agent
+
+```cmd
+python -m agent --register --token <TOKEN> --name "Counter Printer"
+```
+
+#### Step 6 — Test it runs
+
+```cmd
+python -m agent
+```
+
+Should print `WebSocket connected` or `HTTP poll mode`. Test a print from Admin UI.
+
+#### Step 7 — Install as a Windows Service using NSSM
+
+NSSM wraps any script as a proper Windows service with auto-restart on crash and auto-start on boot.
+
+1. Download NSSM from `nssm.cc/download` → extract `nssm.exe` to `C:\nssm\`
+
+2. Open **Command Prompt as Administrator**:
+
+```cmd
+C:\nssm\nssm.exe install SphotelPrintAgent
+```
+
+3. In the GUI that opens, fill in:
+
+| Field | Value |
+|---|---|
+| Path | `C:\Python36\python.exe` |
+| Startup directory | `C:\sphotel-agent` |
+| Arguments | `-m agent` |
+
+4. In the **Details** tab: Display name = `Sphotel Print Agent`, Startup type = `Automatic`
+
+5. Click **Install service**, then:
+
+```cmd
+C:\nssm\nssm.exe start SphotelPrintAgent
+```
+
+The agent now starts automatically on every boot without a logged-in user.
+
+**Useful NSSM commands:**
+
+```cmd
+C:\nssm\nssm.exe status SphotelPrintAgent   # check running status
+C:\nssm\nssm.exe restart SphotelPrintAgent  # restart after config change
+C:\nssm\nssm.exe remove SphotelPrintAgent confirm  # uninstall service
+```
 
 ---
 

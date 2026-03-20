@@ -16,10 +16,11 @@ from app.services.menu_csv import export_csv, import_csv
 
 router = APIRouter(prefix="/menu", tags=["menu"])
 _ADMIN = require_role(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+_BILLER_UP = require_role(UserRole.BILLER, UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
 
 
 @router.get("/items", response_model=DataResponse[list[MenuItemResponse]])
-async def list_items(cu: CurrentUser = Depends(_ADMIN), db: AsyncSession = Depends(get_db)) -> DataResponse[list[MenuItemResponse]]:
+async def list_items(cu: CurrentUser = Depends(_BILLER_UP), db: AsyncSession = Depends(get_db)) -> DataResponse[list[MenuItemResponse]]:
     items = await menu_service.list_menu_items(db, cu["tenant_id"])
     return DataResponse(data=[MenuItemResponse.model_validate(i) for i in items])
 
