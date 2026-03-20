@@ -14,11 +14,10 @@ from app.schemas.bill_responses import BillSummaryResponse
 from app.schemas.bills import CloseBillRequest, OpenBillRequest, UpdatePaymentRequest
 from app.schemas.common import DataResponse
 from app.services import bill_service
-from .bill_helpers import build_response, fetch_user_names
+from .bill_helpers import build_response, enrich_summaries, fetch_user_names
 
 router = APIRouter(prefix="/bills", tags=["bills"])
 _BILLING = (UserRole.BILLER, UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
-_ADMIN = (UserRole.ADMIN, UserRole.SUPER_ADMIN)
 
 @router.get("/recent", response_model=DataResponse[list[BillSummaryResponse]])
 async def list_recent_bills(
@@ -34,8 +33,8 @@ async def list_open_bills(
     current_user: CurrentUser = Depends(require_role(*_BILLING)),
     db: AsyncSession = Depends(get_db),
 ) -> DataResponse[list[BillSummaryResponse]]:
-    bills = await bill_service.list_open_bills(db, current_user["tenant_id"])
-    return DataResponse(data=[BillSummaryResponse.model_validate(b) for b in bills])
+    bills = list(await bill_service.list_open_bills(db, current_user["tenant_id"]))
+    return DataResponse(data=await enrich_summaries(db, current_user["tenant_id"], bills))
 
 
 @router.post("", response_model=DataResponse, status_code=201)

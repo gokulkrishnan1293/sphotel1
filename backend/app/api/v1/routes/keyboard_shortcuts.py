@@ -51,6 +51,7 @@ async def update_shortcuts(
 ):
     tenant = await _tenant(db, cu["tenant_id"])
     current = {**_DEFAULTS, **(tenant.keyboard_shortcuts or {})}
-    tenant.keyboard_shortcuts = {**current, **body.model_dump(exclude_none=True)}
+    new_shortcuts = {**current, **body.model_dump(exclude_none=True)}
+    tenant.keyboard_shortcuts = new_shortcuts
     await db.commit()
-    return DataResponse(data=tenant.keyboard_shortcuts)
+    return DataResponse(data=new_shortcuts)
