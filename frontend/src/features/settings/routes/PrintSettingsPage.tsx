@@ -20,7 +20,7 @@ export function PrintSettingsPage() {
     const { name, value, type } = e.target as HTMLInputElement
     let parsed: unknown = value
     if (type === 'checkbox') parsed = (e.target as HTMLInputElement).checked
-    else if (type === 'number' || name.endsWith('_width')) parsed = parseInt(value, 10) || 0
+    else if (type === 'number' || name.endsWith('_width') || name.endsWith('_size') || name.endsWith('_padding')) parsed = parseInt(value, 10) || 0
     setFormData((prev) => prev ? { ...prev, [name]: parsed } : null)
   }
 
