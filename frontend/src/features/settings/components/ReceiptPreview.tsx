@@ -2,6 +2,8 @@ import { PrintTemplateConfig } from '../api/printSettings'
 
 export function ReceiptPreview({ template, type }: { template: PrintTemplateConfig, type: 'receipt' | 'kot' }) {
   const W = type === 'receipt' ? template.receipt_width : template.kot_width
+  const fontSize = type === 'receipt' ? (template.receipt_font_size ?? 1) : (template.kot_font_size ?? 1)
+  const previewPx = 8 + (fontSize - 1) * 2
 
   // helper functions
   const center = (text: string) => {
@@ -89,7 +91,7 @@ export function ReceiptPreview({ template, type }: { template: PrintTemplateConf
 
   return (
     <div className="bg-white p-4 sm:p-6 shadow-sm border border-sphotel-border w-auto inline-block min-w-full overflow-x-auto flex justify-center">
-      <pre className="font-mono text-[13px] leading-tight text-black whitespace-pre break-normal">
+      <pre className="font-mono leading-tight text-black whitespace-pre break-normal" style={{ fontSize: `${previewPx}px` }}>
         {lines.join('\n')}
       </pre>
     </div>
