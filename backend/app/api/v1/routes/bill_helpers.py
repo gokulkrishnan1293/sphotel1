@@ -4,8 +4,10 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.bill_enums import ItemStatus
+from app.models.kot import BillItem
 from app.models.user import TenantUser
-from app.schemas.bill_responses import BillItemResponse, BillResponse, KotTicketResponse
+from app.schemas.bill_responses import BillItemResponse, BillResponse, BillSummaryResponse, KotTicketResponse
 
 
 def build_response(bill, items, kots, user_names: dict | None = None) -> BillResponse:  # type: ignore[no-untyped-def]
@@ -39,3 +41,26 @@ async def fetch_user_names(db: AsyncSession, tenant_id: str, *ids: uuid.UUID | N
         select(TenantUser.id, TenantUser.name).where(TenantUser.id.in_(valid), TenantUser.tenant_id == tenant_id)
     )
     return {r.id: r.name for r in rows}
+
+
+async def enrich_summaries(db: AsyncSession, tenant_id: str, bills: list) -> list[BillSummaryResponse]:
+    if not bills:
+        return []
+    bill_ids = [b.id for b in bills]
+    waiter_ids = list({b.waiter_id for b in bills if b.waiter_id})
+    names = await fetch_user_names(db, tenant_id, *waiter_ids) if waiter_ids else {}
+    rows = await db.execute(
+        select(BillItem.bill_id, BillItem.name)
+        .where(BillItem.bill_id.in_(bill_ids), BillItem.status != ItemStatus.VOIDED)
+        .order_by(BillItem.created_at)
+    )
+    item_map: dict[uuid.UUID, list[str]] = {}
+    for r in rows:
+        item_map.setdefault(r.bill_id, []).append(r.name)
+    result = []
+    for b in bills:
+        s = BillSummaryResponse.model_validate(b)
+        s.waiter_name = names.get(b.waiter_id) if b.waiter_id else None
+        s.item_names = item_map.get(b.id, [])
+        result.append(s)
+    return result

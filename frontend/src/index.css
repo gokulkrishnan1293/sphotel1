@@ -62,6 +62,14 @@ body {
 }
 
 /* ── Reduced motion (AC #6) ─────────────────────────────────────────────── */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-hover { overflow: hidden; }
+.marquee-hover:hover .marquee-inner { animation: marquee 8s linear infinite; }
+.marquee-inner { display: inline-block; white-space: nowrap; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

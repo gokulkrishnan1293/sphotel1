@@ -76,5 +76,7 @@ class BillSummaryResponse(BaseModel):
     total_paise: int
     created_by: uuid.UUID
     waiter_id: uuid.UUID | None
+    waiter_name: str | None = None
+    item_names: list[str] = []
     created_at: datetime
     updated_at: datetime
