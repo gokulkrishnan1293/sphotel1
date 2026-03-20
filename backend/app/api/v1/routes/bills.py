@@ -91,7 +91,7 @@ async def update_payment_method(
 @router.post("/{bill_id}/void", response_model=DataResponse)
 async def void_bill(
     bill_id: uuid.UUID,
-    current_user: CurrentUser = Depends(require_role(*_ADMIN)),
+    current_user: CurrentUser = Depends(require_role(*_BILLING)),
     db: AsyncSession = Depends(get_db),
 ) -> DataResponse:
     await bill_service.void_bill(db, current_user["tenant_id"], bill_id)
