@@ -9,11 +9,15 @@ const STATUS_LABEL: Record<string, string> = {
   draft: 'Draft', kot_sent: 'KOT Sent', partially_sent: 'Partial KOT', billed: 'Settled', void: 'Void',
 }
 
+function asUtc(iso: string): Date {
+  if (!iso.endsWith('Z') && !iso.includes('+') && !/\d{2}:\d{2}$/.test(iso)) return new Date(iso + 'Z')
+  return new Date(iso)
+}
 function fmtTime(iso: string) {
-  return new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
+  return asUtc(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
 }
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+  return asUtc(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
 }
 
 export function BillHeader({ bill }: { bill: BillResponse }) {

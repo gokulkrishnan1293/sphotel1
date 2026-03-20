@@ -1,5 +1,18 @@
 """ESC/POS receipt and KOT formatter matching sphotel thermal slip format."""
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+
+_IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def _to_ist(iso: str) -> str:
+    """Parse a UTC ISO timestamp and return it formatted in IST."""
+    try:
+        dt = datetime.fromisoformat(iso)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(_IST).strftime("%d/%m/%y %H:%M")
+    except ValueError:
+        return iso
 
 from config.agent_config import agent_settings as cfg
 
@@ -29,7 +42,7 @@ def _format_rupees(paise: int) -> str:
 
 
 def _now_str() -> str:
-    return datetime.now().strftime("%d/%m/%y %H:%M")
+    return datetime.now(_IST).strftime("%d/%m/%y %H:%M")
 
 
 # ── KOT Slip format (small, no totals) ───────────────────────────────────────
@@ -54,13 +67,7 @@ def format_kot(payload: dict) -> str:
     }.get(bill_type, bill_type.replace("_", " ").title() if bill_type else "")
 
     kot_number = payload.get("kot_number", "")
-    printed_at = payload.get("printed_at", "")
-    if printed_at:
-        try:
-            dt = datetime.strptime(printed_at[:16], "%Y-%m-%dT%H:%M")
-            printed_at = dt.strftime("%d/%m/%y %H:%M")
-        except ValueError:
-            pass
+    printed_at = _to_ist(payload.get("printed_at", "")) if payload.get("printed_at") else ""
 
     lines = []
     lines.append(printed_at)
@@ -120,13 +127,7 @@ def format_receipt(payload: dict) -> str:
         "pickup": "Pick Up",
     }.get(bill_type, bill_type.replace("_", " ").title() if bill_type else "")
 
-    printed_at = payload.get("printed_at", "")
-    if printed_at:
-        try:
-            dt = datetime.strptime(printed_at[:16], "%Y-%m-%dT%H:%M")
-            printed_at = dt.strftime("%d/%m/%y %H:%M")
-        except ValueError:
-            pass
+    printed_at = _to_ist(payload.get("printed_at", "")) if payload.get("printed_at") else ""
 
     lines = []
 

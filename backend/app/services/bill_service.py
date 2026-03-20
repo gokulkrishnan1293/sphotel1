@@ -95,6 +95,8 @@ async def void_bill(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID) -> Bil
     bill = await _get_bill(db, tenant_id, bill_id)
     if bill.status == BillStatus.VOID:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Bill is already void")
+    #if bill.status != BillStatus.BILLED:
+    #    raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Only settled bills can be voided")
     bill.status = BillStatus.VOID
     await db.commit()
     await db.refresh(bill)
