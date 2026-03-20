@@ -17,7 +17,9 @@ const fmt = (p: number) => `₹${(p / 100).toFixed(2)}`; const defaultMethod = (
 export function BillCanvas() {
   const qc = useQueryClient()
   const { activeBillId, commandPaletteOpen, openCommandPalette, closeCommandPalette } = useBillingStore()
-  const isAdmin = ['admin', 'super_admin'].includes(useAuthStore((s) => s.currentUser?.role ?? ''))
+  const role = useAuthStore((s) => s.currentUser?.role ?? '')
+  const isAdmin = ['admin', 'super_admin'].includes(role)
+  const isBiller = role === 'biller' || isAdmin
   const [settleOpen, setSettleOpen] = useState(false)
   const [printQueued, setPrintQueued] = useState(false)
 
@@ -88,7 +90,7 @@ export function BillCanvas() {
             {pending.length > 0 && bill.bill_type === 'table' && <button onClick={() => fireKot.mutate()} disabled={fireKot.isPending} className="flex-1 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-1.5"><Flame size={14} />Fire KOT<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">⌘K</kbd></button>}
             <button onClick={() => setSettleOpen(true)} disabled={!hasItems || closeBill.isPending} className="flex-1 py-2.5 bg-sphotel-accent text-sphotel-accent-fg rounded-xl text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-1.5"><CreditCard size={14} />Generate Bill<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">G</kbd><span className="text-xs opacity-50">·</span><kbd className="text-xs opacity-50 font-mono">↵</kbd></button>
           </div>
-          {isAdmin && <button onClick={() => { if (confirm('Void this bill?')) voidBill.mutate() }} className="flex items-center justify-center gap-1.5 text-xs text-status-error hover:opacity-80 py-1"><Ban size={12} />Void bill</button>}
+          {isBiller && <button onClick={() => { if (confirm('Void this bill?')) voidBill.mutate() }} className="flex items-center justify-center gap-1.5 text-xs text-status-error hover:opacity-80 py-1"><Ban size={12} />Void bill</button>}
         </div>
       )}
       {isClosed && <div className="px-6 py-4 border-t border-sphotel-border flex items-center justify-between">{bill.status === 'billed' ? <span className="text-sm font-medium text-sphotel-accent flex items-center gap-1.5">Settled · {fmt(bill.total_paise)} via<select value={bill.payment_method ?? 'cash'} onChange={(e) => updateMethod.mutate(e.target.value as PaymentMethod)} className="bg-transparent text-sphotel-accent font-medium text-sm border-0 outline-none cursor-pointer">{(['cash','card','upi','wallet'] as PaymentMethod[]).map(m => <option key={m} value={m} className="bg-bg-surface text-text-primary">{m}</option>)}</select></span> : <p className="text-sm font-medium text-status-error">This bill has been voided</p>}<div className="flex items-center gap-3">{isAdmin && bill.status === 'billed' && <button onClick={() => { if (confirm('Void this bill?')) voidBill.mutate() }} className="flex items-center gap-1.5 text-xs text-status-error hover:opacity-80 py-1"><Ban size={12} />Void bill</button>}{bill.status === 'billed' && <button onClick={() => printBill.mutate()} disabled={printBill.isPending} className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary disabled:opacity-50"><Printer size={13} />{printQueued ? 'Printing…' : printBill.isPending ? 'Queued…' : 'Reprint'}</button>}</div></div>}
