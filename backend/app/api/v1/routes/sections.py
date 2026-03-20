@@ -13,11 +13,12 @@ from app.services import section_service, table_layout_service
 router = APIRouter(prefix="/tables/sections", tags=["tables"])
 
 _ADMIN = (UserRole.ADMIN, UserRole.SUPER_ADMIN)
+_READ = (UserRole.BILLER, UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
 
 
 @router.get("", response_model=DataResponse[list[SectionWithTablesResponse]])
 async def list_sections(
-    current_user: CurrentUser = Depends(require_role(*_ADMIN)),
+    current_user: CurrentUser = Depends(require_role(*_READ)),
     db: AsyncSession = Depends(get_db),
 ) -> DataResponse[list[SectionWithTablesResponse]]:
     sections = await section_service.list_sections(db, current_user["tenant_id"])

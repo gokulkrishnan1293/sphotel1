@@ -20,6 +20,7 @@ from app.schemas.common import DataResponse
 
 router = APIRouter(prefix="/print/agents", tags=["print-agents"])
 _ADMIN = require_role(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+_READ = require_role(UserRole.BILLER, UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
 
 
 def _hash(value: str) -> str:
@@ -141,7 +142,7 @@ async def activate(
 
 @router.get("", response_model=DataResponse[list[PrintAgentResponse]])
 async def list_agents(
-    cu: CurrentUser = Depends(_ADMIN),
+    cu: CurrentUser = Depends(_READ),
     db: AsyncSession = Depends(get_db),
 ) -> DataResponse[list[PrintAgentResponse]]:
     """List all registered print agents for the tenant."""

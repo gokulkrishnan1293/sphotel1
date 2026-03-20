@@ -14,6 +14,10 @@ export interface PrintTemplateConfig {
   show_bill_no: boolean
   receipt_width: number
   kot_width: number
+  receipt_font_size: number
+  kot_font_size: number
+  top_padding: number
+  bottom_padding: number
 }
 
 export interface PrintAgent {

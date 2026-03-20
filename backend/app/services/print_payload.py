@@ -12,6 +12,7 @@ from app.models.bill import Bill
 from app.models.bill_enums import ItemStatus
 from app.models.kot import BillItem
 from app.models.tenant import Tenant
+from app.models.user import TenantUser
 from app.schemas.print_template import PrintTemplateConfig
 
 
@@ -21,6 +22,17 @@ async def _fetch_bill(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID) -> B
     if not bill:
         raise HTTPException(404, "Bill not found")
     return bill
+
+
+async def _user_names(db: AsyncSession, tenant_id: str, *ids: uuid.UUID | None) -> dict:
+    valid = [i for i in ids if i is not None]
+    if not valid:
+        return {}
+    rows = await db.execute(
+        select(TenantUser.id, TenantUser.name)
+        .where(TenantUser.id.in_(valid), TenantUser.tenant_id == tenant_id)
+    )
+    return {r.id: r.name for r in rows}
 
 
 async def _get_template(db: AsyncSession, tenant_id: str) -> dict:
@@ -38,25 +50,21 @@ async def build_receipt_payload(db: AsyncSession, tenant_id: str, bill_id: uuid.
     )
     items = items_r.scalars().all()
     template = await _get_template(db, tenant_id)
+    names = await _user_names(db, tenant_id, bill.created_by, bill.waiter_id)
     return {
-        "job_type": "receipt",
-        "bill_id": str(bill_id),
-        "bill_number": getattr(bill, "bill_number", None),
-        "bill_type": bill.bill_type,
+        "job_type": "receipt", "bill_id": str(bill_id),
+        "bill_number": bill.bill_number, "bill_type": bill.bill_type,
         "table_id": str(bill.table_id) if bill.table_id else None,
-        "reference_no": bill.reference_no,
-        "platform": bill.platform,
-        "cashier": getattr(bill, "cashier_name", None),
-        "customer_name": getattr(bill, "customer_name", None),
+        "reference_no": bill.reference_no, "platform": bill.platform,
+        "cashier": names.get(bill.created_by),
+        "waiter_name": names.get(bill.waiter_id) if bill.waiter_id else None,
+        "customer_name": None,
         "items": [{"name": i.name, "qty": i.quantity, "price_paise": i.price_paise,
                    "special_note": getattr(i, "special_note", None), "food_type": i.food_type}
                   for i in items],
-        "subtotal_paise": bill.subtotal_paise,
-        "discount_paise": bill.discount_paise,
-        "gst_paise": bill.gst_paise,
-        "total_paise": bill.total_paise,
-        "payment_method": bill.payment_method,
-        "status": bill.status,
+        "subtotal_paise": bill.subtotal_paise, "discount_paise": bill.discount_paise,
+        "gst_paise": bill.gst_paise, "total_paise": bill.total_paise,
+        "payment_method": bill.payment_method, "status": bill.status,
         "printed_at": datetime.now(tz=timezone.utc).isoformat(),
         "print_template": template,
     }
