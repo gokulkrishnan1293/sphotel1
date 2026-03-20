@@ -29,6 +29,11 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
                     <option value={32}>58mm (32 chars)</option><option value={42}>80mm (42 chars)</option>
                   </select>
                 </div>
+                <div><label className={L}>Font Size</label>
+                  <select name="receipt_font_size" value={formData.receipt_font_size} onChange={onChange} className={I}>
+                    <option value={1}>Normal</option><option value={2}>Large (2×)</option>
+                  </select>
+                </div>
                 <div><label className={L}>Address Line 1</label><input name="address_line_1" value={formData.address_line_1} onChange={onChange} className={I} /></div>
                 <div><label className={L}>Address Line 2</label><input name="address_line_2" value={formData.address_line_2} onChange={onChange} className={I} /></div>
                 <div><label className={L}>Phone Number</label><input name="phone" value={formData.phone} onChange={onChange} className={I} /></div>
@@ -54,6 +59,11 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
                   <option value={32}>58mm (32 chars)</option><option value={42}>80mm (42 chars)</option>
                 </select>
               </div>
+              <div><label className={L}>Font Size</label>
+                <select name="kot_font_size" value={formData.kot_font_size} onChange={onChange} className={I}>
+                  <option value={1}>Normal</option><option value={2}>Large (2×)</option>
+                </select>
+              </div>
               <div><label className={L}>Visible Fields</label>
                 <div className="mt-2"><label className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
                   <input type="checkbox" name="show_token_no" checked={formData.show_token_no} onChange={onChange} className="accent-sphotel-accent" />Show KOT Number
@@ -61,6 +71,13 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
               </div>
             </div>
           )}
+          <div className="pt-4 border-t border-sphotel-border">
+            <h3 className="text-sm font-medium text-text-primary mb-3">Paper Padding (blank lines)</h3>
+            <div className="grid grid-cols-2 gap-5">
+              <div><label className={L}>Top Padding</label><input type="number" name="top_padding" value={formData.top_padding} min={0} max={10} onChange={onChange} className={I} /></div>
+              <div><label className={L}>Bottom Padding</label><input type="number" name="bottom_padding" value={formData.bottom_padding} min={0} max={15} onChange={onChange} className={I} /></div>
+            </div>
+          </div>
         </div>
         <div className="w-full lg:w-80 shrink-0 bg-bg-base p-4 rounded-xl border border-sphotel-border">
           <div className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Live Preview</div>
