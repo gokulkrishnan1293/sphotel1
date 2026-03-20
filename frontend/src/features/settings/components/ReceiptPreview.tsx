@@ -29,7 +29,7 @@ export function ReceiptPreview({ template, type }: { template: PrintTemplateConf
 
   if (type === 'kot') {
     lines.push('28/02/26 14:44')
-    if (template.show_token_no !== false) lines.push('KOT - 46') // Using token_no logic for kot no as it's not separated
+    if (template.show_token_no !== false) lines.push(leftRight('KOT - 46', 'Bill No.: 66'))
     lines.push('Pick Up')
     lines.push(divider('.'))
     
@@ -56,14 +56,11 @@ export function ReceiptPreview({ template, type }: { template: PrintTemplateConf
     
     // Receipt Info
     lines.push(leftRight('Date: 28/02/26 19:04', 'Pick Up'))
-    if (template.show_cashier) lines.push('Cashier: biller')
-    
-    let tb = ''
-    if (template.show_token_no) tb += 'Token No.: 85'
-    if (template.show_bill_no) {
-       const b = 'Bill No.: 60626'
-       tb = tb ? leftRight(tb, b) : b
-    }
+    if (template.show_cashier) lines.push('Cashier: Ravi')
+    lines.push('Waiter: Ravi')
+    const tok = template.show_token_no ? 'Token No.: 85' : ''
+    const bil = template.show_bill_no ? 'Bill No.: 66' : ''
+    const tb = tok && bil ? leftRight(tok, bil) : tok || bil
     if (tb) lines.push(tb)
     
     lines.push(divider('-'))

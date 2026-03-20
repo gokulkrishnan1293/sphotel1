@@ -29,10 +29,9 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
                     <option value={32}>58mm (32 chars)</option><option value={42}>80mm (42 chars)</option>
                   </select>
                 </div>
-                <div><label className={L}>Font Size</label>
-                  <select name="receipt_font_size" value={formData.receipt_font_size} onChange={onChange} className={I}>
-                    <option value={1}>Normal</option><option value={2}>Large (2×)</option>
-                  </select>
+                <div><label className={L}>Font Size — <span className="text-sphotel-accent font-semibold">{formData.receipt_font_size === 1 ? 'Normal' : 'Large (2×)'}</span></label>
+                  <input type="range" name="receipt_font_size" min={1} max={2} step={1} value={formData.receipt_font_size} onChange={onChange} className="w-full accent-sphotel-accent mt-2" />
+                  <div className="flex justify-between text-xs text-text-muted mt-0.5"><span>Normal</span><span>Large</span></div>
                 </div>
                 <div><label className={L}>Address Line 1</label><input name="address_line_1" value={formData.address_line_1} onChange={onChange} className={I} /></div>
                 <div><label className={L}>Address Line 2</label><input name="address_line_2" value={formData.address_line_2} onChange={onChange} className={I} /></div>
@@ -59,10 +58,9 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
                   <option value={32}>58mm (32 chars)</option><option value={42}>80mm (42 chars)</option>
                 </select>
               </div>
-              <div><label className={L}>Font Size</label>
-                <select name="kot_font_size" value={formData.kot_font_size} onChange={onChange} className={I}>
-                  <option value={1}>Normal</option><option value={2}>Large (2×)</option>
-                </select>
+              <div><label className={L}>Font Size — <span className="text-sphotel-accent font-semibold">{formData.kot_font_size === 1 ? 'Normal' : 'Large (2×)'}</span></label>
+                <input type="range" name="kot_font_size" min={1} max={2} step={1} value={formData.kot_font_size} onChange={onChange} className="w-full accent-sphotel-accent mt-2" />
+                <div className="flex justify-between text-xs text-text-muted mt-0.5"><span>Normal</span><span>Large</span></div>
               </div>
               <div><label className={L}>Visible Fields</label>
                 <div className="mt-2"><label className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">

@@ -25,7 +25,7 @@ async def list_recent_bills(
     db: AsyncSession = Depends(get_db),
 ) -> DataResponse[list[BillSummaryResponse]]:
     r = await db.execute(select(Bill).where(Bill.tenant_id == current_user["tenant_id"], Bill.status.in_([BillStatus.BILLED, BillStatus.VOID])).order_by(Bill.updated_at.desc()).limit(30))
-    return DataResponse(data=[BillSummaryResponse.model_validate(b) for b in r.scalars().all()])
+    return DataResponse(data=await enrich_summaries(db, current_user["tenant_id"], list(r.scalars().all())))
 
 
 @router.get("", response_model=DataResponse[list[BillSummaryResponse]])
