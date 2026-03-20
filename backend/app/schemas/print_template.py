@@ -22,6 +22,10 @@ class PrintTemplateConfig(BaseModel):
     kot_font_size: int = Field(default=1, ge=1, le=8)
     top_padding: int = Field(default=2, ge=0, le=10)
     bottom_padding: int = Field(default=5, ge=0, le=15)
+    eod_show_payment: bool = True
+    eod_show_items: bool = True
+    eod_show_waiters: bool = True
+    eod_font_size: int = Field(default=1, ge=1, le=8)
 
 
 class PrintTemplateUpdate(BaseModel):
@@ -42,3 +46,7 @@ class PrintTemplateUpdate(BaseModel):
     kot_font_size: int | None = Field(default=None, ge=1, le=8)
     top_padding: int | None = Field(default=None, ge=0, le=10)
     bottom_padding: int | None = Field(default=None, ge=0, le=15)
+    eod_show_payment: bool | None = None
+    eod_show_items: bool | None = None
+    eod_show_waiters: bool | None = None
+    eod_font_size: int | None = Field(default=None, ge=1, le=8)

@@ -18,6 +18,10 @@ export interface PrintTemplateConfig {
   kot_font_size: number
   top_padding: number
   bottom_padding: number
+  eod_show_payment: boolean
+  eod_show_items: boolean
+  eod_show_waiters: boolean
+  eod_font_size: number
 }
 
 export interface PrintAgent {

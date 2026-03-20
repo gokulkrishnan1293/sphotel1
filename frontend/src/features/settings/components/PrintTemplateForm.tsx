@@ -8,8 +8,8 @@ const I = 'w-full bg-bg-base border border-sphotel-border rounded-lg px-3 py-2 t
 interface Props { formData: PrintTemplateConfig; onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }
 
 export function PrintTemplateForm({ formData, onChange }: Props) {
-  const [tab, setTab] = useState<'receipt' | 'kot'>('receipt')
-  const tabCls = (t: 'receipt' | 'kot') =>
+  const [tab, setTab] = useState<'receipt' | 'kot' | 'eod'>('receipt')
+  const tabCls = (t: 'receipt' | 'kot' | 'eod') =>
     `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${tab === t ? 'border-sphotel-accent text-sphotel-accent' : 'border-transparent text-text-muted hover:text-text-primary'}`
 
   return (
@@ -17,6 +17,7 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
       <div className="flex border-b border-sphotel-border px-2 pt-2">
         <button onClick={() => setTab('receipt')} className={tabCls('receipt')}>Full Receipt</button>
         <button onClick={() => setTab('kot')} className={tabCls('kot')}>KOT Slip</button>
+        <button onClick={() => setTab('eod')} className={tabCls('eod')}>EOD Report</button>
       </div>
       <div className="p-6 flex flex-col lg:flex-row gap-10">
         <div className="flex-1 flex flex-col gap-5">
@@ -54,7 +55,7 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
                 </div>
               </div>
             </>
-          ) : (
+          ) : tab === 'kot' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div><label className={L}>KOT Paper Width</label>
                 <select name="kot_width" value={formData.kot_width} onChange={onChange} className={I}>
@@ -72,6 +73,25 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
                 <div className="mt-2"><label className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
                   <input type="checkbox" name="show_token_no" checked={formData.show_token_no} onChange={onChange} className="accent-sphotel-accent" />Show KOT Number
                 </label></div>
+              </div>
+            </div>
+          ) : (
+            <div className="pt-4">
+              <h3 className="text-sm font-medium text-text-primary mb-3">EOD Report Sections</h3>
+              <p className="text-xs text-text-muted mb-4">Toggle which sections appear on the thermal printout and Telegram PDF for the end-of-day report.</p>
+              <div className="flex flex-col gap-3">
+                {[['eod_show_payment', 'Payment Mode Summary'], ['eod_show_items', 'All Items Sold Today'], ['eod_show_waiters', 'Waiter Performance']].map(([name, label]) => (
+                  <label key={name} className="flex items-center gap-2 text-sm text-text-primary cursor-pointer w-fit">
+                    <input type="checkbox" name={name} checked={formData[name as keyof PrintTemplateConfig] as boolean} onChange={onChange} className="accent-sphotel-accent shadow-sm" />{label}
+                  </label>
+                ))}
+              </div>
+              <div className="mt-5"><label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Font Size</label>
+                <div className="flex items-center gap-3 mt-1">
+                  <input type="range" name="eod_font_size" min={1} max={8} step={1} value={formData.eod_font_size} onChange={onChange} className="flex-1 accent-sphotel-accent" />
+                  <input type="number" name="eod_font_size" min={1} max={8} value={formData.eod_font_size} onChange={onChange} className="bg-bg-elevated border border-sphotel-border text-text-primary rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sphotel-accent focus:border-transparent transition-all w-16 text-center" />
+                </div>
+                <div className="flex justify-between text-xs text-text-muted mt-0.5"><span>1× Normal</span><span>8× Max</span></div>
               </div>
             </div>
           )}
