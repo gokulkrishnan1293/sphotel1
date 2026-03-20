@@ -24,7 +24,7 @@ router = APIRouter(prefix="/tables", tags=["tables"])
 
 @router.get("/sections", response_model=DataResponse[list[SectionWithTablesResponse]])
 async def list_sections(
-    current_user: CurrentUser = Depends(require_role(UserRole.ADMIN, UserRole.SUPER_ADMIN)),
+    current_user: CurrentUser = Depends(require_role(UserRole.BILLER, UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN)),
     db: AsyncSession = Depends(get_db),
 ) -> DataResponse[list[SectionWithTablesResponse]]:
     sections = await table_service.list_sections(db, current_user["tenant_id"])
