@@ -44,29 +44,47 @@ def _table(rows: list[list[str]]) -> Table:
     return t
 
 
-def generate_eod_pdf(summary: dict, tenant_name: str) -> bytes:
+def generate_eod_pdf(summary: dict, tenant_name: str,
+                     waiter_rows: list[dict] | None = None,
+                     template_flags: dict | None = None) -> bytes:
+    flags = template_flags or {}
+    show_payment = flags.get("eod_show_payment", True)
+    show_items = flags.get("eod_show_items", True)
+    show_waiters = flags.get("eod_show_waiters", True)
+
     buf = io.BytesIO()
     doc = _doc(buf)
     now_ist = datetime.now(_IST).strftime('%d %b %Y, %I:%M %p IST')
     story = [
-        Paragraph(f"EOD Report — {tenant_name}", _STYLES['Title']),
-        Paragraph(f"{summary['date']}  ·  Generated {now_ist}", _STYLES['Normal']),
+        Paragraph(f"EOD Report \u2014 {tenant_name}", _STYLES['Title']),
+        Paragraph(f"{summary['date']}  \u00b7  Generated {now_ist}", _STYLES['Normal']),
         Spacer(1, 10),
-        _table([['Bills', 'Revenue', 'Avg Bill'],
-                [str(summary['bill_count']), _inr(summary['total_paise']), _inr(summary['avg_paise'])]]),
+        _table([['Bills', 'Revenue', 'Avg Bill', 'Discounts', 'Voids'],
+                [str(summary['bill_count']), _inr(summary['total_paise']),
+                 _inr(summary['avg_paise']), _inr(summary['discount_paise']),
+                 str(summary['void_count'])]]),
         Spacer(1, 10),
     ]
-    if summary.get('payment_breakdown'):
+    if show_payment and summary.get('payment_breakdown'):
         pb = summary['payment_breakdown']
         total = sum(pb.values())
         rows = [['Method', 'Amount', '%']]
         for m, a in pb.items():
-            rows.append([m.capitalize(), _inr(a), f"{a / total * 100:.0f}%" if total else '-'])
+            pct = f"{a / total * 100:.0f}%" if total else '-'
+            rows.append([m.capitalize(), _inr(a), pct])
         rows.append(['Total', _inr(total), '100%'])
-        story += [Paragraph('Payment Breakdown', _STYLES['Heading2']), Spacer(1, 4), _table(rows), Spacer(1, 10)]
-    if summary.get('top_items'):
+        story += [Paragraph('Payment Breakdown', _STYLES['Heading2']),
+                  Spacer(1, 4), _table(rows), Spacer(1, 10)]
+    if show_items and summary.get('top_items'):
         rows = [['Item', 'Qty']] + [[i['name'], str(i['qty'])] for i in summary['top_items']]
-        story += [Paragraph('Top Items', _STYLES['Heading2']), Spacer(1, 4), _table(rows)]
+        story += [Paragraph('Items Sold', _STYLES['Heading2']),
+                  Spacer(1, 4), _table(rows), Spacer(1, 10)]
+    if show_waiters and waiter_rows:
+        rows = [['Waiter', 'Bills', 'Revenue']] + \
+               [[w['waiter_name'], str(w['bill_count']), _inr(w['revenue_paise'])]
+                for w in waiter_rows]
+        story += [Paragraph('Waiter Performance', _STYLES['Heading2']),
+                  Spacer(1, 4), _table(rows)]
     doc.build(story)
     return buf.getvalue()
 
@@ -79,7 +97,7 @@ def generate_custom_report_pdf(name: str, period: str, dimension: str, metric: s
     data_rows = [['Label', 'Value']] + [[r['label'], str(r['value'])] for r in rows]
     story = [
         Paragraph(name, _STYLES['Title']),
-        Paragraph(f"{dimension} · {metric} · {period}  ·  Generated {now_ist}", _STYLES['Normal']),
+        Paragraph(f"{dimension} \u00b7 {metric} \u00b7 {period}  \u00b7  Generated {now_ist}", _STYLES['Normal']),
         Spacer(1, 10),
         _table(data_rows),
     ]

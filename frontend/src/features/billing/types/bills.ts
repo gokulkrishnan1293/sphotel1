@@ -1,7 +1,7 @@
 export type BillType = 'table' | 'parcel' | 'online'
 export type BillStatus = 'draft' | 'kot_sent' | 'partially_sent' | 'billed' | 'void'
 export type ItemStatus = 'pending' | 'sent' | 'voided'
-export type PaymentMethod = 'cash' | 'card' | 'upi' | 'wallet' | 'other'
+export type PaymentMethod = 'cash' | 'card' | 'upi' | 'online' | 'other'
 export type FoodType = 'veg' | 'egg' | 'non_veg'
 
 export interface BillItemResponse {

@@ -93,3 +93,15 @@ async def build_kot_payload(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID
         "printed_at": datetime.now(tz=timezone.utc).isoformat(),
         "print_template": template,
     }
+
+
+def build_eod_payload(summary: dict, waiter_rows: list[dict], template: dict) -> dict:
+    """Build EOD report payload. This does not require DB access."""
+    return {
+        "job_type": "eod_report",
+        "printed_at": datetime.now(tz=timezone.utc).isoformat(),
+        "print_template": template,
+        "summary": summary,
+        "waiter_rows": waiter_rows,
+    }
+

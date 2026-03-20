@@ -69,3 +69,12 @@ async def create_print_job(
     await db.commit()
     await db.refresh(job)
     return job
+
+
+async def create_eod_print_job(db: AsyncSession, tenant_id: str, payload: dict) -> PrintJob:
+    """Create an EOD print job. No bill_id needed."""
+    job = _job(tenant_id, None, "eod_report", payload, "main", None)
+    db.add(job)
+    await db.commit()
+    await db.refresh(job)
+    return job

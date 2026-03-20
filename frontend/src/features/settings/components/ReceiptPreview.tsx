@@ -1,8 +1,8 @@
 import { PrintTemplateConfig } from '../api/printSettings'
 
-export function ReceiptPreview({ template, type }: { template: PrintTemplateConfig, type: 'receipt' | 'kot' }) {
-  const W = type === 'receipt' ? template.receipt_width : template.kot_width
-  const fontSize = type === 'receipt' ? (template.receipt_font_size ?? 1) : (template.kot_font_size ?? 1)
+export function ReceiptPreview({ template, type }: { template: PrintTemplateConfig, type: 'receipt' | 'kot' | 'eod' }) {
+  const W = type === 'receipt' ? template.receipt_width : type === 'eod' ? 42 : template.kot_width
+  const fontSize = type === 'receipt' ? (template.receipt_font_size ?? 1) : type === 'eod' ? (template.eod_font_size ?? 1) : (template.kot_font_size ?? 1)
   const previewPx = 8 + (fontSize - 1) * 2
 
   // helper functions
@@ -44,6 +44,39 @@ export function ReceiptPreview({ template, type }: { template: PrintTemplateConf
       lines.push(`${n}${nt}${q}`)
     }
     lines.push(divider('.'))
+  } else if (type === 'eod') {
+    lines.push(center('*** EOD REPORT ***'))
+    lines.push(leftRight(template.restaurant_name || 'Hotel Name', '28 Feb 2026'))
+    lines.push(divider('='))
+    
+    if (template.eod_show_payment !== false) {
+      lines.push(center('PAYMENT SUMMARY'))
+      lines.push(divider('-'))
+      lines.push(leftRight('Cash', '12,540.00'))
+      lines.push(leftRight('UPI', '8,200.00'))
+      lines.push(leftRight('Online', '3,500.00'))
+      lines.push(divider('~'))
+      lines.push(leftRight('Total (48 bills)', '24,240.00'))
+      lines.push(divider('='))
+    }
+    
+    if (template.eod_show_items !== false) {
+      lines.push(center('ITEMS SOLD'))
+      lines.push(divider('-'))
+      lines.push(leftRight('Butter Chicken', 'x32'))
+      lines.push(leftRight('Parotta [1 Pc]', 'x24'))
+      lines.push(leftRight('...', ''))
+      lines.push(divider('='))
+    }
+    
+    if (template.eod_show_waiters !== false) {
+      lines.push(center('WAITER PERFORMANCE'))
+      lines.push(divider('-'))
+      lines.push('Ravi         18 bills      9,800.00')
+      lines.push('Suresh       15 bills      8,100.00')
+      lines.push(divider('='))
+    }
+    
   } else {
     // Receipt Header
     if (template.restaurant_name) lines.push(center(template.restaurant_name))
@@ -97,3 +130,4 @@ export function ReceiptPreview({ template, type }: { template: PrintTemplateConf
     </div>
   )
 }
+

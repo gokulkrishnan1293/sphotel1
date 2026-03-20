@@ -21,4 +21,7 @@ export const analyticsApi = {
 
   customQuery: (body: { dimension: string; metric: string; days: number }): Promise<CustomQueryRow[]> =>
     apiClient.post<CustomQueryRow[]>(`${BASE}/custom-query`, body).then((r) => r.data),
+
+  triggerEod: (date?: string): Promise<{ telegram_sent: boolean; print_job_id: string }> =>
+    apiClient.post('/api/v1/reports/eod', { date }).then((r) => r.data),
 }
