@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.attributes import flag_modified
 
 from app.core.dependencies import CurrentUser, require_role
 from app.core.security.permissions import UserRole
@@ -53,5 +54,6 @@ async def update_shortcuts(
     current = {**_DEFAULTS, **(tenant.keyboard_shortcuts or {})}
     new_shortcuts = {**current, **body.model_dump(exclude_none=True)}
     tenant.keyboard_shortcuts = new_shortcuts
+    flag_modified(tenant, 'keyboard_shortcuts')
     await db.commit()
     return DataResponse(data=new_shortcuts)
