@@ -16,6 +16,7 @@ export function ActiveBillsPanel({ onSelect }: { onSelect?: () => void }) {
   const { activeBillId, setActiveBill } = useBillingStore()
   const [showNew, setShowNew] = useState(false)
   const [showPast, setShowPast] = useState(false)
+  const [itemTip, setItemTip] = useState<{ top: number; left: number; items: string[] } | null>(null)
   const { data: bills = [], isLoading } = useQuery({ queryKey: ['bills', 'open'], queryFn: billsApi.listOpen, refetchInterval: 15_000 })
   const { data: recentBills = [] } = useQuery({ queryKey: ['bills', 'recent'], queryFn: billsApi.listRecent, enabled: showPast, refetchInterval: 30_000 })
   const { data: sections = [] } = useQuery({ queryKey: ['sections'], queryFn: tablesApi.listSections })
@@ -40,11 +41,23 @@ export function ActiveBillsPanel({ onSelect }: { onSelect?: () => void }) {
   }
   function BillRow({ bill, dim }: { bill: BillSummaryResponse; dim?: boolean }) {
     const Icon = TYPE_ICON[bill.bill_type]; const active = activeBillId === bill.id
+    const itemText = bill.item_names.length > 0 ? bill.item_names.join(' · ') : null
     return (
-      <button onClick={() => { setActiveBill(bill.id); onSelect?.() }} className={`w-full flex items-center gap-2 px-2 py-3 md:py-2.5 rounded-lg text-left transition-colors ${active ? 'bg-sphotel-accent-subtle text-sphotel-accent' : 'hover:bg-bg-base text-text-primary'} ${dim ? 'opacity-60' : ''}`}>
-        <Icon size={14} className="shrink-0 opacity-60" />
-        <div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{label(bill)}</p><p className="text-xs text-text-muted">₹{(bill.total_paise / 100).toFixed(0)}</p></div>
-        <span className={`w-2 h-2 rounded-full shrink-0 ${STATUS_DOT[bill.status]}`} />
+      <button onClick={() => { setActiveBill(bill.id); onSelect?.() }} className={`w-full px-2 py-2 rounded-lg text-left transition-colors ${active ? 'bg-sphotel-accent-subtle text-sphotel-accent' : 'hover:bg-bg-base text-text-primary'} ${dim ? 'opacity-60' : ''}`}>
+        <div className="flex items-start gap-2">
+          <Icon size={13} className="shrink-0 opacity-60 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-1">
+              <p className="text-sm font-medium truncate">{label(bill)} <span className="text-xs font-normal opacity-50">#{bill.bill_number}</span></p>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="text-sm font-semibold">₹{(bill.total_paise / 100).toFixed(0)}</span>
+                <span className={`w-2 h-2 rounded-full ${STATUS_DOT[bill.status]}`} />
+              </div>
+            </div>
+            {bill.bill_type === 'table' && bill.waiter_name && <p className="text-xs text-text-muted truncate">Waiter: {bill.waiter_name}</p>}
+            {itemText && <p className="text-xs text-text-muted truncate mt-0.5" onMouseEnter={(e) => { const r = e.currentTarget.getBoundingClientRect(); setItemTip({ top: r.top, left: r.right + 8, items: bill.item_names }) }} onMouseLeave={() => setItemTip(null)}>{itemText}</p>}
+          </div>
+        </div>
       </button>
     )
   }
@@ -75,6 +88,7 @@ export function ActiveBillsPanel({ onSelect }: { onSelect?: () => void }) {
         )}
       </div>
       {showNew && <QuickBillBar onOpen={(data) => openBill.mutate(data)} onClose={() => setShowNew(false)} isLoading={openBill.isPending} />}
+      {itemTip && <div className="fixed z-[200] w-52 bg-bg-elevated border border-sphotel-border rounded-lg shadow-xl p-2 pointer-events-none" style={{ top: itemTip.top, left: itemTip.left }}>{itemTip.items.map((n, i) => <p key={i} className="text-xs text-text-primary py-0.5 px-1">{n}</p>)}</div>}
     </aside>
   )
 }

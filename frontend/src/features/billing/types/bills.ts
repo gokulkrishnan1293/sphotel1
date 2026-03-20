@@ -63,6 +63,8 @@ export interface BillSummaryResponse {
   total_paise: number
   created_by: string
   waiter_id: string | null
+  waiter_name: string | null
+  item_names: string[]
   created_at: string
   updated_at: string
 }
