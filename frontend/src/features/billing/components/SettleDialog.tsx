@@ -5,17 +5,17 @@ const ALL_METHODS: { value: PaymentMethod; label: string }[] = [
   { value: 'cash', label: 'Cash' },
   { value: 'card', label: 'Card' },
   { value: 'upi', label: 'UPI' },
-  { value: 'wallet', label: 'Wallet' },
+  { value: 'online', label: 'Online' },
 ]
 
 function methodsFor(billType: string) {
-  if (billType === 'online') return ALL_METHODS.filter((m) => m.value === 'wallet')
+  if (billType === 'online') return ALL_METHODS.filter((m) => m.value === 'online')
   if (billType === 'parcel') return ALL_METHODS.filter((m) => ['cash', 'card', 'upi'].includes(m.value))
   return ALL_METHODS // table: all options
 }
 
 function defaultMethod(billType: string): PaymentMethod {
-  return billType === 'online' ? 'wallet' : 'cash'
+  return billType === 'online' ? 'online' : 'cash'
 }
 
 const fmt = (p: number) => `₹${(p / 100).toFixed(2)}`

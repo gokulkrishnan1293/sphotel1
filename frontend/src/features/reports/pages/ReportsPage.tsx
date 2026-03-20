@@ -22,6 +22,7 @@ function fmtDate(d: string) {
 export function ReportsPage() {
   const qc = useQueryClient()
   const [date, setDate] = useState(today)
+  const [eodStatus, setEodStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const summary = useQuery({ queryKey: ['analytics', 'summary', date], queryFn: () => analyticsApi.summary(date) })
   const waiter = useQuery({ queryKey: ['analytics', 'waiter'], queryFn: () => analyticsApi.waiterPerformance() })
   const configs = useQuery({ queryKey: ['fixed-report-configs'], queryFn: fixedReportConfigsApi.list })
@@ -33,6 +34,20 @@ export function ReportsPage() {
 
   const cfg = (type: string) => configs.data?.find((c) => c.report_type === type)
   const onCfg = (type: string) => (cron: string | null) => updateConfig.mutate({ type, cron })
+  
+  const triggerEod = useMutation({
+    mutationFn: () => analyticsApi.triggerEod(date),
+    onMutate: () => setEodStatus('loading'),
+    onSuccess: () => {
+      setEodStatus('success')
+      setTimeout(() => setEodStatus('idle'), 3000)
+    },
+    onError: () => {
+      setEodStatus('error')
+      setTimeout(() => setEodStatus('idle'), 3000)
+    }
+  })
+
   const s = summary.data
 
   return (
@@ -41,8 +56,19 @@ export function ReportsPage() {
         <h1 className="text-lg font-semibold text-text-primary">Reports</h1>
         <div className="flex items-center gap-3 mt-2">
           <span className="text-xs text-text-muted">{fmtDate(date)}</span>
-          <input type="date" value={date} max={today()} onChange={(e) => setDate(e.target.value)}
-            className="ml-auto text-sm bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-1.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-sphotel-accent" />
+          <div className="ml-auto flex items-center gap-3">
+            {eodStatus === 'success' && <span className="text-xs text-status-success mt-1">Sent to Telegram + Printing...</span>}
+            {eodStatus === 'error' && <span className="text-xs text-status-error mt-1">Failed to trigger EOD</span>}
+            <button 
+              onClick={() => triggerEod.mutate()} 
+              disabled={eodStatus === 'loading' || !s}
+              className="px-3 py-1.5 bg-sphotel-accent/10 text-sphotel-accent border border-sphotel-accent/30 rounded-lg text-sm font-medium hover:bg-sphotel-accent/20 transition-colors disabled:opacity-50"
+            >
+              {eodStatus === 'loading' ? 'Processing...' : 'EOD Summary'}
+            </button>
+            <input type="date" value={date} max={today()} onChange={(e) => setDate(e.target.value)}
+              className="text-sm bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-1.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-sphotel-accent" />
+          </div>
         </div>
       </header>
 

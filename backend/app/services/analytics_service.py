@@ -28,7 +28,10 @@ async def daily_summary(db: AsyncSession, tenant_id: str, for_date: date) -> dic
     discount_paise = sum(r["discount_paise"] for r in payment_rows)
     void_count = sum(r["void_count"] for r in payment_rows)
     avg_paise = (total_paise // bill_count) if bill_count else 0
-    payment_breakdown = {r["payment_method"]: int(r["total_paise"]) for r in payment_rows if r["payment_method"]}
+    payment_breakdown = {
+        r["payment_method"].capitalize(): int(r["total_paise"])
+        for r in payment_rows if r["payment_method"]
+    }
 
     items = await db.execute(text("""
         SELECT bi.name, SUM(bi.quantity) AS qty
@@ -36,7 +39,7 @@ async def daily_summary(db: AsyncSession, tenant_id: str, for_date: date) -> dic
         WHERE b.tenant_id = :tid AND b.status = 'billed'
           AND DATE(b.paid_at AT TIME ZONE 'Asia/Kolkata') = :d
           AND bi.status != 'voided'
-        GROUP BY bi.name ORDER BY qty DESC LIMIT 5
+        GROUP BY bi.name ORDER BY qty DESC
     """), {"tid": tenant_id, "d": for_date})
     top_items = [{"name": r["name"], "qty": int(r["qty"])} for r in items.mappings()]
 
@@ -89,3 +92,22 @@ async def table_turns(db: AsyncSession, tenant_id: str, days: int = 7) -> list[d
     """), {"tid": tenant_id, "days": days})
     return [{"table_name": r["table_name"], "turn_count": int(r["turn_count"]), "avg_minutes": int(r["avg_minutes"])}
             for r in rows.mappings()]
+
+
+async def waiter_performance_today(db: AsyncSession, tenant_id: str, for_date: date) -> list[dict]:
+    """Waiter stats for a specific calendar date (used in EOD report)."""
+    rows = await db.execute(text("""
+        SELECT COALESCE(tu.name, 'No Waiter') AS waiter_name,
+            COUNT(DISTINCT b.id) AS bill_count,
+            SUM(b.total_paise) AS revenue_paise
+        FROM bills b
+        LEFT JOIN tenant_users tu ON b.waiter_id = tu.id AND tu.tenant_id = :tid
+        WHERE b.tenant_id = :tid AND b.status = 'billed'
+          AND DATE(COALESCE(b.paid_at, b.updated_at) AT TIME ZONE 'Asia/Kolkata') = :d
+        GROUP BY tu.name ORDER BY revenue_paise DESC
+    """), {"tid": tenant_id, "d": for_date})
+    return [
+        {"waiter_name": r["waiter_name"], "bill_count": int(r["bill_count"]),
+         "revenue_paise": int(r["revenue_paise"])}
+        for r in rows.mappings()
+    ]

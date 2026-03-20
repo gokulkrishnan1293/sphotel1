@@ -1,4 +1,4 @@
-"""Print job dispatcher — formats and sends to the configured printer."""
+from agent.printer_eod import format_eod
 from agent.printer_kot import format_kot
 from agent.printer_receipt import format_receipt
 from config.agent_config import agent_settings as cfg
@@ -12,9 +12,20 @@ def print_receipt(payload: dict) -> None:
     """Format based on job_type and send to printer."""
     job_type = payload.get("job_type", "receipt")
     tmpl = payload.get("print_template", {})
-    font_size = tmpl.get("kot_font_size" if job_type == "kot" else "receipt_font_size", 1)
+    if job_type == "kot":
+        font_size = tmpl.get("kot_font_size", 1)
+    elif job_type == "eod_report":
+        font_size = tmpl.get("eod_font_size", 1)
+    else:
+        font_size = tmpl.get("receipt_font_size", 1)
 
-    text = format_kot(payload) if job_type == "kot" else format_receipt(payload)
+    text = ""
+    if job_type == "kot":
+        text = format_kot(payload)
+    elif job_type == "eod_report":
+        text = format_eod(payload)
+    else:
+        text = format_receipt(payload)
 
     ptype = cfg.PRINTER_TYPE.lower()
     try:

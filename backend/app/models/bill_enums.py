@@ -27,7 +27,7 @@ class PaymentMethod(enum.StrEnum):
     CASH = "cash"
     CARD = "card"
     UPI = "upi"
-    WALLET = "wallet"
+    ONLINE = "online"
     OTHER = "other"
 
 
