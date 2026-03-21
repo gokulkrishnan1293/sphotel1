@@ -13,13 +13,14 @@ interface Props {
   onTheme: (theme: Theme) => void
   onAccent: (name: string) => void
   onClose: () => void
+  className?: string
 }
 
-export function AppearancePopover({ activeTheme, activeAccent, onTheme, onAccent, onClose }: Props) {
+export function AppearancePopover({ activeTheme, activeAccent, onTheme, onAccent, onClose, className }: Props) {
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div className="absolute bottom-0 left-full ml-2 z-50 bg-bg-elevated border border-sphotel-border rounded-xl shadow-xl p-4 w-52">
+      <div className={`absolute z-50 bg-bg-elevated border border-sphotel-border rounded-xl shadow-xl p-4 w-52 ${className}`}>
         <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-2">Mode</p>
         <div className="flex gap-1 mb-4">
           {MODES.map(({ value, label }) => (

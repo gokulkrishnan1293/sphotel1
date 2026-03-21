@@ -91,6 +91,7 @@ export function Sidebar() {
               onTheme={handleTheme}
               onAccent={handleAccent}
               onClose={() => setPaletteOpen(false)}
+              className="bottom-0 left-full ml-2"
             />
           )}
         </div>
