@@ -239,27 +239,34 @@ async def upload_logo(
     db: AsyncSession = Depends(get_db),
 ) -> DataResponse[TenantResponse]:
     """Upload a custom logo for the tenant."""
-    if not file.content_type or not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="File must be an image")
+    try:
+        if not file.content_type or not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="File must be an image")
 
-    tenant_slug = current_user["tenant_id"]
-    result = await db.execute(select(Tenant).where(Tenant.slug == tenant_slug))
-    tenant = result.scalar_one_or_none()
-    if tenant is None:
-        raise HTTPException(status_code=404, detail="Tenant not found")
+        tenant_slug = current_user["tenant_id"]
+        result = await db.execute(select(Tenant).where(Tenant.slug == tenant_slug))
+        tenant = result.scalar_one_or_none()
+        if tenant is None:
+            raise HTTPException(status_code=404, detail="Tenant not found")
 
-    # Ensure upload directory exists
-    upload_dir = os.path.join("uploads", "logos")
-    os.makedirs(upload_dir, exist_ok=True)
+        # Ensure upload directory exists
+        upload_dir = os.path.join("uploads", "logos")
+        os.makedirs(upload_dir, exist_ok=True)
 
-    # Save file
-    file_ext = os.path.splitext(file.filename or "")[1] or ".png"
-    file_path = os.path.join(upload_dir, f"{tenant.id}{file_ext}")
-    
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
+        # Save file
+        file_ext = os.path.splitext(file.filename or "")[1] or ".png"
+        file_path = os.path.join(upload_dir, f"{str(tenant.id)}{file_ext}")
+        
+        content = await file.read()
+        with open(file_path, "wb") as f:
+            f.write(content)
 
-    tenant.logo_path = file_path
-    await db.commit()
-    await db.refresh(tenant)
-    return DataResponse(data=TenantResponse.model_validate(tenant))
+        tenant.logo_path = file_path
+        await db.commit()
+        await db.refresh(tenant)
+        return DataResponse(data=TenantResponse.model_validate(tenant))
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        print(f"ERROR: Logo upload failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to upload logo due to server error")
