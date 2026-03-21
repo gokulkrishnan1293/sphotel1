@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Save, Upload, Smartphone, CheckCircle2, AlertCircle } from 'lucide-react'
-import { brandingApi, PWASettings } from '../api/branding'
+import { brandingApi } from '../api/branding'
 
 export function BrandingPage() {
   const qc = useQueryClient()
