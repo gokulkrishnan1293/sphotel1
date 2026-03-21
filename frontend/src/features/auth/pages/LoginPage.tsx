@@ -3,7 +3,6 @@ import { useMutation } from '@tanstack/react-query'
 import { authApi } from '../api/auth'
 import { useAuthStore } from '../stores/authStore'
 import { applyTheme, type Theme } from '@/lib/theme'
-import {  Link } from 'react-router'
 
 export function LoginPage() {
   const setCurrentUser = useAuthStore((s) => s.setCurrentUser)
@@ -11,6 +10,7 @@ export function LoginPage() {
   const [step, setStep] = useState<'credentials' | 'totp'>('credentials')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [totpCode, setTotpCode] = useState('')
   const [error, setError] = useState('')
 
@@ -45,7 +45,7 @@ export function LoginPage() {
       setError('Enter the 6-digit code from your authenticator app.')
       return
     }
-    loginMutation.mutate({ email: email.trim(), password, totp_code: totpCode })
+    loginMutation.mutate({ email: email.trim(), password, totp_code: totpCode, remember_me: rememberMe })
   }
 
   return (
@@ -83,17 +83,25 @@ export function LoginPage() {
                 required
               />
             </div>
+            <div className="flex items-center gap-2 mt-1">
+              <input 
+                type="checkbox" 
+                id="remember" 
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-sphotel-border text-sphotel-accent focus:ring-sphotel-accent"
+              />
+              <label htmlFor="remember" className="text-sm text-text-secondary cursor-pointer">
+                Remember me on this device
+              </label>
+            </div>
             {error && <p className="text-status-error text-xs">{error}</p>}
             <button
               type="submit"
-              className="bg-sphotel-accent text-white rounded-lg py-2 text-sm font-medium"
+              className="bg-sphotel-accent text-white rounded-lg py-2 mt-2 text-sm font-medium"
             >
               Continue
             </button>
-            <p className="text-center text-xs text-text-muted">
-            restaurant login?{' '}
-            <Link key="t" to="/t" className="underline">Sign in here</Link>
-          </p>
           </form>
           
         )}

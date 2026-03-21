@@ -16,8 +16,8 @@ export const analyticsApi = {
   tableTurns: (days = 7): Promise<TableTurn[]> =>
     apiClient.get<TableTurn[]>(`${BASE}/table-turns?days=${days}`).then((r) => r.data),
 
-  waiterPerformance: (days = 7): Promise<WaiterPerf[]> =>
-    apiClient.get<WaiterPerf[]>(`${BASE}/waiter-performance?days=${days}`).then((r) => r.data),
+  waiterPerformance: (date?: string): Promise<WaiterPerf[]> =>
+    apiClient.get<WaiterPerf[]>(`${BASE}/waiter-performance${date ? `?for_date=${date}` : ''}`).then((r) => r.data),
 
   customQuery: (body: { dimension: string; metric: string; days: number }): Promise<CustomQueryRow[]> =>
     apiClient.post<CustomQueryRow[]>(`${BASE}/custom-query`, body).then((r) => r.data),

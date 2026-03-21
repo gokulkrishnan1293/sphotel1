@@ -15,11 +15,12 @@ export function TenantAdminLoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [totpCode, setTotpCode] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      await authApi.adminLogin({ email: email.trim(), password, totp_code: totpCode, tenant_slug: code })
+      await authApi.adminLogin({ email: email.trim(), password, totp_code: totpCode, tenant_slug: code, remember_me: rememberMe })
       return authApi.me()
     },
     onSuccess: (user) => {
@@ -85,9 +86,21 @@ export function TenantAdminLoginPage() {
                 value={totpCode} onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="000000" autoFocus maxLength={6} />
             </div>
+            <div className="flex items-center gap-2 mt-1">
+              <input 
+                type="checkbox" 
+                id="remember_admin" 
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-sphotel-border text-sphotel-accent focus:ring-sphotel-accent"
+              />
+              <label htmlFor="remember_admin" className="text-sm text-text-secondary cursor-pointer">
+                Remember me on this device
+              </label>
+            </div>
             {error && <p className="text-status-error text-xs">{error}</p>}
             <button type="submit" disabled={loginMutation.isPending || totpCode.length !== 6}
-              className="bg-sphotel-accent text-white rounded-lg py-2 text-sm font-medium disabled:opacity-50">
+              className="bg-sphotel-accent text-white rounded-lg py-2 mt-2 text-sm font-medium disabled:opacity-50">
               {loginMutation.isPending ? 'Signing in…' : 'Sign in'}
             </button>
             <button type="button" onClick={() => { setStep('credentials'); setError('') }} className="text-xs text-text-muted underline">Back</button>
