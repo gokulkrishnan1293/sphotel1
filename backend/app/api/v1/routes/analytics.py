@@ -59,12 +59,12 @@ async def get_table_turns(
 
 @router.get("/waiter-performance")
 async def get_waiter_performance(
-    days: int = Query(default=7, ge=1, le=30),
+    for_date: date = Query(default_factory=date.today),
     db: AsyncSession = Depends(get_db),
     cu: CurrentUser = Depends(_AUTH),
 ):
-    from app.services.analytics_query import waiter_performance
-    return DataResponse(data=await waiter_performance(db, cu["tenant_id"], days))
+    from app.services.analytics_service import waiter_performance_today
+    return DataResponse(data=await waiter_performance_today(db, cu["tenant_id"], for_date))
 
 
 @router.post("/custom-query")

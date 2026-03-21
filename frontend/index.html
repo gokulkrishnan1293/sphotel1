@@ -5,8 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#09090b" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="manifest" id="manifest-link" href="/manifests/biller.webmanifest" />
-    <title>sphotel</title>
+    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="SP Hotel" />
+    <link rel="manifest" id="manifest-link" href="/manifests/biller.manifest.json" />
+    <title>SP Hotel</title>
+    <script>
+      if (window.location.hostname.includes('managehotels')) {
+        document.getElementById('manifest-link').href = '/manifests/admin.manifest.json';
+        document.title = "Nive's Chain Manager";
+        var appleTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+        if (appleTitle) appleTitle.content = "Chain Manager";
+      }
+    </script>
     <script>
       (function () {
         var t = localStorage.getItem('sphotel-theme')

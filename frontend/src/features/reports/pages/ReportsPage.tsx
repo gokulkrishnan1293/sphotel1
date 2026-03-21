@@ -24,7 +24,7 @@ export function ReportsPage() {
   const [date, setDate] = useState(today)
   const [eodStatus, setEodStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const summary = useQuery({ queryKey: ['analytics', 'summary', date], queryFn: () => analyticsApi.summary(date) })
-  const waiter = useQuery({ queryKey: ['analytics', 'waiter'], queryFn: () => analyticsApi.waiterPerformance() })
+  const waiter = useQuery({ queryKey: ['analytics', 'waiter', date], queryFn: () => analyticsApi.waiterPerformance(date) })
   const configs = useQuery({ queryKey: ['fixed-report-configs'], queryFn: fixedReportConfigsApi.list })
   const updateConfig = useMutation({
     mutationFn: ({ type, cron }: { type: string; cron: string | null }) =>
@@ -54,9 +54,9 @@ export function ReportsPage() {
     <div className="flex flex-col h-full overflow-auto bg-bg-base">
       <header className="sticky top-0 z-10 bg-bg-surface border-b border-sphotel-border px-6 py-4 shrink-0">
         <h1 className="text-lg font-semibold text-text-primary">Reports</h1>
-        <div className="flex items-center gap-3 mt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-2">
           <span className="text-xs text-text-muted">{fmtDate(date)}</span>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {eodStatus === 'success' && <span className="text-xs text-status-success mt-1">Sent to Telegram + Printing...</span>}
             {eodStatus === 'error' && <span className="text-xs text-status-error mt-1">Failed to trigger EOD</span>}
             <button 
@@ -84,7 +84,7 @@ export function ReportsPage() {
         {s && (
           <>
             <KpiCards data={s} />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <TopItemsCard items={s.top_items} config={cfg('top_items')} onUpdateConfig={onCfg('top_items')} />
               <WaiterCard data={waiter.data} config={cfg('waiter_performance')} onUpdateConfig={onCfg('waiter_performance')} />
             </div>

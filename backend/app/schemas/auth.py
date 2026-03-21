@@ -9,6 +9,7 @@ class PinLoginRequest(BaseModel):
     user_id: uuid.UUID
     pin: str = Field(min_length=4, max_length=8)
     tenant_slug: str
+    remember_me: bool = False
 
 
 class LoginResponse(BaseModel):
@@ -20,6 +21,7 @@ class AdminLoginRequest(BaseModel):
     password: str
     totp_code: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
     tenant_slug: str | None = None
+    remember_me: bool = False
 
 
 class TotpSetupRequest(BaseModel):

@@ -17,24 +17,29 @@ _ADMIN_ROLES = frozenset({UserRole.ADMIN, UserRole.SUPER_ADMIN})
 
 
 def issue_pin_cookie(
-    response: Response, user_id: uuid.UUID, tenant_id: str, role: UserRole
+    response: Response, user_id: uuid.UUID, tenant_id: str, role: UserRole, remember_me: bool = True
 ) -> None:
     token = create_access_token(user_id, tenant_id, role)
-    response.set_cookie(
-        key="access_token", value=token, httponly=True, samesite="lax",
-        secure=settings.ENVIRONMENT != "development",
-        max_age=_COOKIE_MAX_AGE, path="/api",
-    )
+    kwargs = {
+        "key": "access_token", "value": token, "httponly": True, "samesite": "lax",
+        "secure": settings.ENVIRONMENT != "development", "path": "/api"
+    }
+    if remember_me:
+        kwargs["max_age"] = _COOKIE_MAX_AGE
+    response.set_cookie(**kwargs)
 
 
 def issue_admin_cookie(
-    response: Response, user_id: uuid.UUID, tenant_id: str, role: UserRole
+    response: Response, user_id: uuid.UUID, tenant_id: str, role: UserRole, remember_me: bool = False
 ) -> None:
     token = create_access_token(user_id, tenant_id, role)
-    response.set_cookie(
-        key="access_token", value=token, httponly=True, samesite="strict",
-        secure=settings.ENVIRONMENT != "development", path="/api",
-    )
+    kwargs = {
+        "key": "access_token", "value": token, "httponly": True, "samesite": "strict",
+        "secure": settings.ENVIRONMENT != "development", "path": "/api"
+    }
+    if remember_me:
+        kwargs["max_age"] = _COOKIE_MAX_AGE
+    response.set_cookie(**kwargs)
 
 
 async def check_lockout(user_id: uuid.UUID, valkey: Any) -> None:
