@@ -28,6 +28,15 @@ class TenantCreateRequest(BaseModel):
         return slug
 
 
+class PWASettings(BaseModel):
+    app_name: str | None = None
+    app_short_name: str | None = None
+
+
+class BrandingUpdateRequest(BaseModel):
+    pwa_settings: PWASettings | None = None
+
+
 class TenantResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -37,6 +46,8 @@ class TenantResponse(BaseModel):
     is_active: bool
     onboarding_completed: bool
     created_at: datetime
+    pwa_settings: PWASettings | None = None
+    logo_path: str | None = None
 
 
 class PlatformStatsResponse(BaseModel):

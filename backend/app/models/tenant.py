@@ -31,3 +31,5 @@ class Tenant(Base, TimestampMixin):
     telegram_bot_token: Mapped[str | None] = mapped_column(String, nullable=True)
     telegram_chat_id: Mapped[str | None] = mapped_column(String, nullable=True)
     keyboard_shortcuts: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    pwa_settings: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    logo_path: Mapped[str | None] = mapped_column(String, nullable=True)

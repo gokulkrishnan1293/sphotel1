@@ -29,6 +29,7 @@ from app.api.v1.routes import (
     tenants,
     users,
     reports,
+    public,
 )
 
 api_router = APIRouter()
@@ -64,3 +65,4 @@ api_router.include_router(users.router)
 api_router.include_router(telegram.router)
 api_router.include_router(keyboard_shortcuts.router)
 api_router.include_router(reports.router)
+api_router.include_router(public.router)

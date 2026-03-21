@@ -29,7 +29,15 @@ async def get_tenant_info(
             status_code=404,
             detail={"code": "TENANT_NOT_FOUND", "message": "Invalid tenant code"},
         )
-    return DataResponse(data=TenantPublicInfo(id=str(tenant.id), name=tenant.name, slug=tenant.slug))
+    return DataResponse(
+        data=TenantPublicInfo(
+            id=str(tenant.id),
+            name=tenant.name,
+            slug=tenant.slug,
+            pwa_settings=tenant.pwa_settings,
+            logo_path=tenant.logo_path,
+        )
+    )
 
 
 @router.get("/tenant/{slug}/staff", response_model=DataResponse[list[StaffPublicItem]])
