@@ -1,10 +1,11 @@
 """Telegram settings and manual EOD trigger."""
 from datetime import date
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Dict, Any
 
 from app.core.dependencies import CurrentUser, require_role
 from app.core.security.permissions import UserRole
@@ -40,6 +41,7 @@ async def get_settings(db: AsyncSession = Depends(get_db), cu: CurrentUser = Dep
 @router.patch("/settings")
 async def update_settings(
     body: TelegramSettings,
+    request: Request,
     db: AsyncSession = Depends(get_db),
     cu: CurrentUser = Depends(_AUTH),
 ):
@@ -49,6 +51,14 @@ async def update_settings(
     if body.chat_id is not None:
         tenant.telegram_chat_id = body.chat_id or None
     await db.commit()
+    
+    if tenant.telegram_bot_token:
+        from app.services.telegram_service import set_telegram_webhook
+        base = str(request.base_url).rstrip("/")
+        # Make webhook URL e.g. https://domain.com/api/v1/telegram/webhook/{tenant_id}
+        webhook_url = f"{base}/api/v1/telegram/webhook/{cu['tenant_id']}"
+        await set_telegram_webhook(tenant.telegram_bot_token, webhook_url)
+        
     return DataResponse(data={"bot_token": tenant.telegram_bot_token, "chat_id": tenant.telegram_chat_id})
 
 
@@ -74,3 +84,32 @@ async def trigger_eod(
     if not ok:
         raise HTTPException(status_code=502, detail="Telegram not configured or send failed")
     return DataResponse(data={"ok": True})
+
+@router.post("/webhook/{tenant_id}")
+async def telegram_webhook(tenant_id: str, payload: Dict[Any, Any], db: AsyncSession = Depends(get_db)):
+    """Receive incoming Telegram messages."""
+    message = payload.get("message")
+    if not message:
+        return {"ok": True}
+        
+    chat = message.get("chat", {})
+    text = message.get("text", "").strip().lower()
+    
+    if text in ["reports", "/reports"]:
+        # Verify chat matches tenant
+        tenant = await db.execute(select(Tenant).where(Tenant.slug == tenant_id))
+        t = tenant.scalar_one_or_none()
+        if not t or str(chat.get("id")) != t.telegram_chat_id:
+            return {"ok": True}
+            
+        # Trigger EOD
+        from app.services.eod_service import trigger_eod_flow
+        from datetime import date
+        import logging
+        try:
+            await trigger_eod_flow(db, tenant_id, date.today())
+        except Exception as e:
+            logging.getLogger("sphotel.telegram").error("Webhook EOD failed: %s", e)
+            
+    return {"ok": True}
+

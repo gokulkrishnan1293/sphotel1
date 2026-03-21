@@ -102,3 +102,14 @@ async def send_eod_report(db: AsyncSession, tenant_id: str, tenant_name: str, fo
     await send_document_pdf(tenant.telegram_bot_token, tenant.telegram_chat_id, pdf_bytes, fname, caption="EOD Daily Report PDF")
     
     return msg_ok
+
+async def set_telegram_webhook(bot_token: str, webhook_url: str) -> bool:
+    url = f"https://api.telegram.org/bot{bot_token}/setWebhook"
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            r = await client.post(url, json={"url": webhook_url})
+            return r.status_code == 200
+    except Exception as exc:
+        log.error("Telegram setWebhook failed: %s", exc)
+        return False
+
