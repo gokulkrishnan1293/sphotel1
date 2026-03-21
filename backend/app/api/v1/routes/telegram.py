@@ -55,6 +55,9 @@ async def update_settings(
     if tenant.telegram_bot_token:
         from app.services.telegram_service import set_telegram_webhook
         base = str(request.base_url).rstrip("/")
+        # Force HTTPS for production if proxy headers missed it
+        if base.startswith("http://") and "localhost" not in base and "127.0.0.1" not in base:
+            base = base.replace("http://", "https://", 1)
         # Make webhook URL e.g. https://domain.com/api/v1/telegram/webhook/{tenant_id}
         webhook_url = f"{base}/api/v1/telegram/webhook/{cu['tenant_id']}"
         await set_telegram_webhook(tenant.telegram_bot_token, webhook_url)
@@ -95,7 +98,7 @@ async def telegram_webhook(tenant_id: str, payload: Dict[Any, Any], db: AsyncSes
     chat = message.get("chat", {})
     text = message.get("text", "").strip().lower()
     
-    if text in ["reports", "/reports"]:
+    if text in ["reports", "/reports", "report", "/report"]:
         # Verify chat matches tenant
         tenant = await db.execute(select(Tenant).where(Tenant.slug == tenant_id))
         t = tenant.scalar_one_or_none()
