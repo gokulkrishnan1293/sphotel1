@@ -28,6 +28,7 @@ from datetime import date, datetime
 
 class EodTriggerRequest(BaseModel):
     date: str | None = None
+    auto_print: bool = True
 
 
 @router.post("/eod")
@@ -47,6 +48,6 @@ async def trigger_eod(
 
     # 1. Trigger the consolidated EOD flow
     from app.services.eod_service import trigger_eod_flow
-    result = await trigger_eod_flow(db, tenant_id, for_date)
+    result = await trigger_eod_flow(db, tenant_id, for_date, auto_print=body.auto_print)
 
     return DataResponse(data=result)
