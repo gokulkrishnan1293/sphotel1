@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, Link } from 'react-router'
-import { ReceiptText, UtensilsCrossed, Users, BarChart3, ChefHat, MoreHorizontal, Send, Printer, Keyboard } from 'lucide-react'
+import { ReceiptText, UtensilsCrossed, Users, BarChart3, ChefHat, MoreHorizontal, Send, Printer, Keyboard, Smartphone } from 'lucide-react'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 
 export function MobileNav() {
@@ -24,6 +24,7 @@ export function MobileNav() {
     { label: 'Telegram', href: '/admin/telegram', Icon: Send, show: isAdmin },
     { label: 'Printer', href: '/admin/print-settings', Icon: Printer, show: isAdmin },
     { label: 'Shortcuts', href: '/admin/shortcuts', Icon: Keyboard, show: isAdmin },
+    { label: 'Branding', href: '/admin/branding', Icon: Smartphone, show: isAdmin }
   ].filter((n) => n.show)
 
   return (
