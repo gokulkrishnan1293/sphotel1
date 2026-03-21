@@ -79,12 +79,14 @@ async def send_test(db: AsyncSession = Depends(get_db), cu: CurrentUser = Depend
 @router.post("/eod")
 async def trigger_eod(
     for_date: date | None = None,
+    auto_print: bool = True,
     db: AsyncSession = Depends(get_db),
     cu: CurrentUser = Depends(_AUTH),
 ):
     tenant = await _get_tenant(db, cu["tenant_id"])
-    ok = await send_eod_report(db, cu["tenant_id"], tenant.name, for_date)
-    if not ok:
+    from app.services.eod_service import trigger_eod_flow
+    res = await trigger_eod_flow(db, cu["tenant_id"], for_date or date.today(), auto_print=auto_print)
+    if not res.get("telegram_sent"):
         raise HTTPException(status_code=502, detail="Telegram not configured or send failed")
     return DataResponse(data={"ok": True})
 
@@ -98,19 +100,22 @@ async def telegram_webhook(tenant_id: str, payload: Dict[Any, Any], db: AsyncSes
     chat = message.get("chat", {})
     text = message.get("text", "").strip().lower()
     
-    if text in ["reports", "/reports", "report", "/report"]:
+    if text.startswith("report") or text.startswith("/report"):
         # Verify chat matches tenant
         tenant = await db.execute(select(Tenant).where(Tenant.slug == tenant_id))
         t = tenant.scalar_one_or_none()
         if not t or str(chat.get("id")) != t.telegram_chat_id:
             return {"ok": True}
             
+        # Parse auto_print
+        auto_print = "withoutprint" not in text
+
         # Trigger EOD
         from app.services.eod_service import trigger_eod_flow
         from datetime import date
         import logging
         try:
-            await trigger_eod_flow(db, tenant_id, date.today())
+            await trigger_eod_flow(db, tenant_id, date.today(), auto_print=auto_print)
         except Exception as e:
             logging.getLogger("sphotel.telegram").error("Webhook EOD failed: %s", e)
             

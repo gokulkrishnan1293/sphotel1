@@ -23,6 +23,7 @@ export function ReportsPage() {
   const qc = useQueryClient()
   const [date, setDate] = useState(today)
   const [eodStatus, setEodStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [showEodModal, setShowEodModal] = useState(false)
   const summary = useQuery({ queryKey: ['analytics', 'summary', date], queryFn: () => analyticsApi.summary(date) })
   const waiter = useQuery({ queryKey: ['analytics', 'waiter', date], queryFn: () => analyticsApi.waiterPerformance(date) })
   const configs = useQuery({ queryKey: ['fixed-report-configs'], queryFn: fixedReportConfigsApi.list })
@@ -36,7 +37,7 @@ export function ReportsPage() {
   const onCfg = (type: string) => (cron: string | null) => updateConfig.mutate({ type, cron })
   
   const triggerEod = useMutation({
-    mutationFn: () => analyticsApi.triggerEod(date),
+    mutationFn: (auto_print: boolean) => analyticsApi.triggerEod(date, auto_print),
     onMutate: () => setEodStatus('loading'),
     onSuccess: () => {
       setEodStatus('success')
@@ -60,7 +61,7 @@ export function ReportsPage() {
             {eodStatus === 'success' && <span className="text-xs text-status-success mt-1">Sent to Telegram + Printing...</span>}
             {eodStatus === 'error' && <span className="text-xs text-status-error mt-1">Failed to trigger EOD</span>}
             <button 
-              onClick={() => triggerEod.mutate()} 
+              onClick={() => setShowEodModal(true)} 
               disabled={eodStatus === 'loading' || !s}
               className="px-3 py-1.5 bg-sphotel-accent/10 text-sphotel-accent border border-sphotel-accent/30 rounded-lg text-sm font-medium hover:bg-sphotel-accent/20 transition-colors disabled:opacity-50"
             >
@@ -94,6 +95,25 @@ export function ReportsPage() {
           </>
         )}
       </div>
+
+      {showEodModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowEodModal(false)}>
+          <div className="bg-bg-elevated border border-sphotel-border rounded-xl w-full max-w-sm overflow-hidden shadow-xl" onClick={e => e.stopPropagation()}>
+            <div className="p-5 border-b border-sphotel-border">
+              <h2 className="text-lg font-semibold text-text-primary">Generate EOD</h2>
+              <p className="text-sm text-text-muted mt-1">Choose how you want to generate the end-of-day report.</p>
+            </div>
+            <div className="p-5 flex flex-col gap-3">
+              <button onClick={() => { setShowEodModal(false); triggerEod.mutate(true) }} className="w-full py-2.5 bg-sphotel-accent text-white font-medium rounded-lg hover:bg-sphotel-accent/90 transition-colors flex items-center justify-center gap-2">
+                Generate with Print
+              </button>
+              <button onClick={() => { setShowEodModal(false); triggerEod.mutate(false) }} className="w-full py-2.5 bg-sphotel-accent/10 text-sphotel-accent border border-sphotel-accent/30 font-medium rounded-lg hover:bg-sphotel-accent/20 transition-colors flex items-center justify-center gap-2">
+                Generate without Print
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
