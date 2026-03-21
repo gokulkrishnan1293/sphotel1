@@ -11,6 +11,8 @@ interface AppShellProps {
   children?: ReactNode
 }
 
+import { TenantHeader } from './TenantHeader'
+
 export function AppShell({ children }: AppShellProps) {
   useNetworkWatcher()
   return (
@@ -18,6 +20,7 @@ export function AppShell({ children }: AppShellProps) {
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <OfflineBanner />
+        <TenantHeader />
         <MainContent>{children ?? <Outlet />}</MainContent>
       </div>
       <MobileNav />
