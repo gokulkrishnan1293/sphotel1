@@ -66,9 +66,16 @@ export function Sidebar() {
       )}
 
       {NAV.filter((n) => n.show).map(({ label, href, Icon }) => (
-        <Link key={href} to={href} title={label} className="w-10 h-10 flex items-center justify-center rounded-lg text-text-muted hover:bg-bg-base hover:text-text-primary transition-colors">
-          <Icon size={20} />
-        </Link>
+        <div key={href} className="relative group flex items-center">
+          <Link to={href} className="w-10 h-10 flex items-center justify-center rounded-lg text-text-muted hover:bg-bg-base hover:text-text-primary transition-colors">
+            <Icon size={20} />
+          </Link>
+          <div className="absolute left-full ml-3 px-2 py-1.5 bg-bg-elevated border border-sphotel-border text-text-primary text-xs font-medium rounded shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+            {label}
+            <div className="absolute left-0 top-1/2 -ml-1 -mt-1 border-t-4 border-b-4 border-r-4 border-t-transparent border-b-transparent border-r-bg-elevated"></div>
+            <div className="absolute left-0 top-1/2 -ml-[5px] -mt-1 border-t-4 border-b-4 border-r-4 border-t-transparent border-b-transparent border-r-sphotel-border -z-10"></div>
+          </div>
+        </div>
       ))}
 
       <div className="mt-auto flex flex-col items-center gap-1">
