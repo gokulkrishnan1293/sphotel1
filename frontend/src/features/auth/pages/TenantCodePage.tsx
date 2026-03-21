@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate,Link } from 'react-router'
+import { useNavigate } from 'react-router'
 import { authApi } from '../api/auth'
 
 export function TenantCodePage() {
@@ -52,10 +52,6 @@ export function TenantCodePage() {
           >
             {loading ? 'Checking…' : 'Continue'}
           </button>
-          <p className="text-center text-xs text-text-muted">
-            Super admin?{' '}
-            <Link key="login" to="/login" className="underline">Sign in here</Link>
-          </p>
         </form>
       </div>
     </div>

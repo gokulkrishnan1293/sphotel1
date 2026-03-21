@@ -90,5 +90,5 @@ async def admin_login(
         ))
         await db.commit()
 
-    issue_admin_cookie(response, user.id, user.tenant_id, user.role)
+    issue_admin_cookie(response, user.id, user.tenant_id, user.role, remember_me=body.remember_me)
     return LoginResponse(message="Login successful")

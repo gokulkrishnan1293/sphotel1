@@ -30,7 +30,7 @@ export function WaiterCard({ data, config, onUpdateConfig }: Props) {
   const max = Math.max(...data.map((w) => w.revenue_paise), 1)
 
   function preview() {
-    openPdfPreview('Waiter Performance', 'Last 7 days', [{
+    openPdfPreview('Waiter Performance', 'Today', [{
       title: 'Revenue by Waiter',
       rows: data!.map((w) => ({ label: w.waiter_name, value: fmt(w.revenue_paise) })),
     }])
@@ -40,7 +40,7 @@ export function WaiterCard({ data, config, onUpdateConfig }: Props) {
     <div className="bg-bg-elevated border border-sphotel-border rounded-xl p-5 flex flex-col gap-1">
       <div className="flex items-center justify-between mb-3 gap-2">
         <h2 className="text-sm font-semibold text-text-primary">
-          Waiter Performance <span className="text-xs font-normal text-text-muted ml-1">last 7 days</span>
+          Waiter Performance <span className="text-xs font-normal text-text-muted ml-1">today</span>
         </h2>
         <div className="flex items-center gap-1.5">
           <button onClick={preview} title="Preview PDF" className="p-1 text-text-muted hover:text-text-primary"><FileText size={13} /></button>

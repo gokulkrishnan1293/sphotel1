@@ -62,5 +62,5 @@ async def pin_login(
         )
 
     await valkey.delete(f"auth_attempts:{user.id}")
-    issue_pin_cookie(response, user.id, user.tenant_id, user.role)
+    issue_pin_cookie(response, user.id, user.tenant_id, user.role, remember_me=body.remember_me)
     return LoginResponse(message="Login successful")

@@ -46,18 +46,18 @@ export function MenuItemsPage() {
     <div className="flex flex-col h-full">
       <header className="px-6 py-4 border-b border-sphotel-border bg-bg-surface shrink-0">
         <h1 className="text-lg font-semibold text-text-primary">Menu Items</h1>
-        <div className="flex items-center gap-3 mt-3">
-          <div className="flex gap-1 bg-bg-elevated border border-sphotel-border rounded-lg p-0.5">
+        <div className="flex flex-col md:flex-row md:items-center gap-3 mt-3">
+          <div className="flex overflow-x-auto whitespace-nowrap gap-1 bg-bg-elevated border border-sphotel-border rounded-lg p-0.5 shrink-0">
             {(['items', 'categories', 'vendors'] as Tab[]).map((t) => (
               <button key={t} onClick={() => setTab(t)} className={`px-3 py-1 rounded text-sm font-medium transition-colors capitalize ${tab === t ? 'bg-sphotel-accent text-sphotel-accent-fg' : 'text-text-secondary hover:text-text-primary'}`}>{t}</button>
             ))}
           </div>
           {tab === 'items' && <>
-            <div className="relative">
+            <div className="relative w-full md:w-auto shrink-0">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
-              <input placeholder="Search name, category, code…" className="bg-bg-elevated border border-sphotel-border rounded-lg pl-8 pr-3 py-1.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-sphotel-accent w-56" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <input placeholder="Search name, category, code…" className="w-full md:w-56 bg-bg-elevated border border-sphotel-border rounded-lg pl-8 pr-3 py-1.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-sphotel-accent" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="md:ml-auto flex flex-wrap items-center gap-2 shrink-0">
               <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleImport} />
               <button onClick={() => fileRef.current?.click()} disabled={importing} className="flex items-center gap-1.5 border border-sphotel-border rounded-lg px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary disabled:opacity-50"><Upload size={14} />{importing ? 'Importing…' : 'Import'}</button>
               <button onClick={handleExport} className="flex items-center gap-1.5 border border-sphotel-border rounded-lg px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary"><Download size={14} />Export</button>

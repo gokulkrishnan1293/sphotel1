@@ -13,7 +13,14 @@ interface Props {
 export function TopItemsCard({ items, config, onUpdateConfig }: Props) {
   const [q, setQ] = useState('')
   const [showTg, setShowTg] = useState(false)
-  if (!items.length) return null
+  if (!items.length) {
+    return (
+      <div className="bg-bg-elevated border border-sphotel-border rounded-xl p-5 flex flex-col gap-3">
+        <h2 className="text-sm font-semibold text-text-primary">Top Items Today</h2>
+        <p className="text-xs text-text-muted py-4 text-center">No items sold today.</p>
+      </div>
+    )
+  }
 
   const filtered = items.filter((i) => i.name.toLowerCase().includes(q.toLowerCase())).slice(0, 10)
   const max = Math.max(...items.map((i) => i.qty), 1)

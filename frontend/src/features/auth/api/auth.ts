@@ -16,12 +16,14 @@ export interface AdminLoginPayload {
   password: string
   totp_code: string
   tenant_slug?: string
+  remember_me?: boolean
 }
 
 export interface PinLoginPayload {
   user_id: string
   pin: string
   tenant_slug: string
+  remember_me?: boolean
 }
 
 export interface TenantPublicInfo {

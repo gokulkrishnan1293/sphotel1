@@ -15,7 +15,14 @@ interface Props {
 export function PaymentCard({ breakdown, config, onUpdateConfig }: Props) {
   const [showTg, setShowTg] = useState(false)
   const entries = Object.entries(breakdown)
-  if (!entries.length) return null
+  if (!entries.length) {
+    return (
+      <div className="bg-bg-elevated border border-sphotel-border rounded-xl p-5 flex flex-col gap-3">
+        <h2 className="text-sm font-semibold text-text-primary">Payment Breakdown</h2>
+        <p className="text-xs text-text-muted py-4 text-center">No payment data today.</p>
+      </div>
+    )
+  }
   const total = entries.reduce((s, [, v]) => s + v, 0)
 
   function preview() {

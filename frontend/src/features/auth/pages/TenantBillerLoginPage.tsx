@@ -12,6 +12,7 @@ export function TenantBillerLoginPage() {
 
   const [selected, setSelected] = useState<StaffPublicItem | null>(null)
   const [pin, setPin] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
 
   const { data: staff, isLoading } = useQuery({
@@ -22,7 +23,7 @@ export function TenantBillerLoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      await authApi.pinLogin({ user_id: selected!.id, pin, tenant_slug: code! })
+      await authApi.pinLogin({ user_id: selected!.id, pin, tenant_slug: code!, remember_me: rememberMe })
       return authApi.me()
     },
     onSuccess: (user) => {
@@ -77,9 +78,21 @@ export function TenantBillerLoginPage() {
                 value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 8))}
                 placeholder="••••" autoFocus maxLength={8} />
             </div>
+            <div className="flex items-center gap-2 mt-1">
+              <input 
+                type="checkbox" 
+                id="remember" 
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-sphotel-border text-sphotel-accent focus:ring-sphotel-accent"
+              />
+              <label htmlFor="remember" className="text-sm text-text-secondary cursor-pointer">
+                Remember me on this device
+              </label>
+            </div>
             {error && <p className="text-status-error text-xs">{error}</p>}
             <button type="submit" disabled={loginMutation.isPending || pin.length < 4}
-              className="bg-sphotel-accent text-white rounded-lg py-2 text-sm font-medium disabled:opacity-50">
+              className="bg-sphotel-accent text-white rounded-lg py-2 mt-2 text-sm font-medium disabled:opacity-50">
               {loginMutation.isPending ? 'Signing in…' : 'Sign in'}
             </button>
             <button type="button" onClick={() => { setSelected(null); setPin(''); setError('') }}
