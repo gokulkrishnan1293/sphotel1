@@ -1,7 +1,8 @@
+import os
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,6 +17,7 @@ from app.schemas.common import DataResponse
 from app.schemas.feature_flags import FeatureFlagsResponse
 from app.schemas.print_template import PrintTemplateConfig, PrintTemplateUpdate
 from app.schemas.tenant import (
+    BrandingUpdateRequest,
     ChecklistItem,
     OnboardingStatusResponse,
     TenantResponse,
@@ -195,3 +197,69 @@ async def get_tenant_features(
         return DataResponse(data=FeatureFlagsResponse())
     flags = await get_feature_flags(tenant.id, db, valkey)
     return DataResponse(data=FeatureFlagsResponse(**flags))
+@router.get("/me/branding", response_model=DataResponse[TenantResponse])
+async def get_branding(
+    current_user: CurrentUser = Depends(require_role(UserRole.ADMIN, UserRole.SUPER_ADMIN)),
+    db: AsyncSession = Depends(get_db),
+) -> DataResponse[TenantResponse]:
+    """Return branding/PWA settings for the authenticated Admin's tenant."""
+    result = await db.execute(select(Tenant).where(Tenant.slug == current_user["tenant_id"]))
+    tenant = result.scalar_one_or_none()
+    if tenant is None:
+        raise HTTPException(status_code=404, detail={"code": "NOT_FOUND", "message": "Tenant not found"})
+    return DataResponse(data=TenantResponse.model_validate(tenant))
+
+
+@router.patch("/me/branding", response_model=DataResponse[TenantResponse])
+async def update_branding(
+    body: BrandingUpdateRequest,
+    current_user: CurrentUser = Depends(require_role(UserRole.ADMIN, UserRole.SUPER_ADMIN)),
+    db: AsyncSession = Depends(get_db),
+) -> DataResponse[TenantResponse]:
+    """Update branding/PWA settings for the authenticated Admin's tenant."""
+    result = await db.execute(select(Tenant).where(Tenant.slug == current_user["tenant_id"]))
+    tenant = result.scalar_one_or_none()
+    if tenant is None:
+        raise HTTPException(status_code=404, detail={"code": "NOT_FOUND", "message": "Tenant not found"})
+    
+    if body.pwa_settings:
+        current_pwa = tenant.pwa_settings or {}
+        updated_pwa = {**current_pwa, **body.pwa_settings.model_dump(exclude_none=True)}
+        tenant.pwa_settings = updated_pwa
+        
+    await db.commit()
+    await db.refresh(tenant)
+    return DataResponse(data=TenantResponse.model_validate(tenant))
+
+
+@router.post("/me/logo", response_model=DataResponse[TenantResponse])
+async def upload_logo(
+    file: UploadFile = File(...),
+    current_user: CurrentUser = Depends(require_role(UserRole.ADMIN, UserRole.SUPER_ADMIN)),
+    db: AsyncSession = Depends(get_db),
+) -> DataResponse[TenantResponse]:
+    """Upload a custom logo for the tenant."""
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    tenant_slug = current_user["tenant_id"]
+    result = await db.execute(select(Tenant).where(Tenant.slug == tenant_slug))
+    tenant = result.scalar_one_or_none()
+    if tenant is None:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+
+    # Ensure upload directory exists
+    upload_dir = os.path.join("uploads", "logos")
+    os.makedirs(upload_dir, exist_ok=True)
+
+    # Save file
+    file_ext = os.path.splitext(file.filename or "")[1] or ".png"
+    file_path = os.path.join(upload_dir, f"{tenant.id}{file_ext}")
+    
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+
+    tenant.logo_path = file_path
+    await db.commit()
+    await db.refresh(tenant)
+    return DataResponse(data=TenantResponse.model_validate(tenant))

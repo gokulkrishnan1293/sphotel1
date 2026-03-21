@@ -72,6 +72,8 @@ class TenantPublicInfo(BaseModel):
     id: str
     name: str
     slug: str
+    pwa_settings: dict | None = None
+    logo_path: str | None = None
 
 
 class StaffPublicItem(BaseModel):
