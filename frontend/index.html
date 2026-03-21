@@ -9,11 +9,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="SP Hotel" />
-    <link rel="manifest" id="manifest-link" href="/manifests/biller.manifest.json" />
+    <link rel="manifest" id="manifest-link" href="/api/v1/public/manifest.json" />
     <title>SP Hotel</title>
     <script>
       if (window.location.hostname.includes('managehotels')) {
-        document.getElementById('manifest-link').href = '/manifests/admin.manifest.json';
         document.title = "Nive's Chain Manager";
         var appleTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
         if (appleTitle) appleTitle.content = "Chain Manager";

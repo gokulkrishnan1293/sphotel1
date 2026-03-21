@@ -30,6 +30,11 @@ export interface TenantPublicInfo {
   id: string
   name: string
   slug: string
+  pwa_settings?: {
+    app_name?: string
+    app_short_name?: string
+  }
+  logo_path?: string
 }
 
 export interface StaffPublicItem {

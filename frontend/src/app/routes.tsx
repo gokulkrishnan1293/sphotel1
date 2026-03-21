@@ -20,6 +20,7 @@ import { PrintSettingsPage } from '../features/settings/routes/PrintSettingsPage
 import { TelegramPage } from '../features/settings/routes/TelegramPage'
 import { ShortcutsPage } from '../features/settings/routes/ShortcutsPage'
 import { ReportsPage } from '../features/reports/pages/ReportsPage'
+import { BrandingPage } from '../features/settings/routes/BrandingPage'
 
 const isAdminDomain = window.location.hostname.includes('managehotels') || import.meta.env.VITE_APP_TYPE === 'admin'
 
@@ -47,6 +48,7 @@ export const router = sentryCreateBrowserRouter([
       { path: 'admin/print-settings', element: <PrintSettingsPage /> },
       { path: 'admin/telegram', element: <TelegramPage /> },
       { path: 'admin/shortcuts', element: <ShortcutsPage /> },
+      { path: 'admin/branding', element: <BrandingPage /> },
       { path: 'reports', element: <ReportsPage /> },
       { path: 'kitchen', element: <KitchenPage /> },
     ],

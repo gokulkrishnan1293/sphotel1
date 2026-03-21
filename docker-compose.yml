@@ -9,6 +9,8 @@ services:
       - db
       - valkey
     restart: unless-stopped
+    volumes:
+      - logo_data:/app/uploads/logos
 
   frontend:
     build:
@@ -38,3 +40,4 @@ services:
 volumes:
   postgres_data:
   valkey_data:
+  logo_data:

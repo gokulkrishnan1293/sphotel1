@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
-import { UtensilsCrossed, ChevronDown, Building2, Palette, ReceiptText, LayoutGrid, Users, ChefHat, Printer, BarChart3, Send, Keyboard, LogOut } from 'lucide-react'
+import { UtensilsCrossed, ChevronDown, Building2, Palette, ReceiptText, LayoutGrid, Users, ChefHat, Printer, BarChart3, Send, Keyboard, LogOut, Smartphone } from 'lucide-react'
 import { tenantsApi } from '@/features/admin/api/tenants'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 import { useLogout } from '@/features/auth/hooks/useAuth'
@@ -37,6 +37,7 @@ export function Sidebar() {
     { label: 'Print Settings', href: '/admin/print-settings', Icon: Printer, show: isAdmin },
     { label: 'Telegram', href: '/admin/telegram', Icon: Send, show: isAdmin },
     { label: 'Shortcuts', href: '/admin/shortcuts', Icon: Keyboard, show: isAdmin },
+    { label: 'Branding', href: '/admin/branding', Icon: Smartphone, show: isAdmin },
     { label: 'Kitchen', href: '/kitchen', Icon: ChefHat, show: isAdmin || currentUser?.role === 'kitchen_staff' || currentUser?.role === 'biller' },
   ]
 
