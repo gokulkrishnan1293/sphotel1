@@ -12,5 +12,6 @@ COPY --from=deps /usr/local/bin /usr/local/bin
 COPY . .
 ENV PYTHONPATH=/app
 RUN groupadd -r app && useradd -r -g app app
+RUN mkdir -p /app/uploads/logos && chown -R app:app /app/uploads
 USER app
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

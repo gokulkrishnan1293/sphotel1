@@ -29,6 +29,7 @@ class TenantCreateRequest(BaseModel):
 
 
 class PWASettings(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     app_name: str | None = None
     app_short_name: str | None = None
 
