@@ -69,11 +69,11 @@ export function OnlineVendorsCard() {
         </div>
       )}
 
-      <form onSubmit={handleAdd} className="flex gap-2 pt-2 border-t border-sphotel-border">
-        <input className={INPUT + ' w-28'} placeholder="slug" value={slug} onChange={(e) => setSlug(e.target.value)} />
+      <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-sphotel-border">
+        <input className={INPUT + ' sm:w-28'} placeholder="slug" value={slug} onChange={(e) => setSlug(e.target.value)} />
         <input className={INPUT + ' flex-1'} placeholder="Display name" value={name} onChange={(e) => setName(e.target.value)} />
         <button type="submit" disabled={addMut.isPending || !slug.trim() || !name.trim()}
-          className="flex items-center gap-1 px-3 py-2 bg-sphotel-accent text-sphotel-accent-fg rounded-lg text-sm font-medium disabled:opacity-50">
+          className="flex items-center justify-center gap-1 px-3 py-2 bg-sphotel-accent text-sphotel-accent-fg rounded-lg text-sm font-medium disabled:opacity-50">
           <Plus size={14} /> Add
         </button>
       </form>
