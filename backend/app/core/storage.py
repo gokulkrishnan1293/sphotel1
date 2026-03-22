@@ -9,11 +9,12 @@ class S3Storage:
         self.endpoint_url = settings.R2_UPLOAD_FILES_ENDPOINT_URL
         self.access_key = settings.R2_UPLOAD_FILES_ACCESS_KEY_ID
         self.secret_key = settings.R2_UPLOAD_FILES_SECRET_ACCESS_KEY
-        self.public_url = settings.R2_UPLOAD_FILES_PUBLIC_URL.rstrip("/")
+        self.public_url = settings.R2_UPLOAD_FILES_PUBLIC_URL
 
     async def upload_file(self, file: UploadFile, key: str) -> str:
         """
-        Uploads a file to R2 and returns the public URL.
+        Uploads a file to R2 and returns the key.
+        We store only the key in the database for flexibility.
         """
         async with self.session.client(
             "s3",
@@ -29,7 +30,7 @@ class S3Storage:
                 ContentType=file.content_type,
             )
             
-        return f"{self.public_url}/{key}"
+        return key
 
     def get_public_url(self, key: str) -> str:
         """
@@ -39,6 +40,10 @@ class S3Storage:
             return ""
         if key.startswith("http"):
             return key
-        return f"{self.public_url}/{key}"
+        
+        base_url = self.public_url.rstrip("/") if self.public_url else ""
+        if not base_url:
+            return f"/{key}"
+        return f"{base_url}/{key}"
 
 storage = S3Storage()

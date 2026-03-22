@@ -85,28 +85,34 @@ async def get_manifest(request: Request, db: AsyncSession = Depends(get_db)):
 
 from fastapi.responses import FileResponse, RedirectResponse
 
+from app.core.storage import storage
+
 @router.get("/logo/{tenant_slug}.png")
 async def get_logo(tenant_slug: str, db: AsyncSession = Depends(get_db)):
     """Serve the custom logo for a tenant (via redirect for R2 or local serving)."""
     result = await db.execute(select(Tenant).where(Tenant.slug == tenant_slug))
     tenant = result.scalar_one_or_none()
     
+    # If no tenant or no logo path, serve default
     if not tenant or not tenant.logo_path:
-        # Fallback to default logo in backend static folder
         default_logo = os.path.join("app", "static", "default-logo.png")
         if os.path.exists(default_logo):
             return FileResponse(default_logo)
         raise HTTPException(status_code=404, detail="Default logo not found")
 
-    # If it's an R2 URL, redirect to it
-    if tenant.logo_path.startswith("http"):
-        return RedirectResponse(tenant.logo_path)
+    # Get the public URL using our storage utility
+    logo_url = storage.get_public_url(tenant.logo_path)
 
-    # Local file fallback (backward compatibility)
+    # If it's a full URL (R2), redirect to it
+    if logo_url.startswith("http"):
+        return RedirectResponse(logo_url)
+
+    # Local file fallback (backward compatibility or if public_url is not set)
+    # Check if the path exists locally (either absolute or relative to base)
     if os.path.exists(tenant.logo_path):
         return FileResponse(tenant.logo_path)
     
-    # Final fallback if path set but file missing
+    # Final fallback
     default_logo = os.path.join("app", "static", "default-logo.png")
     if os.path.exists(default_logo):
         return FileResponse(default_logo)
