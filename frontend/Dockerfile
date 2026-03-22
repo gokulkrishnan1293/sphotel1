@@ -19,6 +19,13 @@ COPY frontend/package.json ./
 # ── production build ───────────────────────────────────────────────────────────
 FROM deps AS builder
 COPY frontend/ .
+# Build-time env vars — must be passed as Docker build args (Vite bakes them in)
+ARG VITE_API_URL
+ARG VITE_WS_URL
+ARG VITE_SENTRY_DSN
+ENV VITE_API_URL=$VITE_API_URL \
+    VITE_WS_URL=$VITE_WS_URL \
+    VITE_SENTRY_DSN=$VITE_SENTRY_DSN
 RUN pnpm build
 
 FROM nginx:alpine AS production
