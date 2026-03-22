@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Check, UtensilsCrossed, ShoppingBag, Laptop } from 'lucide-react'
+import { Check, UtensilsCrossed, ShoppingBag, Laptop, AlertCircle } from 'lucide-react'
 import { tablesApi } from '../../admin/api/tables'
 import { staffApi } from '../../admin/api/staff'
+import { vendorsApi } from '../../settings/api/onlineVendors'
 import type { OpenBillRequest } from '../types/bills'
 
 function parse(raw: string) {
@@ -23,9 +24,11 @@ interface Props { onOpen: (data: OpenBillRequest) => void; onClose: () => void; 
 
 export function QuickBillBar({ onOpen, onClose, isLoading }: Props) {
   const [input, setInput] = useState('')
+  const [selectedVendor, setSelectedVendor] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const { data: sections = [] } = useQuery({ queryKey: ['sections'], queryFn: tablesApi.listSections })
   const { data: waiters = [] } = useQuery({ queryKey: ['waiters'], queryFn: staffApi.listWaiters })
+  const { data: vendors = [] } = useQuery({ queryKey: ['online-vendors'], queryFn: vendorsApi.list })
 
   const allTables = useMemo(
     () => sections.flatMap((s) => s.tables.filter((t) => t.is_active).map((t) => ({ ...t, sectionName: s.name }))),
@@ -50,13 +53,32 @@ export function QuickBillBar({ onOpen, onClose, isLoading }: Props) {
     return waiters.find((w) => w.name.toLowerCase().includes(q)) ?? null
   }, [waiters, wq])
 
+  const [submitted, setSubmitted] = useState(false)
+
+  const validationErrors = useMemo(() => {
+    const errors: string[] = []
+    if (type === 'table') {
+      if (!matchedTable) errors.push(!tq ? 'Select a table to continue' : `No table matching "${tq}"`)
+      if (!matchedWaiter) errors.push(!wq ? 'Select a waiter to continue' : `No waiter matching "${wq}"`)
+    }
+    if (type === 'online') {
+      if (vendors.length > 0 && !selectedVendor) errors.push('Select a vendor to continue')
+      if (wq && !matchedWaiter) errors.push(`No waiter matching "${wq}"`)
+    }
+    return errors
+  }, [type, matchedTable, matchedWaiter, tq, wq, vendors, selectedVendor])
+
+  const canSubmit = validationErrors.length === 0
+
   useEffect(() => { inputRef.current?.focus() }, [])
 
   function submit() {
+    setSubmitted(true)
+    if (!canSubmit) return
     const wid = matchedWaiter?.id ?? null
     if (type === 'parcel') { onOpen({ bill_type: 'parcel', waiter_id: wid }); return }
-    if (type === 'online') { onOpen({ bill_type: 'online', reference_no: ref || null, waiter_id: wid }); return }
-    onOpen({ bill_type: 'table', table_id: matchedTable?.id ?? null, waiter_id: wid })
+    if (type === 'online') { onOpen({ bill_type: 'online', reference_no: ref || null, waiter_id: wid, platform: selectedVendor ?? null }); return }
+    onOpen({ bill_type: 'table', table_id: matchedTable!.id, waiter_id: wid })
   }
 
   return (
@@ -73,11 +95,43 @@ export function QuickBillBar({ onOpen, onClose, isLoading }: Props) {
         <div className="px-4 py-3 flex flex-col gap-2 min-h-[56px]">
           {type === 'parcel' && <Row icon={<ShoppingBag size={13} />} text="Parcel bill" ok />}
           {type === 'online' && <Row icon={<Laptop size={13} />} text={`Online · ref: ${ref || '—'}`} ok={!!ref} />}
+          {type === 'online' && vendors.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-1">
+              {vendors.map((v) => (
+                <button
+                  key={v.slug}
+                  type="button"
+                  onClick={() => setSelectedVendor(selectedVendor === v.slug ? null : v.slug)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                    selectedVendor === v.slug
+                      ? 'bg-sphotel-accent text-sphotel-accent-fg border-sphotel-accent'
+                      : 'bg-transparent text-text-muted border-sphotel-border hover:border-sphotel-accent hover:text-text-primary'
+                  }`}
+                >
+                  {v.name}
+                </button>
+              ))}
+            </div>
+          )}
           {type === 'table' && (
             <Row icon={<UtensilsCrossed size={13} />} ok={!!matchedTable}
-              text={tq ? (matchedTable ? `${matchedTable.name} · ${matchedTable.sectionName} · ${matchedTable.capacity} seats` : `No table matching "${tq}"`) : 'Type a table name or number'} />
+              text={tq ? (matchedTable ? `${matchedTable.name} · ${matchedTable.sectionName} · ${matchedTable.capacity} seats` : `No table matching "${tq}"`) : 'Select a table'} />
           )}
-          {wq && <Row ok={!!matchedWaiter} text={matchedWaiter ? `Waiter: ${matchedWaiter.name}` : `No waiter matching "${wq}"`} />}
+          {type === 'table' && (
+            <Row ok={!!matchedWaiter}
+              text={matchedWaiter ? `Waiter: ${matchedWaiter.name}` : wq ? `No waiter matching "${wq}"` : 'Select a waiter'} />
+          )}
+          {type !== 'table' && wq && <Row ok={!!matchedWaiter} text={matchedWaiter ? `Waiter: ${matchedWaiter.name}` : `No waiter matching "${wq}"`} />}
+          {submitted && !canSubmit && (
+            <div className="flex flex-col gap-1 mt-1">
+              {validationErrors.map((err) => (
+                <div key={err} className="flex items-center gap-1.5 text-xs text-status-error">
+                  <AlertCircle size={12} className="shrink-0" />
+                  {err}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="px-4 py-2 border-t border-sphotel-border flex items-center gap-4 text-xs text-text-muted">
           <span>Enter open</span><span>Esc cancel</span>
@@ -85,7 +139,11 @@ export function QuickBillBar({ onOpen, onClose, isLoading }: Props) {
         </div>
         <div className="px-4 pb-3">
           <button onClick={submit} disabled={isLoading}
-            className="w-full bg-sphotel-accent text-sphotel-accent-fg rounded-lg py-2 text-sm font-medium disabled:opacity-50">
+            className={`w-full rounded-lg py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
+              submitted && !canSubmit
+                ? 'bg-status-error/10 text-status-error border border-status-error/30'
+                : 'bg-sphotel-accent text-sphotel-accent-fg'
+            }`}>
             {isLoading ? 'Opening…' : 'Open Bill'}
           </button>
         </div>

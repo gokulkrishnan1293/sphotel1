@@ -1,8 +1,9 @@
 import { PrintTemplateConfig } from '../api/printSettings'
 
 export function ReceiptPreview({ template, type }: { template: PrintTemplateConfig, type: 'receipt' | 'kot' | 'eod' }) {
-  const W = type === 'receipt' ? template.receipt_width : type === 'eod' ? 42 : template.kot_width
+  const rawW = type === 'receipt' ? template.receipt_width : type === 'eod' ? template.receipt_width : template.kot_width
   const fontSize = type === 'receipt' ? (template.receipt_font_size ?? 1) : type === 'eod' ? (template.eod_font_size ?? 1) : (template.kot_font_size ?? 1)
+  const W = Math.max(1, Math.floor(rawW / Math.max(1, fontSize)))
   const previewPx = 8 + (fontSize - 1) * 2
 
   const center = (text: string) => {
@@ -27,16 +28,14 @@ export function ReceiptPreview({ template, type }: { template: PrintTemplateConf
 
   if (type === 'kot') {
     push('28/02/26 14:44')
-    if (template.show_token_no !== false) {
-      const kotLine = leftRight('KOT - 46', 'Bill No.: 66')
-      template.bold_kot_number ? pb(kotLine) : push(kotLine)
-    }
+    push('KOT - 46')
+    push('Bill No.: 66')
     push('Pick Up')
     push(divider('.'))
-    const iw = W - 20
-    push(`Item${' '.repeat(Math.max(0, iw - 4))}Special Note  Qty.`)
+    const iw = W - 4
+    push(`Item${' '.repeat(Math.max(0, iw - 4))}Qty.`)
     for (const item of items) {
-      const itemLine = `${item.name.substring(0, iw).padEnd(iw)}${item.note.substring(0, 10).padEnd(12)}${item.qty.toString().padStart(4)}`
+      const itemLine = `${item.name.substring(0, iw).padEnd(iw)}${item.qty.toString().padStart(4)}`
       template.bold_kot_items ? pb(itemLine) : push(itemLine)
     }
     push(divider('.'))
@@ -93,7 +92,7 @@ export function ReceiptPreview({ template, type }: { template: PrintTemplateConf
       push(`${item.name.substring(0, iw).padEnd(iw)}${item.qty.toString().padStart(4)}${item.price.padStart(7)}${item.amount.padStart(8)}`)
     }
     push(divider('-'))
-    push(leftRight('Total Qty: 4', 'Sub Total 100.00'))
+    push(`Total Qty: 4`)
     push(divider('-'))
     const grandTotal = center('Grand Total   100.00')
     template.bold_total ? pb(grandTotal) : push(grandTotal)

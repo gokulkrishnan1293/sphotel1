@@ -44,11 +44,7 @@ def _fmt_inr(paise: int) -> str:
 
 
 def format_eod(summary: dict, tenant_name: str, waiter_rows: list[dict] | None = None, template_flags: dict | None = None) -> str:
-    flags = template_flags or {}
-    show_payment = flags.get("eod_show_payment", True)
-    show_items = flags.get("eod_show_items", True)
-    show_waiters = flags.get("eod_show_waiters", True)
-
+    # Telegram always receives all 3 sections regardless of print template toggles
     lines = [
         f"<b>\ud83d\udcca EOD Report \u2014 {tenant_name}</b>",
         f"\ud83d\udcc5 {summary['date']}",
@@ -60,17 +56,17 @@ def format_eod(summary: dict, tenant_name: str, waiter_rows: list[dict] | None =
         f"\ud83d\udeab Voids: {summary['void_count']}",
         "",
     ]
-    if show_payment and summary.get("payment_breakdown"):
+    if summary.get("payment_breakdown"):
         lines.append("<b>Payment:</b>")
         for method, amt in summary["payment_breakdown"].items():
             lines.append(f"  {method}: {_fmt_inr(amt)}")
         lines.append("")
-    if show_items and summary.get("top_items"):
+    if summary.get("top_items"):
         lines.append("<b>Top items:</b>")
         for item in summary["top_items"]:
             lines.append(f"  {item['name']} \u00d7 {item['qty']}")
         lines.append("")
-    if show_waiters and waiter_rows:
+    if waiter_rows:
         lines.append("<b>Waiters:</b>")
         for w in waiter_rows:
             lines.append(f"  {w['waiter_name']}: {_fmt_inr(w['revenue_paise'])}")
