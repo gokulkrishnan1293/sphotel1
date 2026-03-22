@@ -88,7 +88,7 @@ export function ReportsPage() {
         )}
         {s && (
           <>
-            <KpiCards data={s} />
+            <KpiCards data={s} waiterData={waiter.data} />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <TopItemsCard items={s.top_items} config={cfg('top_items')} onUpdateConfig={onCfg('top_items')} />
               <WaiterCard data={waiter.data} config={cfg('waiter_performance')} onUpdateConfig={onCfg('waiter_performance')} />

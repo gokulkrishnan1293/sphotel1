@@ -26,8 +26,8 @@ export function WaiterCard({ data, config, onUpdateConfig }: Props) {
     )
   }
 
-  const filtered = data.filter((w) => w.waiter_name.toLowerCase().includes(q.toLowerCase())).slice(0, 10)
-  const max = Math.max(...data.map((w) => w.revenue_paise), 1)
+  const filtered = data.filter((w) => w.waiter_name !== 'No Waiter' && w.waiter_name.toLowerCase().includes(q.toLowerCase())).slice(0, 10)
+  const max = Math.max(...data.filter((w) => w.waiter_name !== 'No Waiter').map((w) => w.revenue_paise), 1)
 
   function preview() {
     openPdfPreview('Waiter Performance', 'Today', [{
