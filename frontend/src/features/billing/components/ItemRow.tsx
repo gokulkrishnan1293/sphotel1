@@ -76,7 +76,7 @@ export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride
       )}
 
       {!readOnly && !disabled && (
-        <button onClick={onRemove} className="md:opacity-0 md:group-hover:opacity-100 p-1 text-text-muted hover:text-status-error rounded">
+        <button onClick={onRemove} className="p-1 text-text-muted hover:text-status-error rounded">
           <Trash2 size={13} />
         </button>
       )}

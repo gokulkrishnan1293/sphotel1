@@ -59,9 +59,12 @@ async def create_print_job(
     bill = bill_r.scalar_one_or_none()
 
     if bill and bill.bill_type in (BillType.PARCEL, BillType.ONLINE):
-        kot_role = await _kot_target_role(db, tenant_id)
         kot_payload = await build_kot_payload(db, tenant_id, bill_id, include_pending=True)
+        # Kitchen/merchant copy — dedicated KOT printer if online, else falls back to main
+        kot_role = await _kot_target_role(db, tenant_id)
         db.add(_job(tenant_id, bill_id, "kot", kot_payload, kot_role))
+        # Customer copy — always printed on main counter printer
+        db.add(_job(tenant_id, bill_id, "kot", kot_payload, "main"))
 
     receipt_payload = await build_receipt_payload(db, tenant_id, bill_id)
     job = _job(tenant_id, bill_id, "receipt", receipt_payload, "main", printer_name)

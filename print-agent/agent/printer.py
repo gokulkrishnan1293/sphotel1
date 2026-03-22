@@ -1,31 +1,47 @@
-from agent.printer_eod import format_eod
-from agent.printer_kot import format_kot
-from agent.printer_receipt import format_receipt
 from config.agent_config import agent_settings as cfg
 
-# ESC/POS select print mode: normal vs double-size
+# ESC/POS print mode: normal vs double-size
 _ESC_NORMAL = b"\x1b\x21\x00"
 _ESC_DOUBLE = b"\x1b\x21\x30"
 
+# ESC/POS bold on/off
+_BOLD_ON  = b"\x1b\x45\x01"
+_BOLD_OFF = b"\x1b\x45\x00"
 
-def print_receipt(payload: dict) -> None:
-    """Format based on job_type and send to printer."""
-    job_type = payload.get("job_type", "receipt")
-    tmpl = payload.get("print_template", {})
-    if job_type == "kot":
-        font_size = tmpl.get("kot_font_size", 1)
-    elif job_type == "eod_report":
-        font_size = tmpl.get("eod_font_size", 1)
-    else:
-        font_size = tmpl.get("receipt_font_size", 1)
+# Bold markers embedded by the backend formatter («B»...«/B»)
+_BSTART = "\u00abB\u00bb"   # «B»
+_BEND   = "\u00ab/B\u00bb"  # «/B»
 
-    text = ""
-    if job_type == "kot":
-        text = format_kot(payload)
-    elif job_type == "eod_report":
-        text = format_eod(payload)
-    else:
-        text = format_receipt(payload)
+
+def _parse_segments(text):
+    """Split text into list of (segment_text, is_bold) tuples."""
+    result = []
+    parts = text.split(_BSTART)
+    if parts[0]:
+        result.append((parts[0], False))
+    for part in parts[1:]:
+        sub = part.split(_BEND, 1)
+        result.append((sub[0], True))
+        if len(sub) > 1 and sub[1]:
+            result.append((sub[1], False))
+    return result
+
+
+def _to_raw_bytes(text, font_cmd, encoding="cp437"):
+    """Encode print_text (with bold markers) into ESC/POS raw bytes."""
+    raw = font_cmd
+    for seg, bold in _parse_segments(text):
+        if bold:
+            raw += _BOLD_ON + seg.encode(encoding, errors="replace") + _BOLD_OFF
+        else:
+            raw += seg.encode(encoding, errors="replace")
+    return raw
+
+
+def print_receipt(payload):
+    """Send a pre-rendered print job to the configured printer."""
+    text = payload.get("print_text", "")
+    font_size = payload.get("font_size", 1)
 
     ptype = cfg.PRINTER_TYPE.lower()
     try:
@@ -33,7 +49,7 @@ def print_receipt(payload: dict) -> None:
             import win32print
             name = cfg.WIN32_PRINTER_NAME or win32print.GetDefaultPrinter()
             font_cmd = _ESC_DOUBLE if font_size >= 2 else _ESC_NORMAL
-            raw = font_cmd + text.encode("cp437", errors="replace") + b"\x1d\x56\x00"
+            raw = _to_raw_bytes(text, font_cmd) + b"\x1d\x56\x00"
             h = win32print.OpenPrinter(name)
             try:
                 win32print.StartDocPrinter(h, 1, ("Receipt", None, "RAW"))
@@ -56,9 +72,12 @@ def print_receipt(payload: dict) -> None:
         else:
             from escpos.printer import Usb
             p = Usb(cfg.USB_VENDOR_ID, cfg.USB_PRODUCT_ID)
-        p.set(align="left", font="a", bold=False, width=font_size, height=font_size)
-        p.text(text)
+        for seg, bold in _parse_segments(text):
+            p.set(align="left", font="a", bold=bold, width=font_size, height=font_size)
+            p.text(seg)
         p.cut()
         p.close()
     except Exception as exc:
         raise RuntimeError("Printer error ({}): {}".format(ptype, exc))
+
+

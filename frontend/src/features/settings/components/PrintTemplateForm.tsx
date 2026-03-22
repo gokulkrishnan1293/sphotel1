@@ -54,6 +54,16 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
                   ))}
                 </div>
               </div>
+              <div className="pt-4 border-t border-sphotel-border">
+                <h3 className="text-sm font-medium text-text-primary mb-3">Bold Options</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {([['bold_header','Header Block'],['bold_total','Grand Total']] as const).map(([name, label]) => (
+                    <label key={name} className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
+                      <input type="checkbox" name={name} checked={!!formData[name as keyof PrintTemplateConfig]} onChange={onChange} className="accent-sphotel-accent" />{label}
+                    </label>
+                  ))}
+                </div>
+              </div>
             </>
           ) : tab === 'kot' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -74,6 +84,15 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
                   <input type="checkbox" name="show_token_no" checked={formData.show_token_no} onChange={onChange} className="accent-sphotel-accent" />Show KOT Number
                 </label></div>
               </div>
+              <div><label className={L}>Bold Options</label>
+                <div className="mt-2 flex flex-col gap-2">
+                  {([['bold_kot_number','KOT Number Line'],['bold_kot_items','Item Names']] as const).map(([name, label]) => (
+                    <label key={name} className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
+                      <input type="checkbox" name={name} checked={!!formData[name as keyof PrintTemplateConfig]} onChange={onChange} className="accent-sphotel-accent" />{label}
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
           ) : (
             <div className="pt-4">
@@ -85,6 +104,12 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
                     <input type="checkbox" name={name} checked={formData[name as keyof PrintTemplateConfig] as boolean} onChange={onChange} className="accent-sphotel-accent shadow-sm" />{label}
                   </label>
                 ))}
+              </div>
+              <div className="mt-4">
+                <h3 className="text-sm font-medium text-text-primary mb-3">Bold Options</h3>
+                <label className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
+                  <input type="checkbox" name="bold_eod_headers" checked={!!formData.bold_eod_headers} onChange={onChange} className="accent-sphotel-accent" />Section Headers
+                </label>
               </div>
               <div className="mt-5"><label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Font Size</label>
                 <div className="flex items-center gap-3 mt-1">
