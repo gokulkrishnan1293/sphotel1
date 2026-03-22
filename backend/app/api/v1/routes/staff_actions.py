@@ -68,7 +68,7 @@ async def revoke_sessions(sid: uuid.UUID,
     valkey: Any = Depends(get_valkey)) -> DataResponse[MessageResponse]:
     t = await _get_staff(sid, cu["tenant_id"], db)
     _check(cu["role"], t.role)
-    await valkey.set(f"session_revoked:{sid}", str(time.time()), ex=settings.JWT_EXPIRY_HOURS * 3600)
+    await valkey.set(f"session_revoked:{sid}", str(time.time()), ex=settings.REMEMBER_ME_EXPIRY_HOURS * 3600)
     await valkey.set(f"auth_locked:{sid}", "1")
     db.add(AuditLog(tenant_id=cu["tenant_id"], actor_id=cu["user_id"], action="sessions_revoke", target_id=sid))
     await db.commit()

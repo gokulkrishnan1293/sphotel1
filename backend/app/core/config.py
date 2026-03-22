@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRY_HOURS: int = 4
+    REMEMBER_ME_EXPIRY_HOURS: int = 720  # 30 days
     VERSION: str = "0.1.0"
     ENVIRONMENT: str = "development"
     CORS_ORIGINS: list[str] = ["http://localhost:5173"]
