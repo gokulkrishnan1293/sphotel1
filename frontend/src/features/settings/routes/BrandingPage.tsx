@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import * as Sentry from '@sentry/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Save, Upload, Smartphone, CheckCircle2, AlertCircle } from 'lucide-react'
 import { brandingApi } from '../api/branding'
@@ -72,6 +73,17 @@ export function BrandingPage() {
               <CheckCircle2 size={16} /> Saved Successfully
             </span>
           )}
+          {/* TEMP: Sentry test button — remove after verifying Sentry captures frontend errors */}
+          <button
+            onClick={() => {
+              const err = new Error('Sentry test error from BrandingPage')
+              Sentry.captureException(err)
+              console.error('[Sentry test] Error sent:', err.message)
+            }}
+            className="text-xs text-text-muted underline"
+          >
+            Test Sentry
+          </button>
           <button 
             onClick={handleSave} 
             disabled={updateMutation.isPending}
