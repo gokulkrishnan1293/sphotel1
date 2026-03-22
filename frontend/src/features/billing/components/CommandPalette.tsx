@@ -74,18 +74,18 @@ export function CommandPalette({ billId, billType, platform }: { billId: string;
     } else if (e.key === 'Escape') closeCommandPalette()
   }
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-end md:justify-start md:pt-16 px-0 md:px-4">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-start pt-4 md:pt-16 px-2 md:px-4">
       <div className="absolute inset-0 bg-black/60" onClick={closeCommandPalette} />
-      <div className="relative w-full md:max-w-2xl bg-bg-elevated border border-sphotel-border rounded-t-2xl md:rounded-2xl shadow-2xl overflow-hidden">
+      <div className="relative w-full md:max-w-2xl bg-bg-elevated border border-sphotel-border rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
         {variantItem ? (
           <VariantPicker item={variantItem} qty={variantQty} billType={billType} onSelect={(n, p) => add.mutate({ item: variantItem, vName: n, vPrice: p, qtyOverride: variantQty })} onBack={() => setVariantItem(null)} />
         ) : (<>
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-sphotel-border">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-sphotel-border shrink-0">
             <Search size={16} className="text-text-muted shrink-0" />
             <input ref={inputRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={onKey} placeholder="Search menu… or 412 2 453 2" className="flex-1 bg-transparent text-sm text-text-primary placeholder-text-muted outline-none" />
             {qty > 1 && <span className="text-xs bg-sphotel-accent-subtle text-sphotel-accent px-2 py-0.5 rounded-full font-medium">×{qty}</span>}
           </div>
-          <div className="max-h-[55vh] md:max-h-96 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto min-h-0">
             {filtered.length === 0 ? <p className="text-sm text-text-muted text-center py-6">No items found</p>
               : filtered.map((item, i) => (
                 <button key={item.id} onClick={() => item.variants?.length ? (setVariantItem(item), setVariantQty(qty)) : add.mutate({ item, vPrice: pickPrice(item, billType, platform) })}
@@ -97,7 +97,7 @@ export function CommandPalette({ billId, billType, platform }: { billId: string;
                 </button>
               ))}
           </div>
-          <div className="px-4 py-2 border-t border-sphotel-border flex items-center gap-4 text-xs text-text-muted">
+          <div className="shrink-0 px-4 py-2 border-t border-sphotel-border flex items-center gap-4 text-xs text-text-muted overflow-x-auto whitespace-nowrap">
             <span>↑↓ navigate</span><span>Enter add</span><span>Esc close</span>
             {isBatch(query) && <span className="text-sphotel-accent">Batch mode — Enter to add all</span>}
           </div>
