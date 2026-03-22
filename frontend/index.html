@@ -12,11 +12,28 @@
     <link rel="manifest" id="manifest-link" href="/api/v1/public/manifest.json" />
     <title>SP Hotel</title>
     <script>
-      if (window.location.hostname.includes('managehotels')) {
-        document.title = "Nive's Chain Manager";
-        var appleTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
-        if (appleTitle) appleTitle.content = "Chain Manager";
-      }
+      (function () {
+        var host = window.location.hostname;
+        var isManager = host.includes('managehotels');
+        
+        if (isManager) {
+          document.title = "Nive's Chain Manager";
+          var appleTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+          if (appleTitle) appleTitle.content = "Chain Manager";
+        } else {
+          // Dynamic Logo and Title logic for Tenants
+          var slug = host.split('.')[0];
+          // Use the proxy endpoint which handles R2 redirects
+          var logoUrl = '/api/v1/public/logo/' + slug + '.png';
+          
+          // Update icons
+          var appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+          if (appleIcon) appleIcon.href = logoUrl;
+          
+          var favicon = document.querySelector('link[rel="icon"]');
+          if (favicon) favicon.href = logoUrl;
+        }
+      })();
     </script>
     <script>
       (function () {

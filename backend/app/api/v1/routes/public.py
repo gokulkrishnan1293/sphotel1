@@ -65,7 +65,34 @@ async def get_manifest(request: Request, db: AsyncSession = Depends(get_db)):
     app_short_name = pwa.get("app_short_name") or app_name[:12]
     
     logo_url = f"/api/v1/public/logo/{tenant.slug}.png" if tenant.logo_path else "/pwa-192x192.png"
-
+    
+    # Define icons for both uses
+    icons = [
+        {
+            "src": logo_url,
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": logo_url,
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": logo_url,
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": logo_url,
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
     return JSONResponse({
         "name": app_name,
         "short_name": app_short_name,
@@ -73,16 +100,8 @@ async def get_manifest(request: Request, db: AsyncSession = Depends(get_db)):
         "display": "standalone",
         "background_color": "#09090b",
         "theme_color": "#09090b",
-        "icons": [
-            {
-                "src": logo_url,
-                "sizes": "512x512",
-                "type": "image/png",
-                "purpose": "any maskable"
-            }
-        ]
+        "icons": icons
     })
-
 from fastapi.responses import FileResponse, RedirectResponse
 
 from app.core.storage import storage
