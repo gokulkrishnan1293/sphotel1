@@ -251,13 +251,13 @@ async def upload_logo(
         if tenant is None:
             raise HTTPException(status_code=404, detail="Tenant not found")
 
-        # Upload to R2
+        # Upload to R2 using tenant slug as the identifier
         file_ext = os.path.splitext(file.filename or "")[1] or ".png"
-        key = f"logos/{str(tenant.id)}{file_ext}"
+        key = f"logos/{tenant.slug}{file_ext}"
         
-        logo_url = await storage.upload_file(file, key)
+        logo_key = await storage.upload_file(file, key)
 
-        tenant.logo_path = logo_url
+        tenant.logo_path = logo_key
         await db.commit()
         await db.refresh(tenant)
         return DataResponse(data=TenantResponse.model_validate(tenant))
