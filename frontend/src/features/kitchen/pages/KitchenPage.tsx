@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChefHat } from 'lucide-react'
 import { kotApi } from '../api/kot'
 import { KotCard } from '../components/KotCard'
+import { TenantBadge } from '@/shared/components/layout/TenantBadge'
 
 export function KitchenPage() {
   const qc = useQueryClient()
@@ -19,7 +20,10 @@ export function KitchenPage() {
   return (
     <div className="flex flex-col h-full">
       <header className="px-6 py-4 border-b border-sphotel-border bg-bg-surface shrink-0 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-text-primary">Kitchen Display</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-semibold text-text-primary">Kitchen Display</h1>
+          <TenantBadge />
+        </div>
         <span className="text-xs px-2.5 py-1 rounded-full bg-status-warning/15 text-status-warning font-medium">{kots.length} pending</span>
       </header>
 

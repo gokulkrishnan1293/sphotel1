@@ -14,6 +14,7 @@ from app.models.kot import BillItem
 from app.models.tenant import Tenant
 from app.models.user import TenantUser
 from app.schemas.print_template import PrintTemplateConfig
+from app.services.print_formatters import format_eod, format_kot, format_receipt
 
 
 async def _fetch_bill(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID) -> Bill:
@@ -51,7 +52,7 @@ async def build_receipt_payload(db: AsyncSession, tenant_id: str, bill_id: uuid.
     items = items_r.scalars().all()
     template = await _get_template(db, tenant_id)
     names = await _user_names(db, tenant_id, bill.created_by, bill.waiter_id)
-    return {
+    payload = {
         "job_type": "receipt", "bill_id": str(bill_id),
         "bill_number": bill.bill_number, "bill_type": bill.bill_type,
         "table_id": str(bill.table_id) if bill.table_id else None,
@@ -68,6 +69,9 @@ async def build_receipt_payload(db: AsyncSession, tenant_id: str, bill_id: uuid.
         "printed_at": datetime.now(tz=timezone.utc).isoformat(),
         "print_template": template,
     }
+    payload["print_text"] = format_receipt(payload)
+    payload["font_size"] = template.get("receipt_font_size", 1)
+    return payload
 
 
 async def build_kot_payload(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID,
@@ -80,7 +84,7 @@ async def build_kot_payload(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID
     )
     items = items_r.scalars().all()
     template = await _get_template(db, tenant_id)
-    return {
+    payload = {
         "job_type": "kot",
         "bill_id": str(bill_id),
         "bill_number": getattr(bill, "bill_number", None),
@@ -93,15 +97,21 @@ async def build_kot_payload(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID
         "printed_at": datetime.now(tz=timezone.utc).isoformat(),
         "print_template": template,
     }
+    payload["print_text"] = format_kot(payload)
+    payload["font_size"] = template.get("kot_font_size", 1)
+    return payload
 
 
 def build_eod_payload(summary: dict, waiter_rows: list[dict], template: dict) -> dict:
     """Build EOD report payload. This does not require DB access."""
-    return {
+    payload = {
         "job_type": "eod_report",
         "printed_at": datetime.now(tz=timezone.utc).isoformat(),
         "print_template": template,
         "summary": summary,
         "waiter_rows": waiter_rows,
     }
+    payload["print_text"] = format_eod(payload)
+    payload["font_size"] = template.get("eod_font_size", 1)
+    return payload
 

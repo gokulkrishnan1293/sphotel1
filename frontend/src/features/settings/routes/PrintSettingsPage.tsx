@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Save } from 'lucide-react'
+import { TenantBadge } from '@/shared/components/layout/TenantBadge'
 import { PrintAgentCard } from '../components/PrintAgentCard'
 import { PrintTemplateForm } from '../components/PrintTemplateForm'
 import { printApi, PrintTemplateConfig } from '../api/printSettings'
@@ -27,7 +28,10 @@ export function PrintSettingsPage() {
   return (
     <div className="flex flex-col h-full">
       <header className="px-6 py-4 border-b border-sphotel-border bg-bg-surface shrink-0 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-text-primary">Print Settings</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-semibold text-text-primary">Print Settings</h1>
+          <TenantBadge />
+        </div>
         <button onClick={() => updateMutation.mutate(formData)} disabled={updateMutation.isPending}
           className="flex items-center gap-2 bg-sphotel-accent text-bg-base px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50">
           <Save size={15} />{updateMutation.isPending ? 'Saving...' : 'Save Changes'}

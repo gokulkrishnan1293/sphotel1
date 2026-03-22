@@ -19,6 +19,7 @@ class MenuVariant(BaseModel):
     price_paise: int
     parcel_price_paise: Optional[int] = None
     vendor_prices: list[VendorPrice] = []
+    effective_price_paise: Optional[int] = None
 
     model_config = {"from_attributes": True}
 
@@ -65,6 +66,7 @@ class MenuItemResponse(BaseModel):
     parcel_price_paise: Optional[int] = None
     variants: list[MenuVariant] = []
     vendor_prices: list[VendorPrice] = []
+    effective_price_paise: Optional[int] = None
 
     model_config = {"from_attributes": True}
 

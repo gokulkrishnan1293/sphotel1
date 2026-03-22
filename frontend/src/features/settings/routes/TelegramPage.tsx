@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../../../lib/api'
+import { TenantBadge } from '@/shared/components/layout/TenantBadge'
 
 const INPUT = 'bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-sphotel-accent w-full'
 
@@ -25,8 +26,9 @@ export function TelegramPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="px-6 py-4 border-b border-sphotel-border bg-bg-surface shrink-0">
+      <header className="px-6 py-4 border-b border-sphotel-border bg-bg-surface shrink-0 flex items-center gap-3">
         <h1 className="text-lg font-semibold text-text-primary">Telegram Integration</h1>
+        <TenantBadge />
       </header>
 
       <div className="flex-1 overflow-auto p-6">

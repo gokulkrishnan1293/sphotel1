@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Save, Upload, Smartphone, CheckCircle2, AlertCircle } from 'lucide-react'
 import { brandingApi } from '../api/branding'
+import { TenantBadge } from '@/shared/components/layout/TenantBadge'
 
 export function BrandingPage() {
   const qc = useQueryClient()
@@ -59,7 +60,10 @@ export function BrandingPage() {
     <div className="flex flex-col h-full bg-bg-base animate-in fade-in duration-500">
       <header className="px-6 py-4 border-b border-sphotel-border bg-bg-surface/50 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-text-primary tracking-tight">App Branding</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold text-text-primary tracking-tight">App Branding</h1>
+            <TenantBadge />
+          </div>
           <p className="text-xs text-text-muted mt-0.5">Customize how your app looks on customer and staff devices.</p>
         </div>
         <div className="flex items-center gap-3">

@@ -26,6 +26,11 @@ class PrintTemplateConfig(BaseModel):
     eod_show_items: bool = True
     eod_show_waiters: bool = True
     eod_font_size: int = Field(default=1, ge=1, le=8)
+    bold_header: bool = False
+    bold_total: bool = False
+    bold_kot_number: bool = False
+    bold_kot_items: bool = False
+    bold_eod_headers: bool = False
 
 
 class PrintTemplateUpdate(BaseModel):
@@ -50,3 +55,8 @@ class PrintTemplateUpdate(BaseModel):
     eod_show_items: bool | None = None
     eod_show_waiters: bool | None = None
     eod_font_size: int | None = Field(default=None, ge=1, le=8)
+    bold_header: bool | None = None
+    bold_total: bool | None = None
+    bold_kot_number: bool | None = None
+    bold_kot_items: bool | None = None
+    bold_eod_headers: bool | None = None

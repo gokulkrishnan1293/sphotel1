@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.menu import MenuItem, MenuItemVariant, MenuItemVendorPrice
-from app.schemas.menu import MenuItemCreate, MenuItemUpdate
+from app.schemas.menu import MenuItemCreate, MenuItemResponse, MenuItemUpdate
 
 
 async def _get(db: AsyncSession, tenant_id: str, item_id: uuid.UUID) -> MenuItem:
@@ -89,3 +89,34 @@ async def delete_menu_item(db: AsyncSession, tenant_id: str, item_id: uuid.UUID)
     item = await _get(db, tenant_id, item_id)
     await db.delete(item)
     await db.commit()
+
+
+def apply_vendor_pricing(item: MenuItem, vendor: str | None) -> MenuItemResponse:
+    """Build a MenuItemResponse with effective_price_paise resolved for the given vendor context.
+
+    vendor=None      → no override, effective_price_paise stays None (use price_paise)
+    vendor="parcel"  → parcel_price_paise if set, otherwise price_paise
+    vendor=<slug>    → MenuItemVendorPrice for that slug if set, otherwise price_paise
+    """
+    resp = MenuItemResponse.model_validate(item)
+    if vendor is None:
+        return resp
+
+    if vendor == "parcel":
+        resp.effective_price_paise = (
+            item.parcel_price_paise if item.parcel_price_paise is not None else item.price_paise
+        )
+        for variant_model, variant_resp in zip(item.variants, resp.variants):
+            variant_resp.effective_price_paise = (
+                variant_model.parcel_price_paise
+                if variant_model.parcel_price_paise is not None
+                else variant_model.price_paise
+            )
+    else:
+        item_vp = {vp.vendor_slug: vp.price_paise for vp in item.vendor_prices}
+        resp.effective_price_paise = item_vp.get(vendor, item.price_paise)
+        for variant_model, variant_resp in zip(item.variants, resp.variants):
+            var_vp = {vp.vendor_slug: vp.price_paise for vp in variant_model.vendor_prices}
+            variant_resp.effective_price_paise = var_vp.get(vendor, variant_model.price_paise)
+
+    return resp

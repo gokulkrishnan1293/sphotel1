@@ -16,7 +16,6 @@ export function ActiveBillsPanel({ onSelect }: { onSelect?: () => void }) {
   const { activeBillId, setActiveBill } = useBillingStore()
   const [showNew, setShowNew] = useState(false)
   const [showPast, setShowPast] = useState(false)
-  const [itemTip, setItemTip] = useState<{ top: number; left: number; items: string[] } | null>(null)
   const { data: bills = [], isLoading } = useQuery({ queryKey: ['bills', 'open'], queryFn: billsApi.listOpen, refetchInterval: 15_000 })
   const { data: recentBills = [] } = useQuery({ queryKey: ['bills', 'recent'], queryFn: billsApi.listRecent, enabled: showPast, refetchInterval: 30_000 })
   const { data: sections = [] } = useQuery({ queryKey: ['sections'], queryFn: tablesApi.listSections })
@@ -55,7 +54,7 @@ export function ActiveBillsPanel({ onSelect }: { onSelect?: () => void }) {
               </div>
             </div>
             {bill.bill_type === 'table' && bill.waiter_name && <p className="text-xs text-text-muted truncate">Waiter: {bill.waiter_name}</p>}
-            {itemText && <p className="text-xs text-text-muted truncate mt-0.5" onMouseEnter={(e) => { const r = e.currentTarget.getBoundingClientRect(); setItemTip({ top: r.top, left: r.right + 8, items: bill.item_names }) }} onMouseLeave={() => setItemTip(null)}>{itemText}</p>}
+            {itemText && <p className="text-xs text-text-muted truncate mt-0.5">{itemText}</p>}
           </div>
         </div>
       </button>
@@ -88,7 +87,6 @@ export function ActiveBillsPanel({ onSelect }: { onSelect?: () => void }) {
         )}
       </div>
       {showNew && <QuickBillBar onOpen={(data) => openBill.mutate(data)} onClose={() => setShowNew(false)} isLoading={openBill.isPending} />}
-      {itemTip && <div className="fixed z-[200] w-52 bg-bg-elevated border border-sphotel-border rounded-lg shadow-xl p-2 pointer-events-none" style={{ top: itemTip.top, left: itemTip.left }}>{itemTip.items.map((n, i) => <p key={i} className="text-xs text-text-primary py-0.5 px-1">{n}</p>)}</div>}
     </aside>
   )
 }

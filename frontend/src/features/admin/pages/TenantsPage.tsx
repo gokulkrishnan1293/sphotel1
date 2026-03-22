@@ -5,6 +5,7 @@ import { tenantsApi, type TenantSummary } from '../api/tenants'
 import { CreateTenantPanel } from '../components/CreateTenantPanel'
 import { EditTenantPanel } from '../components/EditTenantPanel'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table'
+import { TenantBadge } from '@/shared/components/layout/TenantBadge'
 
 export function TenantsPage() {
   const [panel, setPanel] = useState<'create' | TenantSummary | null>(null)
@@ -15,7 +16,10 @@ export function TenantsPage() {
   return (
     <div className="flex flex-col h-full">
       <header className="px-6 py-4 border-b border-sphotel-border bg-bg-surface shrink-0">
-        <h1 className="text-lg font-semibold text-text-primary">Tenants</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-semibold text-text-primary">Tenants</h1>
+          <TenantBadge />
+        </div>
         <div className="flex items-center gap-3 mt-3">
           <div className="relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
