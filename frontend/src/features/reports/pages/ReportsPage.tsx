@@ -7,6 +7,7 @@ import { TopItemsCard } from '../components/TopItemsCard'
 import { PaymentCard } from '../components/PaymentCard'
 import { WaiterCard } from '../components/WaiterCard'
 import { CustomReportsSection } from '../components/CustomReportsSection'
+import { TenantBadge } from '@/shared/components/layout/TenantBadge'
 
 function today() {
   const d = new Date()
@@ -54,7 +55,10 @@ export function ReportsPage() {
   return (
     <div className="flex flex-col h-full overflow-auto bg-bg-base">
       <header className="sticky top-0 z-10 bg-bg-surface border-b border-sphotel-border px-6 py-4 shrink-0">
-        <h1 className="text-lg font-semibold text-text-primary">Reports</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-semibold text-text-primary">Reports</h1>
+          <TenantBadge />
+        </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-2">
           <span className="text-xs text-text-muted">{fmtDate(date)}</span>
           <div className="flex flex-wrap items-center gap-3">

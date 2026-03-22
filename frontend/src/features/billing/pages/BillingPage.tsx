@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronLeft, Printer } from 'lucide-react'
+import { useTenantName } from '@/shared/hooks/useTenantName'
 import { useBillingStore } from '../stores/billingStore'
 import { useAutoSave } from '../hooks/useAutoSave'
 import { ActiveBillsPanel } from '../components/ActiveBillsPanel'
@@ -23,12 +24,45 @@ export function BillingPage() {
   const [mobileView, setMobileView] = useState<'panel' | 'canvas'>('panel')
   useEffect(() => { if (activeBillId) setMobileView('canvas') }, [activeBillId])
 
+  const tenantName = useTenantName()
+
+  const [fontSizeIdx, setFontSizeIdx] = useState<number>(() => {
+    const saved = localStorage.getItem('billFontSize')
+    return saved ? Math.max(0, Math.min(8, parseInt(saved, 10))) : 2
+  })
+  const changeFontSize = (delta: number) => {
+    setFontSizeIdx((prev) => {
+      const next = Math.max(0, Math.min(8, prev + delta))
+      localStorage.setItem('billFontSize', String(next))
+      return next
+    })
+  }
+
   return (
     <>
     <div className="flex flex-col h-full">
       <header className="px-4 md:px-6 py-3 md:py-4 border-b border-sphotel-border bg-bg-surface shrink-0 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-text-primary">Billing</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-semibold text-text-primary">Billing</h1>
+          {tenantName && (
+            <div className="hidden md:flex items-center gap-2">
+              <span className="w-px h-4 bg-sphotel-border" />
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sphotel-accent opacity-60" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-sphotel-accent" />
+              </span>
+              <span className="text-sm font-semibold text-sphotel-accent tracking-wide">{tenantName}</span>
+            </div>
+          )}
+        </div>
         <div className="flex items-center gap-2 text-xs text-text-muted">
+          <div className="hidden md:flex items-center gap-0.5 mr-1">
+            <button onClick={() => changeFontSize(-1)} disabled={fontSizeIdx === 0} title="Smaller text"
+              className="w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-text-primary hover:bg-bg-base disabled:opacity-30 font-bold" style={{ fontSize: '10px' }}>A−</button>
+            <button onClick={() => changeFontSize(1)} disabled={fontSizeIdx === 8} title="Larger text"
+              className="w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-text-primary hover:bg-bg-base disabled:opacity-30 font-bold" style={{ fontSize: '13px' }}>A+</button>
+          </div>
+          <span className="hidden md:inline w-px h-3 bg-sphotel-border" />
           <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-status-success' : 'bg-status-error'}`} />
           <span className={isOnline ? '' : 'text-status-error'}>{isOnline ? 'Online' : 'Offline'}</span>
           <span className="hidden sm:inline w-px h-3 bg-sphotel-border mx-1" />
@@ -48,7 +82,7 @@ export function BillingPage() {
             className="md:hidden shrink-0 flex items-center gap-1 px-4 py-2.5 text-sm text-text-secondary border-b border-sphotel-border bg-bg-surface">
             <ChevronLeft size={16} /> Back to Bills
           </button>
-          <BillCanvas />
+          <BillCanvas fontSizeIdx={fontSizeIdx} />
         </div>
       </div>
     </div>

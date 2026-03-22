@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { shortcutsApi } from '../api/shortcuts'
 import { useShortcutStore, DEFAULT_SHORTCUTS } from '@/lib/shortcutStore'
 import type { ShortcutMap } from '@/lib/shortcutStore'
+import { TenantBadge } from '@/shared/components/layout/TenantBadge'
 
 const LABELS: Record<keyof ShortcutMap, string> = {
   open_search: 'Open item search',
@@ -33,7 +34,10 @@ export function ShortcutsPage() {
   return (
     <div className="max-w-lg mx-auto px-4 md:px-8 py-6 space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-text-primary">Keyboard Shortcuts</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl font-semibold text-text-primary">Keyboard Shortcuts</h1>
+          <TenantBadge />
+        </div>
         <p className="text-sm text-text-muted mt-1">
           Use a letter like <code className="font-mono text-xs">g</code>, a modifier combo like{' '}
           <code className="font-mono text-xs">ctrl+k</code>, or a function key like{' '}

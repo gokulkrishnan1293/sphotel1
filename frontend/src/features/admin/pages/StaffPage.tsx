@@ -6,6 +6,7 @@ import { StaffForm } from '../components/StaffForm'
 import { StaffRow } from '../components/StaffRow'
 import { CreateAdminPanel } from '../components/CreateAdminPanel'
 import { useAuthStore } from '@/features/auth/stores/authStore'
+import { TenantBadge } from '@/shared/components/layout/TenantBadge'
 import type { AdminCreatedResponse, CreateAdminRequest, CreateStaffRequest, StaffResponse } from '../types/staff'
 
 export function StaffPage() {
@@ -42,7 +43,10 @@ export function StaffPage() {
   return (
     <div className="flex flex-col h-full">
       <header className="px-6 py-4 border-b border-sphotel-border bg-bg-surface shrink-0 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-text-primary">Staff</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-semibold text-text-primary">Staff</h1>
+          <TenantBadge />
+        </div>
         <div className="flex items-center gap-2">
           {isSuperAdmin && (
             <button onClick={() => { setAdminResult(null); setShowAdminForm(true) }}
