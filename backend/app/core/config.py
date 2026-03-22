@@ -14,6 +14,13 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list[str] = ["http://localhost:5173"]
     SENTRY_DSN: str = ""
     PRINT_AGENT_KEY: str = ""     # shared secret for print agent auth
+    
+    # Cloudflare R2 Storage (S3 compatible)
+    R2_UPLOAD_FILES_ACCESS_KEY_ID: str = ""
+    R2_UPLOAD_FILES_SECRET_ACCESS_KEY: str = ""
+    R2_UPLOAD_FILES_BUCKET_NAME: str = ""
+    R2_UPLOAD_FILES_ENDPOINT_URL: str = ""
+    R2_UPLOAD_FILES_PUBLIC_URL: str = ""  # Base URL for public access to uploaded files
 
 
 settings = Settings()
