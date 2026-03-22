@@ -81,7 +81,8 @@ def format_receipt(payload: dict) -> str:
         ("phone", "PH : {}"), ("gst_number", "GST NO : {}"), ("fssai_number", "FSSAI : {}"),
     ]:
         if tmpl.get(key):
-            lines.append(_bold(_center(fmt.format(tmpl[key]), W), bold_header))
+            apply_bold = bold_header and key == "restaurant_name"
+            lines.append(_bold(_center(fmt.format(tmpl[key]), W), apply_bold))
 
     if tmpl.get("show_name_field", True):
         lines.append(f"Name: {payload.get('customer_name') or ''}")
