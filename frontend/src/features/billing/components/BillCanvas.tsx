@@ -74,7 +74,7 @@ export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
   return (
     <div className="flex-1 flex flex-col min-h-0">
       <BillHeader bill={bill} />
-      <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-0.5">
+      <div className="flex-1 overflow-y-auto px-3 py-3 md:px-6 md:py-4 flex flex-col gap-0.5">
         {pending.length > 0 && sent.length > 0 && <p className="text-xs font-medium text-amber-400 uppercase tracking-wide mb-1">New (not sent)</p>}
         {pending.map((item) => <ItemRow key={item.id} item={item} disabled={isClosed} onRemove={() => removeItem.mutate(item.id)} onQtyChange={(q) => q < 1 ? removeItem.mutate(item.id) : updateQty.mutate({ itemId: item.id, quantity: q })} onPriceOverride={(p) => updatePrice.mutate({ itemId: item.id, override_price_paise: p })} fontSizeIdx={fontSizeIdx} />)}
         {sent.length > 0 && <p className={`text-xs font-medium uppercase tracking-wide mb-1 mt-2 ${pending.length > 0 ? 'text-status-success' : 'text-text-muted'}`}>{pending.length > 0 ? 'Sent to kitchen' : 'Items'}</p>}
@@ -83,17 +83,34 @@ export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
       </div>
 
       {!isClosed && (
-        <div className="px-6 py-4 border-t border-sphotel-border flex flex-col gap-3">
+        <div className="px-4 py-3 md:px-6 md:py-4 border-t border-sphotel-border flex flex-col gap-3">
           <div className="flex justify-between text-sm"><span className="text-text-secondary">Subtotal</span><span className="font-medium text-text-primary">{fmt(bill.subtotal_paise)}</span></div>
           <div className="flex gap-2">
-            <button onClick={openCommandPalette} className="flex-1 py-2.5 bg-bg-elevated border border-sphotel-border rounded-xl text-sm text-text-secondary hover:text-text-primary flex items-center justify-center gap-1.5"><Plus size={14} />Add<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">Space</kbd></button>
-            {pending.length > 0 && bill.bill_type === 'table' && <button onClick={() => fireKot.mutate()} disabled={fireKot.isPending} className="flex-1 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-1.5"><Flame size={14} />Fire KOT<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">⌘K</kbd></button>}
-            <button onClick={() => setSettleOpen(true)} disabled={!hasItems || closeBill.isPending} className="flex-1 py-2.5 bg-sphotel-accent text-sphotel-accent-fg rounded-xl text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-1.5"><CreditCard size={14} />Generate Bill<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">G</kbd><span className="text-xs opacity-50">·</span><kbd className="text-xs opacity-50 font-mono">↵</kbd></button>
+            <button onClick={openCommandPalette} className="flex-1 py-3 md:py-2.5 bg-bg-elevated border border-sphotel-border rounded-xl text-sm text-text-secondary hover:text-text-primary flex items-center justify-center gap-1.5"><Plus size={14} />Add<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">Space</kbd></button>
+            {pending.length > 0 && bill.bill_type === 'table' && <button onClick={() => fireKot.mutate()} disabled={fireKot.isPending} className="flex-1 py-3 md:py-2.5 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-1.5"><Flame size={14} />Fire KOT<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">⌘K</kbd></button>}
+            <button onClick={() => setSettleOpen(true)} disabled={!hasItems || closeBill.isPending} className="flex-1 py-3 md:py-2.5 bg-sphotel-accent text-sphotel-accent-fg rounded-xl text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-1.5"><CreditCard size={14} />Generate Bill<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">G</kbd><span className="hidden md:inline text-xs opacity-50">·</span><kbd className="hidden md:inline text-xs opacity-50 font-mono">↵</kbd></button>
           </div>
           {isBiller && <button onClick={() => { if (confirm('Void this bill?')) voidBill.mutate() }} className="flex items-center justify-center gap-1.5 text-xs text-status-error hover:opacity-80 py-1"><Ban size={12} />Void bill</button>}
         </div>
       )}
-      {isClosed && <div className="px-6 py-4 border-t border-sphotel-border flex items-center justify-between">{bill.status === 'billed' ? <span className="text-sm font-medium text-sphotel-accent flex items-center gap-1.5">Settled · {fmt(bill.total_paise)} via<select value={bill.payment_method ?? 'cash'} onChange={(e) => updateMethod.mutate(e.target.value as PaymentMethod)} className="bg-transparent text-sphotel-accent font-medium text-sm border-0 outline-none cursor-pointer">{(['cash','card','upi','online'] as PaymentMethod[]).map(m => <option key={m} value={m} className="bg-bg-surface text-text-primary">{m}</option>)}</select></span> : <p className="text-sm font-medium text-status-error">This bill has been voided</p>}<div className="flex items-center gap-3">{isBiller && bill.status === 'billed' && <button onClick={() => { if (confirm('Void this bill?')) voidBill.mutate() }} className="flex items-center gap-1.5 text-xs text-status-error hover:opacity-80 py-1"><Ban size={12} />Void bill</button>}{bill.status === 'billed' && <button onClick={() => printBill.mutate()} disabled={printBill.isPending} className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary disabled:opacity-50"><Printer size={13} />{printQueued ? 'Printing…' : printBill.isPending ? 'Queued…' : 'Reprint'}</button>}</div></div>}
+      {isClosed && (
+        <div className="px-4 py-3 md:px-6 md:py-4 border-t border-sphotel-border flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          {bill.status === 'billed' ? (
+            <span className="text-sm font-medium text-sphotel-accent flex items-center gap-1.5">
+              Settled · {fmt(bill.total_paise)} via
+              <select value={bill.payment_method ?? 'cash'} onChange={(e) => updateMethod.mutate(e.target.value as PaymentMethod)} className="bg-transparent text-sphotel-accent font-medium text-sm border-0 outline-none cursor-pointer">
+                {(['cash','card','upi','online'] as PaymentMethod[]).map(m => <option key={m} value={m} className="bg-bg-surface text-text-primary">{m}</option>)}
+              </select>
+            </span>
+          ) : (
+            <p className="text-sm font-medium text-status-error">This bill has been voided</p>
+          )}
+          <div className="flex items-center gap-3">
+            {isBiller && bill.status === 'billed' && <button onClick={() => { if (confirm('Void this bill?')) voidBill.mutate() }} className="flex items-center gap-1.5 text-xs text-status-error hover:opacity-80 py-1"><Ban size={12} />Void bill</button>}
+            {bill.status === 'billed' && <button onClick={() => printBill.mutate()} disabled={printBill.isPending} className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary disabled:opacity-50"><Printer size={13} />{printQueued ? 'Printing…' : printBill.isPending ? 'Queued…' : 'Reprint'}</button>}
+          </div>
+        </div>
+      )}
 
       {commandPaletteOpen && <CommandPalette billId={activeBillId} billType={bill.bill_type} platform={bill.platform} />}
       {settleOpen && <SettleDialog bill={bill} onClose={() => setSettleOpen(false)} onSettle={(m, d) => closeBill.mutate({ method: m, discount: d })} isLoading={closeBill.isPending} />}
