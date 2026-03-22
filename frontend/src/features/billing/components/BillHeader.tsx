@@ -27,7 +27,7 @@ export function BillHeader({ bill }: { bill: BillResponse }) {
   const timeStr = bill.paid_at ? `${fmtDate(bill.paid_at)} ${fmtTime(bill.paid_at)}` : `${fmtDate(bill.created_at)} ${fmtTime(bill.created_at)}`
 
   return (
-    <div className="px-6 py-4 border-b border-sphotel-border flex items-center gap-3">
+    <div className="px-4 py-3 md:px-6 md:py-4 border-b border-sphotel-border flex items-center gap-3">
       <Icon size={18} className="text-text-muted shrink-0" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">

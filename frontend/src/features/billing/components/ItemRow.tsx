@@ -41,51 +41,59 @@ export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride
   }
 
   return (
-    <div className={`flex items-center gap-3 py-2 px-3 rounded-xl group ${readOnly ? 'opacity-70' : 'hover:bg-bg-surface'}`}>
-      <span className={`w-2 h-2 rounded-full shrink-0 ${FOOD_DOT[item.food_type]}`} />
+    <div className={`flex items-start gap-2.5 py-2.5 px-3 rounded-xl ${readOnly ? 'opacity-70' : 'hover:bg-bg-surface'}`}>
+      <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${FOOD_DOT[item.food_type]}`} />
       <div className="flex-1 min-w-0">
-        <p className="text-text-primary truncate" style={textStyle}>{item.name}</p>
-        {item.notes && <p className="text-xs text-text-muted">{item.notes}</p>}
-      </div>
-      <span className="text-xs text-text-muted shrink-0">
-        ₹{(item.price_paise / 100).toFixed(0)}
-        {item.override_price_paise != null && <span className="text-sphotel-accent ml-1">→{(item.override_price_paise / 100).toFixed(0)}</span>}
-      </span>
-
-      {!readOnly && !disabled ? (
-        <div className="flex items-center gap-1">
-          <button onClick={() => onQtyChange(item.quantity - 1)}
-            className="w-6 h-6 flex items-center justify-center rounded-md bg-bg-elevated hover:bg-bg-base text-text-secondary">
-            <Minus size={10} />
-          </button>
-          <span className="text-sm font-medium text-text-primary w-5 text-center">{item.quantity}</span>
-          <button onClick={() => onQtyChange(item.quantity + 1)}
-            className="w-6 h-6 flex items-center justify-center rounded-md bg-bg-elevated hover:bg-bg-base text-text-secondary">
-            <Plus size={10} />
-          </button>
+        {/* Row 1: name + line total */}
+        <div className="flex items-start gap-2">
+          <p className="flex-1 min-w-0 text-text-primary leading-snug" style={textStyle}>{item.name}</p>
+          {editing ? (
+            <input
+              autoFocus
+              className="w-20 shrink-0 text-right text-sm font-medium bg-bg-elevated border border-sphotel-accent rounded px-1 py-0.5 text-text-primary outline-none"
+              value={draftRupees}
+              onChange={(e) => setDraftRupees(e.target.value)}
+              onBlur={commitEdit}
+              onKeyDown={(e) => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') setEditing(false) }}
+              inputMode="decimal"
+            />
+          ) : (
+            <span
+              onClick={startEdit}
+              className={`font-medium text-text-primary shrink-0 ${!readOnly && !disabled && onPriceOverride ? 'cursor-pointer hover:text-sphotel-accent' : ''}`}
+              style={textStyle}
+            >
+              ₹{(linePaise / 100).toFixed(0)}
+            </span>
+          )}
         </div>
-      ) : (
-        <span className="font-medium text-text-primary w-5 text-center" style={textStyle}>×{item.quantity}</span>
-      )}
-
-      {editing ? (
-        <input autoFocus className="w-16 text-right text-sm font-medium bg-bg-elevated border border-sphotel-accent rounded px-1 py-0.5 text-text-primary outline-none"
-          value={draftRupees} onChange={(e) => setDraftRupees(e.target.value)}
-          onBlur={commitEdit} onKeyDown={(e) => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') setEditing(false) }}
-          inputMode="decimal" />
-      ) : (
-        <span onClick={startEdit}
-          className={`font-medium text-text-primary w-16 text-right shrink-0 ${!readOnly && !disabled && onPriceOverride ? 'cursor-pointer hover:text-sphotel-accent' : ''}`}
-          style={textStyle}>
-          ₹{(linePaise / 100).toFixed(0)}
-        </span>
-      )}
-
-      {!readOnly && !disabled && (
-        <button onClick={onRemove} className="p-1 text-text-muted hover:text-status-error rounded">
-          <Trash2 size={13} />
-        </button>
-      )}
+        {/* Row 2: unit price + qty controls */}
+        <div className="flex items-center justify-between mt-1 gap-2">
+          <span className="text-xs text-text-muted">
+            ₹{(item.price_paise / 100).toFixed(0)}
+            {item.override_price_paise != null && <span className="text-sphotel-accent ml-1">→{(item.override_price_paise / 100).toFixed(0)}</span>}
+          </span>
+          {!readOnly && !disabled ? (
+            <div className="flex items-center gap-1">
+              <button onClick={() => onQtyChange(item.quantity - 1)}
+                className="w-7 h-7 flex items-center justify-center rounded-md bg-bg-elevated hover:bg-bg-base text-text-secondary">
+                <Minus size={11} />
+              </button>
+              <span className="text-sm font-medium text-text-primary w-5 text-center">{item.quantity}</span>
+              <button onClick={() => onQtyChange(item.quantity + 1)}
+                className="w-7 h-7 flex items-center justify-center rounded-md bg-bg-elevated hover:bg-bg-base text-text-secondary">
+                <Plus size={11} />
+              </button>
+              <button onClick={onRemove} className="p-1.5 ml-1 text-text-muted hover:text-status-error rounded-md">
+                <Trash2 size={13} />
+              </button>
+            </div>
+          ) : (
+            <span className="text-sm text-text-muted" style={textStyle}>×{item.quantity}</span>
+          )}
+        </div>
+        {item.notes && <p className="text-xs text-text-muted mt-0.5">{item.notes}</p>}
+      </div>
     </div>
   )
 }
