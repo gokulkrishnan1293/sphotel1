@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, Query, UploadFile, File
 from fastapi.responses import PlainTextResponse
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,9 +20,13 @@ _BILLER_UP = require_role(UserRole.BILLER, UserRole.MANAGER, UserRole.ADMIN, Use
 
 
 @router.get("/items", response_model=DataResponse[list[MenuItemResponse]])
-async def list_items(cu: CurrentUser = Depends(_BILLER_UP), db: AsyncSession = Depends(get_db)) -> DataResponse[list[MenuItemResponse]]:
+async def list_items(
+    vendor: str | None = Query(default=None, description="'parcel' or a vendor slug (e.g. 'swiggy') to apply pricing context"),
+    cu: CurrentUser = Depends(_BILLER_UP),
+    db: AsyncSession = Depends(get_db),
+) -> DataResponse[list[MenuItemResponse]]:
     items = await menu_service.list_menu_items(db, cu["tenant_id"])
-    return DataResponse(data=[MenuItemResponse.model_validate(i) for i in items])
+    return DataResponse(data=[menu_service.apply_vendor_pricing(i, vendor) for i in items])
 
 
 @router.post("/items", response_model=DataResponse[MenuItemResponse], status_code=201)

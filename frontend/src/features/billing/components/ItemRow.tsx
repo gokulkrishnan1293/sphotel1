@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import type { BillItemResponse } from '../types/bills'
 
+const FONT_SIZES = [12, 13, 14, 15, 16, 18, 20, 22, 24]
+
 const FOOD_DOT: Record<string, string> = {
   veg: 'bg-emerald-500',
   egg: 'bg-yellow-400',
@@ -15,9 +17,12 @@ interface Props {
   onQtyChange: (qty: number) => void
   onPriceOverride?: (paise: number) => void
   readOnly?: boolean
+  fontSizeIdx?: number
 }
 
-export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride, readOnly }: Props) {
+export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride, readOnly, fontSizeIdx = 2 }: Props) {
+  const fs = FONT_SIZES[fontSizeIdx] ?? 16
+  const textStyle = { fontSize: fs }
   const [editing, setEditing] = useState(false)
   const [draftRupees, setDraftRupees] = useState('')
   const effectivePaise = item.override_price_paise ?? item.price_paise
@@ -39,7 +44,7 @@ export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride
     <div className={`flex items-center gap-3 py-2 px-3 rounded-xl group ${readOnly ? 'opacity-70' : 'hover:bg-bg-surface'}`}>
       <span className={`w-2 h-2 rounded-full shrink-0 ${FOOD_DOT[item.food_type]}`} />
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-text-primary truncate">{item.name}</p>
+        <p className="text-text-primary truncate" style={textStyle}>{item.name}</p>
         {item.notes && <p className="text-xs text-text-muted">{item.notes}</p>}
       </div>
       <span className="text-xs text-text-muted shrink-0">
@@ -60,7 +65,7 @@ export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride
           </button>
         </div>
       ) : (
-        <span className="text-sm font-medium text-text-primary w-5 text-center">×{item.quantity}</span>
+        <span className="font-medium text-text-primary w-5 text-center" style={textStyle}>×{item.quantity}</span>
       )}
 
       {editing ? (
@@ -70,13 +75,14 @@ export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride
           inputMode="decimal" />
       ) : (
         <span onClick={startEdit}
-          className={`text-sm font-medium text-text-primary w-16 text-right shrink-0 ${!readOnly && !disabled && onPriceOverride ? 'cursor-pointer hover:text-sphotel-accent' : ''}`}>
+          className={`font-medium text-text-primary w-16 text-right shrink-0 ${!readOnly && !disabled && onPriceOverride ? 'cursor-pointer hover:text-sphotel-accent' : ''}`}
+          style={textStyle}>
           ₹{(linePaise / 100).toFixed(0)}
         </span>
       )}
 
       {!readOnly && !disabled && (
-        <button onClick={onRemove} className="md:opacity-0 md:group-hover:opacity-100 p-1 text-text-muted hover:text-status-error rounded">
+        <button onClick={onRemove} className="p-1 text-text-muted hover:text-status-error rounded">
           <Trash2 size={13} />
         </button>
       )}

@@ -14,7 +14,7 @@ import { useFeatureFlagStore } from '@/lib/featureFlagStore'
 import { toast } from '@/lib/toast'
 const fmt = (p: number) => `₹${(p / 100).toFixed(2)}`; const defaultMethod = (billType: string): PaymentMethod => billType === 'online' ? 'online' : 'cash'
 
-export function BillCanvas() {
+export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
   const qc = useQueryClient()
   const { activeBillId, commandPaletteOpen, openCommandPalette, closeCommandPalette } = useBillingStore()
   const role = useAuthStore((s) => s.currentUser?.role ?? '')
@@ -76,9 +76,9 @@ export function BillCanvas() {
       <BillHeader bill={bill} />
       <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-0.5">
         {pending.length > 0 && sent.length > 0 && <p className="text-xs font-medium text-amber-400 uppercase tracking-wide mb-1">New (not sent)</p>}
-        {pending.map((item) => <ItemRow key={item.id} item={item} disabled={isClosed} onRemove={() => removeItem.mutate(item.id)} onQtyChange={(q) => q < 1 ? removeItem.mutate(item.id) : updateQty.mutate({ itemId: item.id, quantity: q })} onPriceOverride={(p) => updatePrice.mutate({ itemId: item.id, override_price_paise: p })} />)}
+        {pending.map((item) => <ItemRow key={item.id} item={item} disabled={isClosed} onRemove={() => removeItem.mutate(item.id)} onQtyChange={(q) => q < 1 ? removeItem.mutate(item.id) : updateQty.mutate({ itemId: item.id, quantity: q })} onPriceOverride={(p) => updatePrice.mutate({ itemId: item.id, override_price_paise: p })} fontSizeIdx={fontSizeIdx} />)}
         {sent.length > 0 && <p className={`text-xs font-medium uppercase tracking-wide mb-1 mt-2 ${pending.length > 0 ? 'text-status-success' : 'text-text-muted'}`}>{pending.length > 0 ? 'Sent to kitchen' : 'Items'}</p>}
-        {sent.map((item) => <ItemRow key={item.id} item={item} disabled={isClosed} onRemove={() => {}} onQtyChange={() => {}} readOnly />)}
+        {sent.map((item) => <ItemRow key={item.id} item={item} disabled={isClosed} onRemove={() => {}} onQtyChange={() => {}} readOnly fontSizeIdx={fontSizeIdx} />)}
         {bill.items.length === 0 && <div className="flex flex-col items-center justify-center py-16"><p className="text-text-muted text-sm">Bill is empty</p><button onClick={openCommandPalette} className="mt-2 text-sm text-sphotel-accent">Press Space to add items</button></div>}
       </div>
 

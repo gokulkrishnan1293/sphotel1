@@ -46,7 +46,16 @@ export function CommandPalette({ billId, billType, platform }: { billId: string;
   const filtered = useMemo(() => {
     const avail = items.filter((i) => i.is_available); if (!searchQuery.trim()) return avail.slice(0, 20)
     const q = searchQuery.toLowerCase()
-    return avail.filter((i) => i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q) || String(i.short_code ?? '').includes(q))
+    const matches = avail.filter((i) => i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q) || String(i.short_code ?? '').includes(q))
+    const score = (i: MenuItemResponse) => {
+      const code = String(i.short_code ?? ''); const name = i.name.toLowerCase()
+      if (code === q) return 0
+      if (code.startsWith(q)) return 1
+      if (code.includes(q)) return 2
+      if (name.startsWith(q)) return 3
+      return 4
+    }
+    return matches.sort((a, b) => score(a) - score(b))
   }, [items, searchQuery])
   const add = useMutation({
     mutationFn: ({ item, vName, vPrice, qtyOverride }: { item: MenuItemResponse; vName?: string; vPrice?: number; qtyOverride?: number }) =>
@@ -55,7 +64,7 @@ export function CommandPalette({ billId, billType, platform }: { billId: string;
   })
   useEffect(() => { inputRef.current?.focus() }, []) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { setIdx(0) }, [filtered]) // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (!queue.length) return; const [next, ...rest] = queue; if (next.item.variants?.length) { setVariantItem(next.item); setVariantQty(next.qty); setQueue(rest) } else { add.mutate({ item: next.item, qtyOverride: next.qty }); setQueue(rest) } }, [queue]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!queue.length || variantItem) return; const [next, ...rest] = queue; if (next.item.variants?.length) { setVariantItem(next.item); setVariantQty(next.qty); setQueue(rest) } else { add.mutate({ item: next.item, qtyOverride: next.qty }); setQueue(rest) } }, [queue, variantItem])  // eslint-disable-line react-hooks/exhaustive-deps // eslint-disable-line react-hooks/exhaustive-deps
   function onKey(e: React.KeyboardEvent) {
     if (e.key === 'ArrowDown') { e.preventDefault(); setIdx((i) => Math.min(i + 1, filtered.length - 1)) }
     else if (e.key === 'ArrowUp') { e.preventDefault(); setIdx((i) => Math.max(i - 1, 0)) }

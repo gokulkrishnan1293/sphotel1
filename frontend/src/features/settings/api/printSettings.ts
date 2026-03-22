@@ -22,6 +22,11 @@ export interface PrintTemplateConfig {
   eod_show_items: boolean
   eod_show_waiters: boolean
   eod_font_size: number
+  bold_header: boolean
+  bold_total: boolean
+  bold_kot_number: boolean
+  bold_kot_items: boolean
+  bold_eod_headers: boolean
 }
 
 export interface PrintAgent {

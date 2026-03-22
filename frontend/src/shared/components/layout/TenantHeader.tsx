@@ -23,9 +23,9 @@ export function TenantHeader() {
     enabled: !!activeSlug && !isSuperAdmin
   })
 
-  // On desktop, keep current hide logic for superAdmins (they see it in sidebar toggle)
-  // On mobile, we always want to show the header for navigation/actions.
-  const hiddenOnDesktop = isSuperAdmin 
+  // Always hidden on desktop — each page shows tenant name inline in its own header.
+  // On mobile this bar provides navigation, logout, and appearance controls.
+  const hiddenOnDesktop = true
 
   if (!activeSlug && !isSuperAdmin) return null
 
