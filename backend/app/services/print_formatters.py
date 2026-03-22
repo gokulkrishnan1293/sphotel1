@@ -61,7 +61,8 @@ def _bold(text: str, enabled: bool) -> str:
 
 def format_receipt(payload: dict) -> str:
     tmpl = payload.get("print_template", {})
-    W = tmpl.get("receipt_width", 42)
+    font_size = max(1, tmpl.get("receipt_font_size", 1))
+    W = max(1, tmpl.get("receipt_width", 42) // font_size)
     top_pad = tmpl.get("top_padding", 2)
     bot_pad = tmpl.get("bottom_padding", 5)
 
@@ -150,7 +151,8 @@ def format_receipt(payload: dict) -> str:
 
 def format_kot(payload: dict) -> str:
     tmpl = payload.get("print_template", {})
-    W = tmpl.get("kot_width", 32)
+    font_size = max(1, tmpl.get("kot_font_size", 1))
+    W = max(1, tmpl.get("kot_width", 32) // font_size)
     top_pad = tmpl.get("top_padding", 2)
     bot_pad = tmpl.get("bottom_padding", 5)
 
@@ -201,7 +203,8 @@ def format_eod(payload: dict) -> str:
     summary = payload.get("summary", {})
     waiter_rows = payload.get("waiter_rows", [])
 
-    W = tmpl.get("receipt_width", 42)
+    font_size = max(1, tmpl.get("eod_font_size", 1))
+    W = max(1, tmpl.get("receipt_width", 42) // font_size)
     top_pad = tmpl.get("top_padding", 2)
     bot_pad = tmpl.get("bottom_padding", 2)
 
