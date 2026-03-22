@@ -73,11 +73,11 @@ export function BillingPage() {
         </div>
       </header>
 
-      <div className="flex flex-1 min-h-0">
-        <div className={`${mobileView === 'canvas' ? 'hidden md:flex' : 'flex'} flex-1 md:flex-none flex-col`}>
+      <div className="flex flex-1 min-h-0 min-w-0">
+        <div className={`${mobileView === 'canvas' ? 'hidden md:flex' : 'flex'} w-full md:w-auto md:flex-none flex-col min-h-0 min-w-0`}>
           <ActiveBillsPanel onSelect={() => setMobileView('canvas')} />
         </div>
-        <div className={`${mobileView === 'panel' ? 'hidden md:flex' : 'flex'} flex-1 flex-col min-h-0`}>
+        <div className={`${mobileView === 'panel' ? 'hidden md:flex' : 'flex'} flex-1 flex-col min-h-0 min-w-0`}>
           <button onClick={() => setMobileView('panel')}
             className="md:hidden shrink-0 flex items-center gap-1 px-4 py-2.5 text-sm text-text-secondary border-b border-sphotel-border bg-bg-surface">
             <ChevronLeft size={16} /> Back to Bills
