@@ -20,8 +20,8 @@ services:
       valkey:
         condition: service_healthy
     restart: unless-stopped
-    volumes:
-      - logo_data:/app/uploads/logos
+    # volumes:
+    #   - logo_data:/app/uploads/logos
 
   frontend:
     build:
@@ -72,4 +72,4 @@ services:
 volumes:
   postgres_data:
   valkey_data:
-  logo_data:
+  # logo_data:

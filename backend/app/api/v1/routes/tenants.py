@@ -232,13 +232,15 @@ async def update_branding(
     return DataResponse(data=TenantResponse.model_validate(tenant))
 
 
+from app.core.storage import storage
+
 @router.post("/me/logo", response_model=DataResponse[TenantResponse])
 async def upload_logo(
     file: UploadFile = File(...),
     current_user: CurrentUser = Depends(require_role(UserRole.ADMIN, UserRole.SUPER_ADMIN)),
     db: AsyncSession = Depends(get_db),
 ) -> DataResponse[TenantResponse]:
-    """Upload a custom logo for the tenant."""
+    """Upload a custom logo for the tenant to Cloudflare R2."""
     try:
         if not file.content_type or not file.content_type.startswith("image/"):
             raise HTTPException(status_code=400, detail="File must be an image")
@@ -249,24 +251,18 @@ async def upload_logo(
         if tenant is None:
             raise HTTPException(status_code=404, detail="Tenant not found")
 
-        # Ensure upload directory exists
-        upload_dir = os.path.join("uploads", "logos")
-        os.makedirs(upload_dir, exist_ok=True)
-
-        # Save file
+        # Upload to R2
         file_ext = os.path.splitext(file.filename or "")[1] or ".png"
-        file_path = os.path.join(upload_dir, f"{str(tenant.id)}{file_ext}")
+        key = f"logos/{str(tenant.id)}{file_ext}"
         
-        content = await file.read()
-        with open(file_path, "wb") as f:
-            f.write(content)
+        logo_url = await storage.upload_file(file, key)
 
-        tenant.logo_path = file_path
+        tenant.logo_path = logo_url
         await db.commit()
         await db.refresh(tenant)
         return DataResponse(data=TenantResponse.model_validate(tenant))
     except Exception as e:
         if isinstance(e, HTTPException):
             raise e
-        print(f"ERROR: Logo upload failed: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to upload logo due to server error")
+        print(f"ERROR: Logo upload failed to R2: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to upload logo to cloud storage")

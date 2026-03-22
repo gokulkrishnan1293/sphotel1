@@ -83,9 +83,11 @@ async def get_manifest(request: Request, db: AsyncSession = Depends(get_db)):
         ]
     })
 
+from fastapi.responses import FileResponse, RedirectResponse
+
 @router.get("/logo/{tenant_slug}.png")
 async def get_logo(tenant_slug: str, db: AsyncSession = Depends(get_db)):
-    """Serve the custom logo for a tenant."""
+    """Serve the custom logo for a tenant (via redirect for R2 or local serving)."""
     result = await db.execute(select(Tenant).where(Tenant.slug == tenant_slug))
     tenant = result.scalar_one_or_none()
     
@@ -96,7 +98,17 @@ async def get_logo(tenant_slug: str, db: AsyncSession = Depends(get_db)):
             return FileResponse(default_logo)
         raise HTTPException(status_code=404, detail="Default logo not found")
 
-    if not os.path.exists(tenant.logo_path):
-        raise HTTPException(status_code=404, detail="Logo file not found on disk")
+    # If it's an R2 URL, redirect to it
+    if tenant.logo_path.startswith("http"):
+        return RedirectResponse(tenant.logo_path)
 
-    return FileResponse(tenant.logo_path)
+    # Local file fallback (backward compatibility)
+    if os.path.exists(tenant.logo_path):
+        return FileResponse(tenant.logo_path)
+    
+    # Final fallback if path set but file missing
+    default_logo = os.path.join("app", "static", "default-logo.png")
+    if os.path.exists(default_logo):
+        return FileResponse(default_logo)
+        
+    raise HTTPException(status_code=404, detail="Logo not found")
