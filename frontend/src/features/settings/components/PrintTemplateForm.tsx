@@ -27,7 +27,7 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
                 <div><label className={L}>Restaurant Name</label><input name="restaurant_name" value={formData.restaurant_name} onChange={onChange} className={I} /></div>
                 <div><label className={L}>Paper Width</label>
                   <select name="receipt_width" value={formData.receipt_width} onChange={onChange} className={I}>
-                    <option value={32}>58mm (32 chars)</option><option value={42}>80mm (42 chars)</option>
+                    <option value={32}>58mm (32 chars)</option><option value={48}>80mm (48 chars)</option>
                   </select>
                 </div>
                 <div><label className={L}>Font Size</label>
@@ -69,7 +69,7 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div><label className={L}>KOT Paper Width</label>
                 <select name="kot_width" value={formData.kot_width} onChange={onChange} className={I}>
-                  <option value={32}>58mm (32 chars)</option><option value={42}>80mm (42 chars)</option>
+                  <option value={32}>58mm (32 chars)</option><option value={48}>80mm (48 chars)</option>
                 </select>
               </div>
               <div><label className={L}>Font Size</label>
@@ -97,7 +97,12 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
           ) : (
             <div className="pt-4">
               <h3 className="text-sm font-medium text-text-primary mb-3">EOD Report Sections</h3>
-              <p className="text-xs text-text-muted mb-4">Toggle which sections appear on the thermal printout and Telegram PDF for the end-of-day report.</p>
+              <p className="text-xs text-text-muted mb-4">Toggle which sections appear on the thermal printout. Telegram always receives all sections.</p>
+              <div className="mb-4"><label className={L}>Paper Width</label>
+                <select name="receipt_width" value={formData.receipt_width} onChange={onChange} className={I}>
+                  <option value={32}>58mm (32 chars)</option><option value={48}>80mm (48 chars)</option>
+                </select>
+              </div>
               <div className="flex flex-col gap-3">
                 {[['eod_show_payment', 'Payment Mode Summary'], ['eod_show_items', 'All Items Sold Today'], ['eod_show_waiters', 'Waiter Performance']].map(([name, label]) => (
                   <label key={name} className="flex items-center gap-2 text-sm text-text-primary cursor-pointer w-fit">

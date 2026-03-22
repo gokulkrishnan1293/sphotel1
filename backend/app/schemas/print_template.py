@@ -16,12 +16,13 @@ class PrintTemplateConfig(BaseModel):
     show_cashier: bool = True
     show_token_no: bool = True
     show_bill_no: bool = True
-    receipt_width: int = Field(default=42, ge=24, le=60)
-    kot_width: int = Field(default=32, ge=24, le=60)
+    receipt_width: int = Field(default=48, ge=24, le=60)
+    kot_width: int = Field(default=48, ge=24, le=60)
     receipt_font_size: int = Field(default=1, ge=1, le=8)
     kot_font_size: int = Field(default=1, ge=1, le=8)
     top_padding: int = Field(default=2, ge=0, le=10)
     bottom_padding: int = Field(default=5, ge=0, le=15)
+    eod_width: int = Field(default=48, ge=24, le=60)
     eod_show_payment: bool = True
     eod_show_items: bool = True
     eod_show_waiters: bool = True
@@ -51,6 +52,7 @@ class PrintTemplateUpdate(BaseModel):
     kot_font_size: int | None = Field(default=None, ge=1, le=8)
     top_padding: int | None = Field(default=None, ge=0, le=10)
     bottom_padding: int | None = Field(default=None, ge=0, le=15)
+    eod_width: int | None = Field(default=None, ge=24, le=60)
     eod_show_payment: bool | None = None
     eod_show_items: bool | None = None
     eod_show_waiters: bool | None = None

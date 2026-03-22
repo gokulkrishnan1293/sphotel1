@@ -61,7 +61,8 @@ def _bold(text: str, enabled: bool) -> str:
 
 def format_receipt(payload: dict) -> str:
     tmpl = payload.get("print_template", {})
-    W = tmpl.get("receipt_width", 42)
+    font_size = max(1, tmpl.get("receipt_font_size", 1))
+    W = max(1, tmpl.get("receipt_width", 42) // font_size)
     top_pad = tmpl.get("top_padding", 2)
     bot_pad = tmpl.get("bottom_padding", 5)
 
@@ -84,14 +85,22 @@ def format_receipt(payload: dict) -> str:
             apply_bold = bold_header and key == "restaurant_name"
             lines.append(_bold(_center(fmt.format(tmpl[key]), W), apply_bold))
 
+    # Compact mode when W is too narrow for normal 4-column layout (e.g. font_size >= 2)
+    compact = (W - 22) < 8  # name_w < 8 means columns won't fit cleanly
+
     if tmpl.get("show_name_field", True):
         lines.append(f"Name: {payload.get('customer_name') or ''}")
     lines.append("")
 
     date_line = f"Date: {printed_at}"
     if type_label:
-        date_line = _row_left_right(date_line, type_label, W)
-    lines.append(date_line)
+        if compact:
+            lines.append(date_line)
+            lines.append(_center(type_label, W))
+        else:
+            lines.append(_row_left_right(date_line, type_label, W))
+    else:
+        lines.append(date_line)
 
     if tmpl.get("show_cashier", True) and payload.get("cashier"):
         lines.append(f"Cashier: {payload['cashier']}")
@@ -99,37 +108,66 @@ def format_receipt(payload: dict) -> str:
         lines.append(f"Waiter: {payload['waiter_name']}")
 
     token_no, bill_no = payload.get("token_number"), payload.get("bill_number")
-    token_bill = ""
-    if tmpl.get("show_token_no", True) and token_no is not None:
-        token_bill = f"Token No.: {token_no}"
-    if tmpl.get("show_bill_no", True) and bill_no is not None:
-        bp = f"Bill No.: {bill_no}"
-        token_bill = _row_left_right(token_bill, bp, W) if token_bill else bp
-    if token_bill:
-        lines.append(token_bill)
+    if compact:
+        if tmpl.get("show_token_no", True) and token_no is not None:
+            lines.append(f"Token No.: {token_no}")
+        if tmpl.get("show_bill_no", True) and bill_no is not None:
+            lines.append(f"Bill No.: {bill_no}")
+    else:
+        token_bill = ""
+        if tmpl.get("show_token_no", True) and token_no is not None:
+            token_bill = f"Token No.: {token_no}"
+        if tmpl.get("show_bill_no", True) and bill_no is not None:
+            bp = f"Bill No.: {bill_no}"
+            token_bill = _row_left_right(token_bill, bp, W) if token_bill else bp
+        if token_bill:
+            lines.append(token_bill)
 
-    name_w = W - 22
-    lines += [
-        _divider("-", W),
-        f"{'Item':<{name_w}}{'Qty.':>4}  {'Price':>6}  {'Amount':>7}",
-        _divider("-", W),
-    ]
-
-    total_qty = 0
-    for item in payload.get("items", []):
-        name = str(item.get("name", ""))[:name_w].ljust(name_w)
-        qty = item.get("qty", 0)
-        total_qty += qty
-        p = item.get("price_paise", 0)
-        lines.append(f"{name}{qty:>4}  {_format_rupees(p):>6}  {_format_rupees(p * qty):>7}")
-
-    lines.append(_divider("-", W))
     subtotal = payload.get("subtotal_paise", 0)
     discount = payload.get("discount_paise", 0)
     total = payload.get("total_paise", 0)
-    lines.append(_row_left_right(f"Total Qty: {total_qty}", f"Sub Total {_format_rupees(subtotal)}", W))
-    if discount:
-        lines.append(_row_left_right("", f"Discount -{_format_rupees(discount)}", W))
+    total_qty = 0
+
+    if compact:
+        # 2-line-per-item layout: line1 = name + qty, line2 = price + amount
+        name_w = W - 4
+        price_amt_w = 15  # 6 (price) + 2 (gap) + 7 (amount)
+        indent = max(0, W - price_amt_w)
+        lines += [
+            _divider("-", W),
+            f"{'Item':<{name_w}}{'Qty.':>4}",
+            f"{'':>{indent}}{'Price':>6}  {'Amount':>7}",
+            _divider("-", W),
+        ]
+        for item in payload.get("items", []):
+            name = str(item.get("name", ""))[:name_w].ljust(name_w)
+            qty = item.get("qty", 0)
+            total_qty += qty
+            p = item.get("price_paise", 0)
+            lines.append(f"{name}{qty:>4}")
+            lines.append(f"{'':>{indent}}{_format_rupees(p):>6}  {_format_rupees(p * qty):>7}")
+        lines.append(_divider("-", W))
+        lines.append(f"Total Qty: {total_qty}")
+        if discount:
+            lines.append(f"Discount -{_format_rupees(discount)}")
+    else:
+        name_w = W - 22
+        lines += [
+            _divider("-", W),
+            f"{'Item':<{name_w}}{'Qty.':>4}  {'Price':>6}  {'Amount':>7}",
+            _divider("-", W),
+        ]
+        for item in payload.get("items", []):
+            name = str(item.get("name", ""))[:name_w].ljust(name_w)
+            qty = item.get("qty", 0)
+            total_qty += qty
+            p = item.get("price_paise", 0)
+            lines.append(f"{name}{qty:>4}  {_format_rupees(p):>6}  {_format_rupees(p * qty):>7}")
+        lines.append(_divider("-", W))
+        lines.append(f"Total Qty: {total_qty}")
+        if discount:
+            lines.append(_row_left_right("", f"Discount -{_format_rupees(discount)}", W))
+
     lines += [
         _divider("-", W),
         _bold(_center(f"Grand Total  {_format_rupees(total)}", W), bold_total),
@@ -150,7 +188,8 @@ def format_receipt(payload: dict) -> str:
 
 def format_kot(payload: dict) -> str:
     tmpl = payload.get("print_template", {})
-    W = tmpl.get("kot_width", 32)
+    font_size = max(1, tmpl.get("kot_font_size", 1))
+    W = max(1, tmpl.get("kot_width", 32) // font_size)
     top_pad = tmpl.get("top_padding", 2)
     bot_pad = tmpl.get("bottom_padding", 5)
 
@@ -169,23 +208,20 @@ def format_kot(payload: dict) -> str:
     lines: list[str] = [""]*top_pad
     lines.append(printed_at)
 
-    if kot_number and bill_number is not None:
-        lines.append(_bold(_row_left_right(f"KOT - {kot_number}", f"Bill No.: {bill_number}", W), bold_kot_number))
-    elif kot_number:
+    if kot_number:
         lines.append(_bold(f"KOT - {kot_number}", bold_kot_number))
-    elif bill_number is not None:
-        lines.append(_bold(f"Bill No.: {bill_number}", bold_kot_number))
+    if bill_number is not None:
+        lines.append(f"Bill No.: {bill_number}")
 
     lines.append(type_label)
     lines.append(_dots(W))
 
-    item_w = W - 20
-    lines.append(f"{'Item':<{item_w}}{'Special Note':<12}{'Qty.':>4}")
+    item_w = W - 4
+    lines.append(f"{'Item':<{item_w}}{'Qty.':>4}")
     for item in payload.get("items", []):
         name = str(item.get("name", ""))[:item_w].ljust(item_w)
-        note = str(item.get("special_note") or "--")[:10].ljust(12)
         qty = str(item.get("qty", 0)).rjust(4)
-        lines.append(_bold(f"{name}{note}{qty}", bold_kot_items))
+        lines.append(_bold(f"{name}{qty}", bold_kot_items))
 
     lines.append(_dots(W))
     lines += [""] * bot_pad
@@ -201,7 +237,8 @@ def format_eod(payload: dict) -> str:
     summary = payload.get("summary", {})
     waiter_rows = payload.get("waiter_rows", [])
 
-    W = tmpl.get("receipt_width", 42)
+    font_size = max(1, tmpl.get("eod_font_size", 1))
+    W = max(1, tmpl.get("eod_width", tmpl.get("receipt_width", 42)) // font_size)
     top_pad = tmpl.get("top_padding", 2)
     bot_pad = tmpl.get("bottom_padding", 2)
 
