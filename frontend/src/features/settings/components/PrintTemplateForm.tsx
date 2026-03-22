@@ -57,7 +57,7 @@ export function PrintTemplateForm({ formData, onChange }: Props) {
               <div className="pt-4 border-t border-sphotel-border">
                 <h3 className="text-sm font-medium text-text-primary mb-3">Bold Options</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  {([['bold_header','Header Block'],['bold_total','Grand Total']] as const).map(([name, label]) => (
+                  {([['bold_header','Hotel Name'],['bold_total','Grand Total']] as const).map(([name, label]) => (
                     <label key={name} className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
                       <input type="checkbox" name={name} checked={!!formData[name as keyof PrintTemplateConfig]} onChange={onChange} className="accent-sphotel-accent" />{label}
                     </label>

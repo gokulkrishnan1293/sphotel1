@@ -70,13 +70,12 @@ export function ReceiptPreview({ template, type }: { template: PrintTemplateConf
     }
   } else {
     // Receipt
-    const hpush = (line: string) => template.bold_header ? pb(line) : push(line)
-    if (template.restaurant_name) hpush(center(template.restaurant_name))
-    if (template.address_line_1) hpush(center(template.address_line_1))
-    if (template.address_line_2) hpush(center(template.address_line_2))
-    if (template.phone) hpush(center(`PH : ${template.phone}`))
-    if (template.gst_number) hpush(center(`GST NO : ${template.gst_number}`))
-    if (template.fssai_number) hpush(center(`FSSAI : ${template.fssai_number}`))
+    if (template.restaurant_name) template.bold_header ? pb(center(template.restaurant_name)) : push(center(template.restaurant_name))
+    if (template.address_line_1) push(center(template.address_line_1))
+    if (template.address_line_2) push(center(template.address_line_2))
+    if (template.phone) push(center(`PH : ${template.phone}`))
+    if (template.gst_number) push(center(`GST NO : ${template.gst_number}`))
+    if (template.fssai_number) push(center(`FSSAI : ${template.fssai_number}`))
     if (template.show_name_field) push('Name: ___________________')
     push('')
     push(leftRight('Date: 28/02/26 19:04', 'Pick Up'))
