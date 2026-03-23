@@ -49,7 +49,8 @@ async def _cloud_loop(conn):
             log.info("Connecting to %s", ws_url.split("?")[0])
             async with websockets.connect(ws_url, ping_interval=30, ping_timeout=10) as ws:
                 log.info("Connected — flushing local queue")
-                flush_queue(conn)
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(None, flush_queue, conn)
                 backoff = 1
                 async for message in ws:
                     await _handle_job(ws, str(message), conn)
