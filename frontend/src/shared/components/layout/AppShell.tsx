@@ -5,6 +5,7 @@ import { MainContent } from './MainContent'
 import { MobileNav } from './MobileNav'
 import { useNetworkWatcher } from '@/lib/networkStatus'
 import { OfflineBanner } from './OfflineBanner'
+import { UpdateBanner } from './UpdateBanner'
 import { RecoveryModal } from '@/features/billing/components/RecoveryModal'
 
 interface AppShellProps {
@@ -19,6 +20,7 @@ export function AppShell({ children }: AppShellProps) {
     <div className="flex h-screen w-full overflow-hidden bg-bg-base">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
+        <UpdateBanner />
         <OfflineBanner />
         <TenantHeader />
         <MainContent>{children ?? <Outlet />}</MainContent>
