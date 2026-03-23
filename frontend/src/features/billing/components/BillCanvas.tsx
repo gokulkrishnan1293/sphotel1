@@ -12,6 +12,7 @@ import { useAuthStore } from '../../auth/stores/authStore'
 import { useShortcutStore, matchKey } from '@/lib/shortcutStore'
 import { useFeatureFlagStore } from '@/lib/featureFlagStore'
 import { toast } from '@/lib/toast'
+import { localPrint } from '@/lib/localPrint'
 const fmt = (p: number) => `₹${(p / 100).toFixed(2)}`; const defaultMethod = (billType: string): PaymentMethod => billType === 'online' ? 'online' : 'cash'
 
 export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
@@ -33,7 +34,7 @@ export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
   const closeBill = useMutation({
     mutationFn: ({ method, discount }: { method: PaymentMethod; discount: number }) =>
       billsApi.close(activeBillId!, { payment_method: method, discount_paise: discount }),
-    onSuccess: () => { inv(); setSettleOpen(false); billsApi.print(activeBillId!).catch(() => {}); if (useFeatureFlagStore.getState().billCloseUx) { toast('Bill settled ✓  Printing…'); setPrintQueued(true); setTimeout(() => setPrintQueued(false), 5000) } else useBillingStore.getState().setActiveBill(null) },
+    onSuccess: (closedBill) => { inv(); setSettleOpen(false); billsApi.print(activeBillId!).catch(() => localPrint(closedBill).catch(() => {})); if (useFeatureFlagStore.getState().billCloseUx) { toast('Bill settled ✓  Printing…'); setPrintQueued(true); setTimeout(() => setPrintQueued(false), 5000) } else useBillingStore.getState().setActiveBill(null) },
   })
   const removeItem = useMutation({ mutationFn: (id: string) => billsApi.removeItem(activeBillId!, id), onSuccess: inv })
   const updateQty = useMutation({ mutationFn: ({ itemId, quantity }: { itemId: string; quantity: number }) => billsApi.updateItem(activeBillId!, itemId, { quantity }), onSuccess: inv })
@@ -42,7 +43,7 @@ export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
     mutationFn: () => billsApi.void(activeBillId!),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['bill', activeBillId] }); qc.invalidateQueries({ queryKey: ['bills', 'open'] }); qc.invalidateQueries({ queryKey: ['bills', 'recent'] }) },
   })
-  const printBill = useMutation({ mutationFn: () => billsApi.print(activeBillId!) })
+  const printBill = useMutation({ mutationFn: () => billsApi.print(activeBillId!).catch(() => bill ? localPrint(bill) : Promise.reject(new Error('no bill'))) })
   const updateMethod = useMutation({ mutationFn: (m: PaymentMethod) => billsApi.updatePaymentMethod(activeBillId!, m), onSuccess: inv })
 
   useEffect(() => {

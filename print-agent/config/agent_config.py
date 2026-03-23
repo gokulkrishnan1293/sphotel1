@@ -22,6 +22,7 @@ class AgentSettings:
     WIN32_PRINTER_NAME = os.environ.get('WIN32_PRINTER_NAME', '')
     PRINTER_FILE      = os.environ.get('PRINTER_FILE',      '/dev/usb/lp0')
     LOCAL_WS_PORT     = int(os.environ.get('LOCAL_WS_PORT',          '8765'))
+    LOCAL_HTTP_PORT   = int(os.environ.get('LOCAL_HTTP_PORT',        '8766'))
     POLL_INTERVAL_SECONDS = int(os.environ.get('POLL_INTERVAL_SECONDS', '3'))
     RECEIPT_WIDTH     = int(os.environ.get('RECEIPT_WIDTH',           '32'))
 

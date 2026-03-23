@@ -39,6 +39,7 @@ apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 apiClient.interceptors.response.use(
   (response: AxiosResponse<ApiEnvelope<unknown>>) => {
     const body = response.data
+    if (typeof body !== 'object' || body === null) return response
     if (body.error != null) {
       throw new Error(body.error.message)
     }

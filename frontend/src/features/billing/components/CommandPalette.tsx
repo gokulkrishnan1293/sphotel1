@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
-import { menuApi } from '../../admin/api/menu'
+import { menuListWithCache } from '@/lib/db/menuCache'
 import { billsApi } from '../api/bills'
 import { useBillingStore } from '../stores/billingStore'
 import type { MenuItemResponse } from '../../admin/types/menu'
@@ -42,7 +42,7 @@ export function CommandPalette({ billId, billType, platform }: { billId: string;
   const [queue, setQueue] = useState<Array<{ item: MenuItemResponse; qty: number }>>([])
   const inputRef = useRef<HTMLInputElement>(null)
   const { qty, searchQuery } = useMemo(() => parse(query), [query])
-  const { data: items = [] } = useQuery({ queryKey: ['menu-items'], queryFn: menuApi.list })
+  const { data: items = [] } = useQuery({ queryKey: ['menu-items'], queryFn: menuListWithCache })
   const filtered = useMemo(() => {
     const avail = items.filter((i) => i.is_available); if (!searchQuery.trim()) return avail.slice(0, 20)
     const q = searchQuery.toLowerCase()

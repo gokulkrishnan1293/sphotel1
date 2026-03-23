@@ -46,7 +46,7 @@ export function MenuItemTable({ items, search, onEdit, onToggle, onDelete, isUpd
               </TableCell>
               <TableCell className="text-right font-mono text-text-primary w-20">₹{(item.price_paise / 100).toFixed(0)}</TableCell>
               <TableCell className="text-right font-mono text-text-muted w-20">
-                {item.online_price_paise != null ? `₹${(item.online_price_paise / 100).toFixed(0)}` : '—'}
+                {(() => { const vp = item.vendor_prices?.find(v => v.vendor_slug === 'swiggy' || v.vendor_slug === 'zomato'); return vp ? `₹${(vp.price_paise / 100).toFixed(0)}` : '—' })()}
               </TableCell>
               <TableCell className="text-center w-24" onClick={(e) => e.stopPropagation()}>
                 <Switch size="sm" checked={item.is_available} onCheckedChange={() => onToggle(item)} disabled={isUpdating} aria-label={`Toggle ${item.name}`} />
