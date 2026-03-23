@@ -11,10 +11,11 @@ from agent.auth import load_api_key
 from agent.job_queue import init_queue_db, enqueue, flush_queue
 from config.agent_config import agent_settings as cfg
 
+
 log = logging.getLogger("print-agent.ws")
 
 
-async def _handle_job(ws, msg, conn):
+async def _handle_job(ws, msg):
     try:
         data = json.loads(msg)
     except ValueError:
@@ -33,10 +34,10 @@ async def _handle_job(ws, msg, conn):
         log.info("Job %s printed and confirmed", job_id)
     except Exception as exc:
         log.error("Job %s failed: %s — queuing locally", job_id, exc)
-        enqueue(conn, str(job_id), payload)
+        enqueue(str(job_id), payload)
 
 
-async def _cloud_loop(conn):
+async def _cloud_loop():
     api_key = load_api_key()
     if not api_key:
         log.error("No API key. Run: python -m agent --register --token <TOKEN> --name <NAME>")
@@ -50,10 +51,10 @@ async def _cloud_loop(conn):
             async with websockets.connect(ws_url, ping_interval=30, ping_timeout=10) as ws:
                 log.info("Connected — flushing local queue")
                 loop = asyncio.get_event_loop()
-                await loop.run_in_executor(None, flush_queue, conn)
+                await loop.run_in_executor(None, flush_queue)
                 backoff = 1
                 async for message in ws:
-                    await _handle_job(ws, str(message), conn)
+                    await _handle_job(ws, str(message))
         except websockets.exceptions.ConnectionClosed as exc:
             log.warning("WS closed: %s — retrying in %ds", exc, backoff)
         except OSError as exc:
@@ -65,6 +66,6 @@ async def _cloud_loop(conn):
 
 
 async def run_ws_client():
-    conn = init_queue_db()
+    init_queue_db()
     from agent.local_server import run_local_server
-    await asyncio.gather(_cloud_loop(conn), run_local_server())
+    await asyncio.gather(_cloud_loop(), run_local_server())
