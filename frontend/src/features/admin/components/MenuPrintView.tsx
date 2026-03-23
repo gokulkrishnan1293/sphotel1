@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { X, Printer } from 'lucide-react'
 import type { MenuItemResponse } from '../types/menu'
+import { localPrintMenu } from '../../../lib/localPrintMenu'
 
 interface Props { items: MenuItemResponse[]; onClose: () => void }
 
@@ -53,6 +54,15 @@ function buildContent(byCategory: Record<string, MenuItemResponse[]>) {
 }
 
 export function MenuPrintView({ items, onClose }: Props) {
+  const [printing, setPrinting] = useState(false)
+
+  async function handlePrint() {
+    setPrinting(true)
+    try { await localPrintMenu(items) }
+    catch { window.print() }
+    finally { setPrinting(false) }
+  }
+
   useEffect(() => {
     const s = document.createElement('style')
     s.textContent = `@media print { @page { size: 80mm auto; margin: 3mm 2mm; } body > *:not(#menu-rate-print) { display: none !important; } }`
@@ -75,7 +85,7 @@ export function MenuPrintView({ items, onClose }: Props) {
           <div className="flex items-center justify-between px-4 py-3 border-b border-sphotel-border shrink-0">
             <span className="font-semibold text-sm text-text-primary">Menu Rate List</span>
             <div className="flex gap-2">
-              <button onClick={() => window.print()} className="flex items-center gap-1 text-xs border border-sphotel-border rounded px-2 py-1 text-text-secondary hover:text-text-primary"><Printer size={12} /> Print</button>
+              <button onClick={handlePrint} disabled={printing} className="flex items-center gap-1 text-xs border border-sphotel-border rounded px-2 py-1 text-text-secondary hover:text-text-primary disabled:opacity-50"><Printer size={12} />{printing ? 'Printing…' : 'Print'}</button>
               <button onClick={onClose} className="text-text-muted hover:text-text-primary"><X size={16} /></button>
             </div>
           </div>
