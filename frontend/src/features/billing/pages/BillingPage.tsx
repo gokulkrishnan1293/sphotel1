@@ -4,9 +4,13 @@ import { ChevronLeft, Printer } from 'lucide-react'
 import { useTenantName } from '@/shared/hooks/useTenantName'
 import { useBillingStore } from '../stores/billingStore'
 import { useAutoSave } from '../hooks/useAutoSave'
+import { useOfflineSync } from '../hooks/useOfflineSync'
 import { ActiveBillsPanel } from '../components/ActiveBillsPanel'
 import { BillCanvas } from '../components/BillCanvas'
+import { PrinterOfflineBanner } from '../components/PrinterOfflineBanner'
 import { printApi } from '../../settings/api/printSettings'
+import { cachePrintTemplate } from '@/lib/localPrint'
+import { useIsLocalMachine } from '@/lib/db/localAgentStatus'
 import { shortcutsApi } from '../../settings/api/shortcuts'
 import { useShortcutStore } from '@/lib/shortcutStore'
 import { useNetworkStore } from '@/lib/networkStatus'
@@ -15,11 +19,16 @@ import { Toast } from '@/shared/components/Toast'
 export function BillingPage() {
   const activeBillId = useBillingStore((s) => s.activeBillId)
   useAutoSave(activeBillId)
+  useOfflineSync()
   const setShortcuts = useShortcutStore((s) => s.setShortcuts)
   useEffect(() => { shortcutsApi.get().then(setShortcuts).catch(() => {}) }, [setShortcuts])
   const isOnline = useNetworkStore((s) => s.isOnline)
+  const isLocalMachine = useIsLocalMachine()
   const { data: agents = [] } = useQuery({ queryKey: ['print-agents'], queryFn: printApi.listAgents, refetchInterval: 30_000, staleTime: 20_000 })
+  const { data: printTemplate } = useQuery({ queryKey: ['print-template'], queryFn: printApi.getTemplate, staleTime: 300_000 })
+  useEffect(() => { if (printTemplate) cachePrintTemplate(printTemplate) }, [printTemplate])
   const printerOnline = agents.some((a) => a.status === 'online')
+  const canOpenNewBill = isLocalMachine || (isOnline && printerOnline) || !isOnline
 
   const [mobileView, setMobileView] = useState<'panel' | 'canvas'>('panel')
   useEffect(() => { if (activeBillId) setMobileView('canvas') }, [activeBillId])
@@ -72,10 +81,11 @@ export function BillingPage() {
           </span>
         </div>
       </header>
+      <PrinterOfflineBanner printerOnline={printerOnline} isLocalMachine={isLocalMachine} />
 
       <div className="flex flex-1 min-h-0 min-w-0">
         <div className={`${mobileView === 'canvas' ? 'hidden md:flex' : 'flex'} w-full md:w-auto md:flex-none flex-col min-h-0 min-w-0`}>
-          <ActiveBillsPanel onSelect={() => setMobileView('canvas')} />
+          <ActiveBillsPanel onSelect={() => setMobileView('canvas')} canOpenNewBill={canOpenNewBill} />
         </div>
         <div className={`${mobileView === 'panel' ? 'hidden md:flex' : 'flex'} flex-1 flex-col min-h-0 min-w-0`}>
           <button onClick={() => setMobileView('panel')}

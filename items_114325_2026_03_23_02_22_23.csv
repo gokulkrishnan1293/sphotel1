@@ -1,0 +1,252 @@
+Name,Online_Name,Description,Short_Code,Short_Code_2,Sap_Code,HSN_Code,Parent_Category,Category,Category_online_display,Price,Attributes,Goods_Services,Unit,is_Self_Item_Recipe,minimum_stock_level,at_par_stock_level,Rank,Packing_Charges,Allow_Decimal_Qty,Addon_Group_Name,Addon_Group_Selection,Addon_Group_Min,Addon_Group_Max,Variation_group_name,Variation,Variation_Price,Variation_Sap_Code,Variation_Packing_Charges,Variation,Variation_Price,Variation_Sap_Code,Variation_Packing_Charges,Variation,Variation_Price,Variation_Sap_Code,Variation_Packing_Charges
+"Idly [2 Nos]","Idli (2)",,1,,,,,"Idli Varities",,25,veg,,,0,,,1,0,Yes
+"Sambar Idly","Sambar Idli",,2,,,,,"Idli Varities",,40,veg,,,0,,,1,0,Yes
+"Fried Idly","Fried Idli",,384,,,,,"Idli Varities",,60,veg,,,0,,,1,0,Yes
+"Chilly Idly","Chilli Idli",,456,,,,,"Idli Varities",,70,veg,,,0,,,1,0,Yes
+"Plain Dosai","Plain Dosai",,303,,,,,"Dosai Varities",,30,veg,,,0,,,1,0,Yes
+"Kal Dosai","Kal Dosai",,4,,,,,"Dosai Varities",,30,veg,,,0,,,1,0,Yes
+Roast,Roast,,3,,,,,"Dosai Varities",,60,veg,,,0,,,1,0,Yes
+"Podi Dosai","Podi Dosai",,5,,,,,"Dosai Varities",,40,veg,,,0,,,1,0,Yes
+"Podi Roast","Podi Roast",,418,,,,,"Dosai Varities",,70,veg,,,0,,,1,0,Yes
+"Tomato Uthappam","Tomato Uthappam",,7,,,,,"Dosai Varities",,70,veg,,,0,,,1,0,Yes
+"Egg Dosai","Egg Dosai",,8,,,,,"Dosai Varities",,60,egg,,,0,,,1,0,Yes
+"Egg Roast","Egg Roast",,309,,,,,"Dosai Varities",,80,egg,,,0,,,1,0,Yes
+"Onion Roast","Onion Roast",,10,,,,,"Dosai Varities",,90,veg,,,0,,,1,0,Yes
+"Masal Roast","Masal Roast",,12,,,,,"Dosai Varities",,90,veg,,,0,,,1,0,Yes
+"Ghee Roast","Ghee Roast",,9,,,,,"Dosai Varities",,100,veg,,,0,,,1,0,Yes
+"Onion Ghee Roast","Onion Ghee Roast",,11,,,,,"Dosai Varities",,120,veg,,,0,,,1,0,Yes
+"Ghee Masal Roast","Ghee Masal Roast",,475,,,,,"Dosai Varities",,130,veg,,,0,,,1,0,Yes
+"Paneer Roast","Paneer Roast",,13,,,,,"Dosai Varities",,120,veg,,,0,,,1,0,Yes
+"Gobi Roast","Gobi Roast",,14,,,,,"Dosai Varities",,110,veg,,,0,,,1,0,Yes
+"Mushroom Roast","Mushroom Roast",,15,,,,,"Dosai Varities",,120,veg,,,0,,,1,0,Yes
+"Chicken Kari Roast","Chicken Kari Roast",,20,,,,,"Dosai Varities",,170,non-veg,,,0,,,1,0,Yes
+"Mutton Kari Roast","Mutton Kari Roast",,21,,,,,"Dosai Varities",,210,non-veg,,,0,,,1,0,Yes
+"Plain Uthappam","Plain Uthappam",,16,,,,,"Dosai Varities",,60,veg,,,0,,,1,0,Yes
+"Onion Uthappam","Onion Uthappam",,18,,,,,"Dosai Varities",,80,veg,,,0,,,1,0,Yes
+"Veg Uthappam","Veg Uthappam",,17,,,,,"Dosai Varities",,80,veg,,,0,,,1,0,Yes
+"Egg Uthappam","Egg Uthappam",,19,,,,,"Dosai Varities",,80,egg,,,0,,,1,0,Yes
+"Parotta [1 Pc]","Parotta (1)",,75,,,,,"Parotta Varities",,25,veg,,,0,,,1,0,Yes
+"Ghee Parotta","Ghee Parotta",,76,,,,,"Parotta Varities",,40,veg,,,0,,,1,0,Yes
+"Bun Parotta","Bun Parotta",,77,,,,,"Parotta Varities",,40,veg,,,0,,,1,0,Yes
+"Spl Sp","Spl Sp",,312,,,,,"Parotta Varities",,120,veg,,,0,,,1,0,Yes
+"Plain Veehu Parotta","Plain Veechu Parotta",,82,,,,,"Parotta Varities",,35,veg,,,0,,,1,0,Yes
+"Egg Vechu Parotta","Egg Veechu Parotta",,83,,,,,"Parotta Varities",,70,egg,,,0,,,1,0,Yes
+"Veg Kothu [Veg Special]","Veg Kothu","Veg Sp",84,,,,,"Parotta Varities",,80,veg,,,0,,,1,0,Yes
+"Egg Kothu [special]","Egg Kothu",,"34(s)",,,,,"Parotta Varities",,90,egg,,,0,,,1,0,Yes
+Sp,"Special Kothu","Spl Sp",85,,,,,"Parotta Varities",,90,veg,,,0,,,1,0,Yes
+"Chicken S.P","Chicken Sp",,86,,,,,"Parotta Varities",,170,non-veg,,,0,,,1,0,Yes
+"Mutton S.P.","Mutton Sp",,423,,,,,"Parotta Varities",,210,non-veg,,,0,,,1,0,Yes
+"Veg Soup","Veg Soup",,422,,,,,"Soup Varities",,70,veg,,,0,,,1,0,Yes
+"Veg Clear Soup","Veg Clear Soup",,43,,,,,"Soup Varities",,70,veg,,,0,,,1,0,Yes
+"Tomato Soup","Tomato Soup",,400,,,,,"Soup Varities",,80,veg,,,0,,,1,0,Yes
+"Mushroom Soup","Mushroom Soup",,417,,,,,"Soup Varities",,80,veg,,,0,,,1,0,Yes
+"Chicken Milagu Soup","Chicken Milagu Soup",,104,,,,,"Soup Varities",,90,non-veg,,,0,,,1,0,Yes
+"Chicken Clear Soup","Chicken Clear Soup",,101,,,,,"Soup Varities",,100,non-veg,,,0,,,1,0,Yes
+"Hot & Sour Veg Soup","Veg Hot And Sour Soup",,103,,,,,"Soup Varities",,90,veg,,,0,,,1,0,Yes
+"Hot & Sour Non-Veg Soup","Non Veg Hot And Sour Soup","[Chicken Preparation]",42,,,,,"Soup Varities",,110,non-veg,,,0,,,1,0,Yes
+"Noodles Soup Veg Soup","Veg Noodles Soup",,415,,,,,"Soup Varities",,90,veg,,,0,,,1,0,Yes
+"Noodles Soup Non-Veg Soup","Non Veg Noodles Soup","[Chicken Preparation]",416,,,,,"Soup Varities",,110,non-veg,,,0,,,1,0,Yes
+"Boiled Egg","Boiled Egg",,92,,,,,"Egg Varities",,20,egg,,,0,,,1,0,Yes
+"Plain Omlet","Plain Omelette",,88,,,,,"Egg Varities",,20,egg,,,0,,,1,0,Yes
+Omlet,Omelette,,166,,,,,"Egg Varities",,25,egg,,,0,,,1,0,Yes
+"Double Omlet","Double Omelette",,389,,,,,"Egg Varities",,50,egg,,,0,,,1,0,Yes
+"Half Boil","Half Boil",,93,,,,,"Egg Varities",,20,egg,,,0,,,1,0,Yes
+"Full Boil","Full Boil",,94,,,,,"Egg Varities",,20,egg,,,0,,,1,0,Yes
+Kalakki,Kalakki,,91,,,,,"Egg Varities",,20,egg,,,0,,,1,0,Yes
+"Other Kalakki","Other Kalakki",,459,,,,,"Egg Varities",,30,egg,,,0,,,1,0,Yes
+"Egg Podimas","Egg Podimas",,90,,,,,"Egg Varities",,40,egg,,,0,,,1,0,Yes
+"Egg Chilly","Egg Chilli",,406,,,,,"Egg Varities",,90,egg,,,0,,,1,0,Yes
+"Egg Masala","Egg Masala",,89,,,,,"Egg Varities",,100,egg,,,0,,,1,0,Yes
+"Veg Meals","Veg Meals",,71,,,,,Meals,,100,veg,,,0,,,1,0,Yes
+"Cup Meals [After Biriyani]","Cup Meals [After Biriyani]",,72,,,,,Meals,,60,veg,,,0,,,1,0,Yes
+"Non Veg Meals","Non Veg Meals",,200,,,,,Meals,,250,veg,,,0,,,1,0,Yes
+"Curd Rice","Curd Rice",,73,,,,,Meals,,60,veg,,,0,,,1,0,Yes
+Curd,Curd,,341,,,,,Meals,,20,veg,,,0,,,1,0,Yes
+Kuska,Kuska,,100,,,,,"Biryani Varities",,70,veg,,,0,,,1,0,Yes
+"Veg Briyani","Veg Biryani",,68,,,,,"Biryani Varities",,100,veg,,,0,,,1,0,Yes
+"Gobi Briyani","Gobi Biryani",,429,,,,,"Biryani Varities",,110,veg,,,0,,,1,0,Yes
+"Paneer Briyani","Paneer Biryani",,70,,,,,"Biryani Varities",,140,veg,,,0,,,1,0,Yes
+"Mushroom Briyani","Mushroom Biryani",,69,,,,,"Biryani Varities",,130,veg,,,0,,,1,0,Yes
+"Chicken Plain Briyani","Chicken Plain Biryani",,99,,,,,"Biryani Varities",,100,veg,,,0,,,1,0,Yes
+"Egg Briyani","Egg Biryani",,96,,,,,"Biryani Varities",,140,egg,,,0,,,1,0,Yes
+"Chicken Briyani","Chicken Biryani",,97,,,,,"Biryani Varities",,180,non-veg,,,0,,,1,0,Yes
+"Chicken 65 Briyani","Chicken 65 Biryani",,563,,,,,"Biryani Varities",,210,non-veg,,,0,,,1,0,Yes
+"Mutton Briyani","Mutton Biryani",,98,,,,,"Biryani Varities",,230,non-veg,,,0,,,1,0,Yes
+"Fish Briyani","Fish Biryani",,364,,,,,"Biryani Varities",,210,non-veg,,,0,,,1,0,Yes
+"Kaadai Briyani","Kaadai Biryani",,562,,,,,"Biryani Varities",,220,non-veg,,,0,,,1,0,Yes
+"Prawn Briyani","Prawn Biryani",,492,,,,,"Biryani Varities",,250,non-veg,,,0,,,1,0,Yes
+"Ghee Rice","Ghee Rice",,67,,,,"Fried Rice and Noodles","Fried Rice Varities",,100,veg,,,0,,,1,0,Yes
+"Veg Fried Rice","Veg Fried Rice",,63,,,,"Fried Rice and Noodles","Fried Rice Varities",,110,veg,,,0,,,1,0,Yes
+"Schezwan Veg Fried Rice","Schezwan Fried Rice",,64,,,,"Fried Rice and Noodles","Fried Rice Varities",,120,veg,,,0,,,1,0,Yes
+"Gobi Fried Rice","Gobi Fried Rice",,434,,,,"Fried Rice and Noodles","Fried Rice Varities",,120,veg,,,0,,,1,0,Yes
+"Schezwan Gobi Fried Rice","Schezwan Gobi Fried Rice",,554,,,,"Fried Rice and Noodles","Fried Rice Varities",,130,veg,,,0,,,1,0,Yes
+"Paneer Fried Rice","Paneer Fried Rice",,66,,,,"Fried Rice and Noodles","Fried Rice Varities",,140,veg,,,0,,,1,0,Yes
+"Schezwan Paneer Fried Rice","Schezwan Paneer Fried Rice",,480,,,,"Fried Rice and Noodles","Fried Rice Varities",,150,veg,,,0,,,1,0,Yes
+"Mushroom Fried Rice","Mushroom Fried Rice",,65,,,,"Fried Rice and Noodles","Fried Rice Varities",,130,veg,,,0,,,1,0,Yes
+"Schezwan Mushroom Rice","Schezwan Mushroom Rice",,551,,,,"Fried Rice and Noodles","Fried Rice Varities",,140,veg,,,0,,,1,0,Yes
+"Egg Fried Rice","Egg Fried Rice",,109,,,,"Fried Rice and Noodles","Fried Rice Varities",,130,egg,,,0,,,1,0,Yes
+"Schezwan Egg Fried Rice","Schezwan Egg Fried Rice",,110,,,,"Fried Rice and Noodles","Fried Rice Varities",,140,egg,,,0,,,1,0,Yes
+"Chicken Fried Rice","Chicken Fried Rice",,111,,,,"Fried Rice and Noodles","Fried Rice Varities",,150,non-veg,,,0,,,1,0,Yes
+"Schezwan Chicken Fried Rice","Schezwan Chicken Fried Rice",,112,,,,"Fried Rice and Noodles","Fried Rice Varities",,160,non-veg,,,0,,,1,0,Yes
+"Mixed Veg Fried Rice","Mixed Veg Fried Rice",,333,,,,"Fried Rice and Noodles","Fried Rice Varities",,0,veg,,,0,,,1,0,Yes,,,,,Preparation,Normal,170,,0,Schezwan,180,,0
+"Mixed Non-veg Fried Rice","Mixed Non Veg Fried Rice","[Chicken Preparation]",503,,,,"Fried Rice and Noodles","Fried Rice Varities",,0,non-veg,,,0,,,1,0,Yes,,,,,Preparation,Normal,220,,0,Schezwan,230,,0
+"Veg Noodles","Veg Noodles",,59,,,,"Fried Rice and Noodles","Noodles Varities",,110,veg,,,0,,,1,0,Yes
+"Schezwan Veg Noodles","Schezwan Veg Noodles",,60,,,,"Fried Rice and Noodles","Noodles Varities",,120,veg,,,0,,,1,0,Yes
+"Gobi Noodles","Gobi Noodles",,576,,,,"Fried Rice and Noodles","Noodles Varities",,120,veg,,,0,,,1,0,Yes
+"Schezwan Gobi Noodles","Schezwan Gobi Noodles",,546,,,,"Fried Rice and Noodles","Noodles Varities",,130,veg,,,0,,,1,0,Yes
+"Paneer Nooldes","Paneer Noodles",,62,,,,"Fried Rice and Noodles","Noodles Varities",,140,veg,,,0,,,1,0,Yes
+"Schezwan Paneer Noodles","Schezwan Paneer Noodles",,548,,,,"Fried Rice and Noodles","Noodles Varities",,150,veg,,,0,,,1,0,Yes
+"Mushroom Noodles","Mushroom Noodles",,61,,,,"Fried Rice and Noodles","Noodles Varities",,130,veg,,,0,,,1,0,Yes
+"Schezwan Mushroom Nooldes","Schezwan Mushroom Noodles",,549,,,,"Fried Rice and Noodles","Noodles Varities",,140,veg,,,0,,,1,0,Yes
+"Egg Noodles","Egg Noodles",,105,,,,"Fried Rice and Noodles","Noodles Varities",,130,egg,,,0,,,1,0,Yes
+"Schezwan Egg Noodles","Schezwan Egg Noodles",,106,,,,"Fried Rice and Noodles","Noodles Varities",,140,egg,,,0,,,1,0,Yes
+"Chicken Noodles","Chicken Noodles",,107,,,,"Fried Rice and Noodles","Noodles Varities",,150,non-veg,,,0,,,1,0,Yes
+"Schezwan Chicken Noodles","Schezwan Chicken Noodles",,108,,,,"Fried Rice and Noodles","Noodles Varities",,160,non-veg,,,0,,,1,0,Yes
+"Mixed Veg Noodles","Mix Veg Noodles",,519,,,,"Fried Rice and Noodles","Noodles Varities",,0,veg,,,0,,,1,0,Yes,,,,,Preparation,Normal,170,,0,Schezwan,180,,0
+"Mixed Non-veg Noodles","Mix Non Veg Noodles","[Chicken Preparation]",518,,,,"Fried Rice and Noodles","Noodles Varities",,0,non-veg,,,0,,,1,0,Yes,,,,,Preparation,Normal,220,,0,Schezwan,230,,0
+"Paneer Butter Masala","Paneer Butter Masala",,55,,,,"Dry & Gravy Varieties","Veg Gravy Varities",,150,veg,,,0,,,1,0,Yes
+"Mushroom Masala","Mushroom Masala",,56,,,,"Dry & Gravy Varieties","Veg Gravy Varities",,140,veg,,,0,,,1,0,Yes
+"Gobi Masala","Gobi Masala",,307,,,,"Dry & Gravy Varieties","Veg Gravy Varities",,140,veg,,,0,,,1,0,Yes
+"Mixed Veg Gravy","Mixed Veg Gravy",,58,,,,"Dry & Gravy Varieties","Veg Gravy Varities",,170,veg,,,0,,,1,0,Yes
+"Gobi Chilly","Gobi Chilli",,44,,,,"Dry & Gravy Varieties","Veg Dry Varities",,90,veg,,,0,,,1,0,Yes
+"Gobi 65","Gobi 65",,46,,,,"Dry & Gravy Varieties","Veg Dry Varities",,100,veg,,,0,,,1,0,Yes
+"Gobi Pepper Fry","Gobi Pepper Fry",,578,,,,"Dry & Gravy Varieties","Veg Dry Varities",,130,veg,,,0,,,1,0,Yes
+"Gobi Manchurian","Gobi Manchurian",,45,,,,"Dry & Gravy Varieties","Veg Dry Varities",,140,veg,,,0,,,1,0,Yes
+"Mushroom Chilly","Mushroom Chilli",,47,,,,"Dry & Gravy Varieties","Veg Dry Varities",,100,veg,,,0,,,1,0,Yes
+"Mushroom 65","Mushroom 65",,48,,,,"Dry & Gravy Varieties","Veg Dry Varities",,140,veg,,,0,,,1,0,Yes
+"Mushroom Pepper Fry","Mushroom Pepper Fry",,49,,,,"Dry & Gravy Varieties","Veg Dry Varities",,140,veg,,,0,,,1,0,Yes
+"Mushroom Manchurian","Mushroom Manchurian",,171,,,,"Dry & Gravy Varieties","Veg Dry Varities",,150,veg,,,0,,,1,0,Yes
+"Paneer Chilly","Paneer Chilli",,50,,,,"Dry & Gravy Varieties","Veg Dry Varities",,140,veg,,,0,,,1,0,Yes
+"Paneer 65","Paneer 65",,514,,,,"Dry & Gravy Varieties","Veg Dry Varities",,150,veg,,,0,,,1,0,Yes
+"Paneer Pepper Fry","Paneer Pepper Fry",,488,,,,"Dry & Gravy Varieties","Veg Dry Varities",,160,veg,,,0,,,1,0,Yes
+"Paneer Manchurian","Paneer Manchurian",,385,,,,"Dry & Gravy Varieties","Veg Dry Varities",,170,veg,,,0,,,1,0,Yes
+"Plain Gravy","Plain Gravy","[Chicken Preparation]",136,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,100,non-veg,,,0,,,1,0,Yes
+"Chettinad Chicken Gravy","Chettinad Chicken Gravy",,465,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,200,,0,Boneless,270,,0
+"Pepper Chicken Gravy","Pepper Chicken Gravy",,466,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,210,,0,Boneless,270,,0
+"Butter Chicken Gravy","Butter Chicken Gravy",,133,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,210,,0,Boneless,270,,0
+"Garlic Chicken Gravy","Garlic Chicken Gravy",,135,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,210,,0,Boneless,270,,0
+"Ginger Chicken Gravy","Ginger Chicken Gravy",,134,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,210,,0,Boneless,270,,0
+"Ginger Garlic Gravy","Ginger Garlic Gravy","[Chicken Preparation]",504,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,220,,0,Boneless,280,,0
+"Hyderabad Chicken Gravy","Hyderabad Chicken Gravy",,361,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,210,,0,Boneless,280,,0
+"Chicken Leg Piece Gravy","Chicken Leg Piece Gravy",,128,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,230,non-veg,,,0,,,1,0,Yes
+"Chilly Chicken Gravy","Chilly Chicken Gravy",,496,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,210,,0,Boneless,270,,0
+"Chicken Pallipalayam Gravy","Chicken Pallipalayam Gravy",,571,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,210,,0,Boneless,280,,0
+"Chicken Sinthamani Gravy","Chicken Sinthamani Gravy",,572,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,220,,0,Boneless,290,,0
+"Chilli Bone","[Chicken Preparation]",305,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Portion,Half,120,,0,Full,220,,0
+"Chilli Boneless","[Chicken Preparation]",334,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Portion,Half,180,,0,Full,350,,0
+"Chicken Fry Bone [Half]","Chicken Fry Bone [Half]",,115,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,160,non-veg,,,0,,,1,0,Yes
+"Chicken 65 [half]","Chicken 65 [Half]",,310,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,130,,0,Boneless,190,,0
+"Chicken Pakkoda [Half]","Chicken Pakkoda [Half]",,118,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,140,,0,Boneless,200,,0
+"Chicken Manchurian [Half]","Chicken Manchurian [Half]",,117,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,160,,0,Boneless,220,,0
+"Pepper Chicken Dry","Pepper Chicken B/L Half",,474,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,160,,0,Boneless,200,,0
+"Hot Pepper Chicken [Half]","Hot Pepper Chicken [Half]",,413,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,160,,0,Boneless,220,,0
+"Chicken Chukka [Half]","Chicken Chukka [Half]",,120,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,160,,0,Boneless,200,,0
+"Schezwan Chicken [Half]","Schezwan Chicken [Half]",,335,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,160,,0,Boneless,220,,0
+"Hyderabad Chicken [Half]","Hyderabad Chicken [Half]",,573,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,160,,0,Boneless,230,,0
+"Chicken Pallipalayam [Half]","Chicken Pallipalayam [Half]",,119,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Bone,160,,0,Boneless,230,,0
+"Super Chicken [2 Pieces]","Super Chicken [2 Pieces]",,170,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,160,non-veg,,,0,,,1,0,Yes
+"Nattukozhi Gravy","Nattukozhi gravy","[Chicken Preparation]",147,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,290,non-veg,,,0,,,1,0,Yes
+"Chicken Sintamani Dry [Half]","Chicken Sintamani Dry [Half]",,582,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,0,non-veg,,,0,,,1,0,Yes,,,,,Customisation,Boneless,220,,0
+"Mutton Fry [half]","Mutton Fry [Half]",,137,,,,"Dry & Gravy Varieties","Mutton Dry Varities",,220,non-veg,,,0,,,1,0,Yes
+"Mutton Chukka [half]","Mutton Chukka [Half]",,139,,,,"Dry & Gravy Varieties","Mutton Dry Varities",,240,non-veg,,,0,,,1,0,Yes
+"Mutton Masala [half]","Mutton Masala [Half]",,144,,,,"Dry & Gravy Varieties","Mutton Dry Varities",,260,non-veg,,,0,,,1,0,Yes
+"Mutton Pallipalayam [half]","Mutton Pallipalayam [Half]",,574,,,,"Dry & Gravy Varieties","Mutton Dry Varities",,260,non-veg,,,0,,,1,0,Yes
+"Kudal Fry [Half]","Kudal Fry [Half]",,141,,,,"Dry & Gravy Varieties","Mutton Dry Varities",,160,non-veg,,,0,,,1,0,Yes
+"Kudal Egg Fry [Half]","Kudal Egg Fry [Half]",,142,,,,"Dry & Gravy Varieties","Mutton Dry Varities",,180,non-veg,,,0,,,1,0,Yes
+"Kudal Masala [Half]","Kudal Masala [Half]",,145,,,,"Dry & Gravy Varieties","Mutton Dry Varities",,210,non-veg,,,0,,,1,0,Yes
+"Kaadai Roast [1 Piece]","Kaadai Roast [1 Piece]","[Chicken Preparation]",148,,,,,"Kaadai Varities",,130,non-veg,,,0,,,1,0,Yes
+"Kaadai Chilly","Kaadai Chilly","[Chicken Preparation]",152,,,,,"Kaadai Varities",,140,non-veg,,,0,,,1,0,Yes
+"Kaadai Fry","Kaadai Fry","[Chicken Preparation]",150,,,,,"Kaadai Varities",,160,non-veg,,,0,,,1,0,Yes
+"Kaadai Masala","Kaadai Masala","[Chicken Preparation]",149,,,,,"Kaadai Varities",,210,non-veg,,,0,,,1,0,Yes
+"Fish Kulambu","Fish Kulambu",,420,,,,,"Sea Food Varities",,70,non-veg,,,0,,,1,0,Yes
+"Cutla Fish Roast [1 Piece]","Cutla Fish Roast [1 Piece]",,155,,,,,"Sea Food Varities",,60,non-veg,,,0,,,1,0,Yes
+"Chilly Fish [12 Pieces]","Chilly Fish [12 Pieces]",,156,,,,,"Sea Food Varities",,160,non-veg,,,0,,,1,0,Yes
+"Fish Finger 80Gms","Fish Finger 80Gms",,352,,,,,"Sea Food Varities",,160,non-veg,,,0,,,1,0,Yes
+"Fish Cutlet [1 Piece]","Fish Cutlet [1 Piece]",,440,,,,,"Sea Food Varities",,50,non-veg,,,0,,,1,0,Yes
+"Fish Manchurian","Fish Manchurian",,353,,,,,"Sea Food Varities",,170,non-veg,,,0,,,1,0,Yes
+"Fish Masala","Fish Masala",,306,,,,,"Sea Food Varities",,180,non-veg,,,0,,,1,0,Yes
+"Nethili Fish Chilly","Nethili Fish Chilly",,437,,,,,"Sea Food Varities",,170,non-veg,,,0,,,1,0,Yes
+"Nethili Fish Masala","Nethili Fish Masala",,438,,,,,"Sea Food Varities",,200,non-veg,,,0,,,1,0,Yes
+"Prawn Chilly","Prawn Chilly",,159,,,,,"Sea Food Varities",,200,non-veg,,,0,,,1,0,Yes
+"Prawn Pepper Fry","Prawn Pepper Fry",,158,,,,,"Sea Food Varities",,210,non-veg,,,0,,,1,0,Yes
+"Prawn Manchurian","Prawn Manchurian",,462,,,,,"Sea Food Varities",,220,non-veg,,,0,,,1,0,Yes
+"Prawn Masala","Prawn Masala",,168,,,,,"Sea Food Varities",,260,non-veg,,,0,,,1,0,Yes
+"Garlic Prawns","Garlic Prawns",,463,,,,,"Sea Food Varities",,270,non-veg,,,0,,,1,0,Yes
+"Crab Lollipop [1 Piece]","Crab Lollipop [1 Piece]",,436,,,,,"Sea Food Varities",,50,non-veg,,,0,,,1,0,Yes
+"Naan [1 Piece]","Naan [1 Piece]",,34,,,,,"Tandoori Bread Varities",,40,veg,,,0,,,1,0,Yes
+"Butter Naan [1 Piece]","Butter Naan [1 Piece]",,35,,,,,"Tandoori Bread Varities",,60,veg,,,0,,,1,0,Yes
+"Garlic Naan [1 Piece]","Garlic Naan [1 Piece]",,379,,,,,"Tandoori Bread Varities",,70,veg,,,0,,,1,0,Yes
+"Roti [1 Piece]","Roti [1 Piece]",,36,,,,,"Tandoori Bread Varities",,40,veg,,,0,,,1,0,Yes
+"Butter Roti [1 Piece]","Butter Roti [1 Piece]",,428,,,,,"Tandoori Bread Varities",,60,veg,,,0,,,1,0,Yes
+"Grill Chicken","Grilled Chicken",,412,,,,,"Grill Items",,0,non-veg,,,0,,,1,0,Yes,,,,,Portion,Quarter,120,,0,Half,220,,0,Full,440,,0
+"Grill Pepper Fry","Grilled Pepper Fry",,494,,,,,"Grill Items",,0,veg,,,0,,,1,0,Yes,,,,,Portion,Quarter,140,,0,Half,260,,0,Full,480,,0
+"Tandoori Chicken","Tandoori Chicken",,411,,,,,"Tandoori Items",,0,non-veg,,,0,,,1,0,Yes,,,,,Portion,Quarter,120,,0,Half,220,,0,Full,440,,0
+"Shawarma Roll","Chicken Shawarma Roll",,441,,,,,"Shawarma Varities",,100,non-veg,,,0,,,1,0,Yes
+"Shawarma Plate","Chicken Shawarma Plate",,442,,,,,"Shawarma Varities",,200,non-veg,,,0,,,1,0,Yes
+"Chocolate Lasagne [Online]","Chocolate Lasagne","Serves 1","1 [Online]",,,,"Dessert & Beverages",Desserts,,155,veg,,,0,,,1,0,Yes
+"Misti Doi [Online]","Misti Doi","Serves 1","2 [Online]",,,,"Dessert & Beverages",Desserts,,60,veg,,,0,,,1,0,Yes
+"Phirni [Online]",Phirni,"Serves 1","3 [Online]",,,,"Dessert & Beverages",Desserts,,120,veg,,,0,,,1,0,Yes
+"Aam Panna [Online]","Aam Panna",,"4 [Online]",,,,"Dessert & Beverages",Beverages,,90,veg,,,0,,,1,0,Yes
+"Kitkat Shake [Online]","Kitkat Shake",,"5 [Online]",,,,"Dessert & Beverages",Beverages,,155,veg,,,0,,,1,0,Yes
+"Lemon Ice Tea [Online]","Lemon Ice Tea",,"6 [Online]",,,,"Dessert & Beverages",Beverages,,85,veg,,,0,,,1,0,Yes
+"Mint Mojito [Online]","Mint Mojito",,"7 [Online]",,,,"Dessert & Beverages",Beverages,,100,veg,,,0,,,1,0,Yes
+"Container 500 Ml","Container 500 Ml",,533,,,,,parcel,,5,veg,,,0,,,1,0,Yes
+"Container 250 Ml","Container 250 Ml",,532,,,,,parcel,,4,veg,,,0,,,1,0,Yes
+Jigerthanda,Jigerthanda,,556,,,,,parcel,,75,veg,,,0,,,1,0,Yes
+Soda,Soda,,470,,,,,parcel,,30,veg,,,0,,,1,0,Yes
+"Mini Cool Drinks","Mini Cool Drinks",,386,,,,,parcel,,15,veg,,,0,,,1,0,Yes
+"Water Bottel","Water Bottel",,358,,,,,parcel,,20,veg,,,0,,,1,0,Yes
+"Pet Bottle","Pet Bottle",,777,,,,,parcel,,30,veg,,,0,,,1,0,Yes
+Extra,Extra,,491,,,,,parcel,,0,veg,,,0,,,1,0,Yes
+"Chilly Bone (half)","Chilly Bone (Half)",,113,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,120,veg,,,0,,,1,0,Yes
+"Chilly Boneless (Half)","Chilly Boneless (Half)",,114,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,180,veg,,,0,,,1,0,Yes
+"Chicken Lollipop (2pcs)","Chicken Lollipop (2Pcs)",,481,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,100,non-veg,,,0,,,1,0,Yes
+"Chicken Lollipop (4pcs)","Chicken Lollipop (4Pcs)",,126,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,200,non-veg,,,0,,,1,0,Yes
+"Prawn Noodles","Prawn Noodles",,542,,,,"Fried Rice and Noodles","Noodles Varities",,220,veg,,,0,,,1,0,Yes
+"Singapore Noodles","Singapore Noodles",,567,,,,"Fried Rice and Noodles","Noodles Varities",,100,veg,,,0,,,1,0,Yes
+"Malai Goftha","Malai Goftha",,565,,,,"Dry & Gravy Varieties","Veg Gravy Varities",,100,veg,,,0,,,1,0,Yes
+"Nattukozhi Fry","Nattukozhi Fry","[Chicken Preparation]",146,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,240,non-veg,,,0,,,1,0,Yes
+"Egg Onion Roast","Egg Onion Roast",dosai,467,,,,,"Dosai Varities",,110,egg,,,0,,,1,0,Yes
+"Chicken Veechu Parotta","Chicken Veechu Parotta",,568,,,,,"Parotta Varities",,200,non-veg,,,0,,,1,0,Yes
+"Chilly Parotta","Chilli Parotta",,80,,,,,"Parotta Varities",,100,veg,,,0,,,1,0,Yes
+"Mushroom Stuff","Mushroom Stuff",,559,,,,,"Parotta Varities",,100,veg,,,0,,,1,0,Yes
+"Paneer Stuffed","Paneer Stuffed",,561,,,,,"Parotta Varities",,110,veg,,,0,,,1,0,Yes
+"Gobi Stuffed","Gobi Stuffed",,558,,,,,"Parotta Varities",,100,veg,,,0,,,1,0,Yes
+"Chicken Stuffed","Chicken Stuffed",,380,,,,,"Parotta Varities",,120,veg,,,0,,,1,0,Yes
+Chappthi,Chappathi,,37,,,,,"Parotta Varities",,25,veg,,,0,,,1,0,Yes
+"Egg Chappthi","Egg Chappathi",,38,,,,,"Parotta Varities",,45,egg,,,0,,,1,0,Yes
+"Egg Kothu Chappthi","Egg Kothu Chappathi",,579,,,,,"Parotta Varities",,90,egg,,,0,,,1,0,Yes
+"Mutton Kothu Chappthi","Mutton Kothu Chappathi",,581,,,,,"Parotta Varities",,210,non-veg,,,0,,,1,0,Yes
+"Chicken Kothu Chappathi","Chicken Kothu Chappathi",,580,,,,,"Parotta Varities",,170,non-veg,,,0,,,1,0,Yes
+"Kash Mivi Pulav","Kash Mivi Pulav",,560,,,,"Fried Rice and Noodles","Fried Rice Varities",,100,veg,,,0,,,1,0,Yes
+"Prawn Fried Rice","Prawn Fried Rice",,523,,,,"Fried Rice and Noodles","Fried Rice Varities",,220,veg,,,0,,,1,0,Yes
+"Chicken Fry Bonless","Chicken Fry Bonless",,123,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,200,veg,,,0,,,1,0,Yes
+"100ml Continer","100Ml Continer",,531,,,,,parcel,,3,veg,,,0,,,1,0,Yes
+"Leaf Parotta","Leaf Parotta",,575,,,,,"Parotta Varities",,170,veg,,,0,,,1,0,Yes
+"Chicken Gravy Bonless","Chicken Gravy Bonless",,464,,,,"Dry & Gravy Varieties","Non-veg Gravy Dishes",,270,veg,,,0,,,1,0,Yes
+"Sprite 750 Ml","Sprite 750 Ml",,454,,,,,parcel,,40,veg,,,0,,,1,0,Yes
+"Coke 750 Ml","Coke 750 Ml",,455,,,,,parcel,,40,veg,,,0,,,1,0,Yes
+"Mazza 750 Ml","Mazza 750 Ml",,502,,,,,parcel,,45,veg,,,0,,,1,0,Yes
+"One Side Omlet","One Side Omlet",,382,,,,,"Egg Varities",,20,veg,,,0,,,1,0,Yes
+"Nethilyi  Fish Pepper Fry","Nethilyi  Fish Pepper Fry",fish,439,,,,,"Sea Food Varities",,190,veg,,,0,,,1,0,Yes
+"Water Bottel 2litter","Water Bottel 2litter",,359,,,,,parcel,,30,veg,,,0,,,1,0,Yes
+"Chilly Chiken Biriyani","Chilly Chiken Biriyani",,564,,,,,"Biryani Varities",,190,non-veg,,,0,,,1,0,Yes
+"Nattukoli Biriyani","Nattukoli Biriyani","NON VEG BIRIYANI",601,579,,,,"Biryani Varities",,280,non-veg,,,0,,,1,0,Yes
+"Soda Pet Bottle","Soda Pet Bottle",soda,471,,,,"Dessert & Beverages",Beverages,,35,veg,,,0,,,1,0,Yes
+"Coco Natta (small)","Coco Natta (small)","cool drinks",585,,,,"Dessert & Beverages",Beverages,,40,veg,,,0,,,1,0,Yes
+"Nattukozhi Pallipalayam","Nattukozhi Pallipalayam",,NCPA,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,310,non-veg,services,,0,,,1,0,Yes
+"Sc Mix Veg Fr","sc mix veg fr",,"sc mix veg fr",,,,"Fried Rice and Noodles","Fried Rice Varities",,180,veg,services,,0,,,1,0,Yes
+"Sc Mix Nv Fr","sc mix nv fr",,"sc mix nv fr",,,,"Fried Rice and Noodles","Fried Rice Varities",,230,non-veg,services,,0,,,1,0,Yes
+"Sc Mix Veg Noodles","sc mix veg noodles",,"sc mix veg noodles",,,,"Fried Rice and Noodles","Noodles Varities",,180,veg,services,,0,,,1,0,Yes
+"Sc Mix Nv Noodles","sc mix nv noodles",,"sc mix nv noodles",,,,"Fried Rice and Noodles","Noodles Varities",,230,non-veg,services,,0,,,1,0,Yes
+"Meals Parcel","Meals Parcel",,201,587,,,,Meals,,0,veg,,qty,1,,,1,0,Yes,,,,,Customisation,Veg,120,,0,Non-veg,270,,0
+"Coconatta (big)","Coconatta (big)",cooldrinks,586,,,,"Dessert & Beverages",Beverages,,60,veg,,,0,,,1,0,Yes
+"Mutton Plain Briyani","mutton plain briyani",,102,,,,,"Biryani Varities",,120,non-veg,services,,0,,,1,0,Yes
+"Nool Parotta","nool parotta",,577,,,,,"Parotta Varities",,40,veg,services,,0,,,1,0,Yes
+"Schezwan Prawn Fried Rice","schezwan prawn fried rice",,524,,,,"Fried Rice and Noodles","Fried Rice Varities",,230,non-veg,services,,0,,,1,0,Yes
+"Schezwan Prawn Noodles","schezwan prawn noodles",,543,,,,"Fried Rice and Noodles","Noodles Varities",,230,non-veg,services,,0,,,1,0,Yes
+"Nethili Pepper Fry","Nethili Pepper Fry","FISH ITEM",600,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,190,non-veg,,,0,,,1,0,Yes
+"Curd Semiya","Curd Semiya",veg,534,,,,"Fried Rice and Noodles","Fried Rice Varities",,80,veg,,,0,,,1,0,Yes
+"Mutton Pallipalayam Gravy","Mutton Pallipalayam Gravy","mutton items",143,,,,"Dry & Gravy Varieties","Non-veg Dry Dishes",,300,veg,,,0,,,1,0,Yes
+"Ghee Podi Roast","Ghee Podi Roast",,22,610,,,,"Dosai Varities",,110,veg,,,0,,,1,0,Yes
+"Mutton Veechu Parotta","Mutton Veechu Parotta",,569,,,,,"Parotta Varities",,240,veg,,,0,,,1,0,Yes

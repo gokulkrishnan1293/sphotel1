@@ -7,11 +7,12 @@ import { tablesApi } from '../../admin/api/tables'
 import type { BillSummaryResponse, BillStatus, BillType, OpenBillRequest } from '../types/bills'
 import { QuickBillBar } from './QuickBillBar'
 import { useShortcutStore, matchKey } from '@/lib/shortcutStore'
+import { toast } from '@/lib/toast'
 
 const STATUS_DOT: Record<BillStatus, string> = { draft: 'bg-text-muted', kot_sent: 'bg-status-success', partially_sent: 'bg-amber-400', billed: 'bg-sphotel-accent', void: 'bg-status-error' }
 const TYPE_ICON: Record<BillType, React.ElementType> = { table: UtensilsCrossed, parcel: ShoppingBag, online: Laptop }
 
-export function ActiveBillsPanel({ onSelect }: { onSelect?: () => void }) {
+export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect?: () => void; canOpenNewBill?: boolean }) {
   const qc = useQueryClient()
   const { activeBillId, setActiveBill } = useBillingStore()
   const [showNew, setShowNew] = useState(false)
@@ -24,12 +25,15 @@ export function ActiveBillsPanel({ onSelect }: { onSelect?: () => void }) {
   const openBill = useMutation({
     mutationFn: (data: OpenBillRequest) => billsApi.open(data),
     onSuccess: (bill) => { qc.invalidateQueries({ queryKey: ['bills', 'open'] }); setActiveBill(bill.id); setShowNew(false); onSelect?.() },
+    onError: (err) => { if ((err as any).offline) toast('Cannot open a new bill while offline') },
   })
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const tag = (document.activeElement as HTMLElement)?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
-      if (matchKey(e, useShortcutStore.getState().shortcuts.new_bill)) { e.preventDefault(); setShowNew(true) }
+      if (matchKey(e, useShortcutStore.getState().shortcuts.new_bill)) { e.preventDefault(); 
+        if (canOpenNewBill) setShowNew(true) 
+            else toast('Printer is offline — cannot open new bills from this device'); }
     }
     window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey)
   }, [])
@@ -64,7 +68,7 @@ export function ActiveBillsPanel({ onSelect }: { onSelect?: () => void }) {
     <aside className="w-full md:w-56 shrink-0 bg-bg-surface border-r border-sphotel-border flex flex-col h-full overflow-hidden">
       <div className="px-3 pt-4 pb-2 flex items-center justify-between shrink-0 gap-2">
         <span className="text-xs font-medium text-text-muted uppercase tracking-wide truncate">Open Bills</span>
-        <button onClick={() => setShowNew(true)} className="w-9 h-9 md:w-6 md:h-6 shrink-0 flex items-center justify-center rounded-md bg-sphotel-accent text-sphotel-accent-fg hover:opacity-90" title="New Bill (N)"><Plus size={16} /></button>
+        <button onClick={() => canOpenNewBill ? setShowNew(true) : toast('Printer is offline — cannot open new bills from this device')} disabled={!canOpenNewBill} className="w-9 h-9 md:w-6 md:h-6 shrink-0 flex items-center justify-center rounded-md bg-sphotel-accent text-sphotel-accent-fg hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed" title={canOpenNewBill ? 'New Bill (N)' : 'Printer offline'}><Plus size={16} /></button>
       </div>
       <div className="flex-1 overflow-y-auto px-2 pb-2 flex flex-col gap-0.5 min-h-0 overflow-x-hidden">
         {isLoading && <p className="text-xs text-text-muted px-2 py-4">Loading…</p>}

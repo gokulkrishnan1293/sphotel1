@@ -49,6 +49,10 @@ def main():
 
     check_and_update()
 
+    from agent.local_http import start_local_http_server
+    from config.agent_config import agent_settings as _cfg
+    start_local_http_server(_cfg.LOCAL_HTTP_PORT)
+
     if args.poll:
         run_http_poll(api_key)
     else:
