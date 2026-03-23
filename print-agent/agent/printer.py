@@ -1,8 +1,11 @@
 from config.agent_config import agent_settings as cfg
 
-# ESC/POS print mode: normal vs double-size
-_ESC_NORMAL = b"\x1b\x21\x00"
-_ESC_DOUBLE = b"\x1b\x21\x30"
+# ESC/POS print mode: normal vs font-B double-size
+# 0x00 = Font A, normal
+# 0x31 = Font B (smaller base) + double-width + double-height
+#        -> slightly bigger than Font A normal, much smaller than Font A double
+_ESC_NORMAL      = b"\x1b\x21\x00"
+_ESC_FONTB_DOUBLE = b"\x1b\x21\x31"
 
 # ESC/POS bold on/off
 _BOLD_ON  = b"\x1b\x45\x01"
@@ -48,7 +51,7 @@ def print_receipt(payload):
         if ptype == "win32":
             import win32print
             name = cfg.WIN32_PRINTER_NAME or win32print.GetDefaultPrinter()
-            font_cmd = _ESC_DOUBLE if font_size >= 2 else _ESC_NORMAL
+            font_cmd = _ESC_FONTB_DOUBLE if font_size >= 2 else _ESC_NORMAL
             raw = _to_raw_bytes(text, font_cmd) + b"\x1d\x56\x00"
             h = win32print.OpenPrinter(name)
             try:
@@ -73,7 +76,9 @@ def print_receipt(payload):
             from escpos.printer import Usb
             p = Usb(cfg.USB_VENDOR_ID, cfg.USB_PRODUCT_ID)
         for seg, bold in _parse_segments(text):
-            p.set(align="left", font="a", bold=bold, width=font_size, height=font_size)
+            # font="b" with double scale = slightly bigger than font-a normal
+            fnt = "b" if font_size >= 2 else "a"
+            p.set(align="left", font=fnt, bold=bold, width=font_size, height=font_size)
             p.text(seg)
         p.cut()
         p.close()
