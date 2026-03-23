@@ -27,7 +27,8 @@ async def _handle_job(ws, msg, conn):
     log.info("Received job %s type=%s", job_id, payload.get("job_type", "receipt"))
     try:
         from agent.printer import print_receipt
-        print_receipt(payload)
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, print_receipt, payload)
         await ws.send(json.dumps({"type": "print.job.confirmed", "job_id": job_id}))
         log.info("Job %s printed and confirmed", job_id)
     except Exception as exc:

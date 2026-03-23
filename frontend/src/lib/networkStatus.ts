@@ -7,7 +7,7 @@ interface NetworkState {
 }
 
 export const useNetworkStore = create<NetworkState>((set) => ({
-  isOnline: true,
+  isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
   setOnline: (v) => set({ isOnline: v }),
 }))
 
