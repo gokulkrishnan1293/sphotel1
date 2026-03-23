@@ -70,6 +70,7 @@ async def agent_ws(websocket: WebSocket, api_key: str = Query(...)):
 
     tenant_id = agent.tenant_id
     agent_id = agent.id
+    printer_role = agent.printer_role  # read before session closes
 
     # Flush any jobs stuck in printing from a previous session
     await _reset_all_printing(tenant_id)
@@ -107,17 +108,26 @@ async def agent_ws(websocket: WebSocket, api_key: str = Query(...)):
             async with async_session_maker() as db_poll:
                 job = (await db_poll.execute(
                     select(PrintJob)
-                    .where(PrintJob.status == "pending", PrintJob.tenant_id == tenant_id)
+                    .where(
+                        PrintJob.status == "pending",
+                        PrintJob.tenant_id == tenant_id,
+                        PrintJob.target_role == printer_role,
+                    )
                     .order_by(PrintJob.created_at)
                     .limit(1)
                 )).scalar_one_or_none()
 
                 if job:
+                    # Read all attributes BEFORE commit — async SQLAlchemy expires
+                    # ORM attributes after commit and lazy loading is not allowed.
+                    job_id_str = str(job.id)
+                    job_payload = dict(job.payload)
+                    job_type = job.job_type
                     job.status = "printing"
                     job.updated_at = datetime.now(tz=timezone.utc)
                     await db_poll.commit()
-                    job_data = {**dict(job.payload), "job_id": str(job.id), "job_type": job.job_type}
-                    await websocket.send_text(json.dumps({"type": "print.job", "job_id": str(job.id), "payload": job_data}))
+                    job_data = {**job_payload, "job_id": job_id_str, "job_type": job_type}
+                    await websocket.send_text(json.dumps({"type": "print.job", "job_id": job_id_str, "payload": job_data}))
 
             await asyncio.sleep(2)
             loops += 1
