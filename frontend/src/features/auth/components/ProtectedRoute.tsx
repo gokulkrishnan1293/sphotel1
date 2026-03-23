@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useAuthStore } from '../stores/authStore'
 import { useMe } from '../hooks/useAuth'
+import { useNetworkStore } from '../../../lib/networkStatus'
 
 interface Props {
   children: React.ReactNode
@@ -9,13 +10,16 @@ interface Props {
 export function ProtectedRoute({ children }: Props) {
   const currentUser = useAuthStore((s) => s.currentUser)
   const loginTenantSlug = useAuthStore((s) => s.loginTenantSlug)
+  const isOnline = useNetworkStore((s) => s.isOnline)
   const { isLoading, isError } = useMe()
 
   useEffect(() => {
-    if (!isLoading && isError) {
+    // Only redirect when the server explicitly rejects (online + error).
+    // A network failure while offline is not a sign-out event.
+    if (!isLoading && isError && isOnline) {
       window.location.href = loginTenantSlug ? `/t/${loginTenantSlug}` : '/t'
     }
-  }, [isLoading, isError, loginTenantSlug])
+  }, [isLoading, isError, isOnline, loginTenantSlug])
 
   if (isLoading) {
     return (
