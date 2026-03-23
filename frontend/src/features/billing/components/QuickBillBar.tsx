@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Check, UtensilsCrossed, ShoppingBag, Laptop, AlertCircle } from 'lucide-react'
 import { tablesApi } from '../../admin/api/tables'
-import { staffApi } from '../../admin/api/staff'
-import { vendorsApi } from '../../settings/api/onlineVendors'
+import { waitersListWithCache } from '../../../lib/db/waitersCache'
+import { vendorsListWithCache } from '../../../lib/db/vendorsCache'
 import type { OpenBillRequest } from '../types/bills'
 
 function parse(raw: string) {
@@ -27,8 +27,8 @@ export function QuickBillBar({ onOpen, onClose, isLoading }: Props) {
   const [selectedVendor, setSelectedVendor] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const { data: sections = [] } = useQuery({ queryKey: ['sections'], queryFn: tablesApi.listSections })
-  const { data: waiters = [] } = useQuery({ queryKey: ['waiters'], queryFn: staffApi.listWaiters })
-  const { data: vendors = [] } = useQuery({ queryKey: ['online-vendors'], queryFn: vendorsApi.list })
+  const { data: waiters = [] } = useQuery({ queryKey: ['waiters'], queryFn: waitersListWithCache })
+  const { data: vendors = [] } = useQuery({ queryKey: ['online-vendors'], queryFn: vendorsListWithCache })
 
   const allTables = useMemo(
     () => sections.flatMap((s) => s.tables.filter((t) => t.is_active).map((t) => ({ ...t, sectionName: s.name }))),

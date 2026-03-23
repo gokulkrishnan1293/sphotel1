@@ -18,13 +18,21 @@ interface SphotelDB {
     value: { op: string; payload: any; createdAt: number }
     autoIncrement: true
   }
+  waiters_cache: {
+    key: string
+    value: { id: string; data: any; cachedAt: number }
+  }
+  vendors_cache: {
+    key: string
+    value: { id: string; data: any; cachedAt: number }
+  }
 }
 
 let dbPromise: Promise<IDBPDatabase<SphotelDB>> | null = null
 
 export function getDb(): Promise<IDBPDatabase<SphotelDB>> {
   if (!dbPromise) {
-    dbPromise = openDB<SphotelDB>('sphotel', 1, {
+    dbPromise = openDB<SphotelDB>('sphotel', 2, {
       upgrade(db) {
         if (!db.objectStoreNames.contains('bills')) {
           db.createObjectStore('bills', { keyPath: 'id' })
@@ -37,6 +45,12 @@ export function getDb(): Promise<IDBPDatabase<SphotelDB>> {
         }
         if (!db.objectStoreNames.contains('offline_queue')) {
           db.createObjectStore('offline_queue', { autoIncrement: true })
+        }
+        if (!db.objectStoreNames.contains('waiters_cache')) {
+          db.createObjectStore('waiters_cache', { keyPath: 'id' })
+        }
+        if (!db.objectStoreNames.contains('vendors_cache')) {
+          db.createObjectStore('vendors_cache', { keyPath: 'id' })
         }
       },
     })
