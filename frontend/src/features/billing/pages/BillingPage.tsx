@@ -24,11 +24,11 @@ export function BillingPage() {
   useEffect(() => { shortcutsApi.get().then(setShortcuts).catch(() => {}) }, [setShortcuts])
   const isOnline = useNetworkStore((s) => s.isOnline)
   const isLocalMachine = useIsLocalMachine()
-  const { data: agents = [] } = useQuery({ queryKey: ['print-agents'], queryFn: printApi.listAgents, refetchInterval: 30_000, staleTime: 20_000 })
+  const { data: agents = [], isLoading: agentsLoading } = useQuery({ queryKey: ['print-agents'], queryFn: printApi.listAgents, refetchInterval: 30_000, staleTime: 20_000 })
   const { data: printTemplate } = useQuery({ queryKey: ['print-template'], queryFn: printApi.getTemplate, staleTime: 300_000 })
   useEffect(() => { if (printTemplate) cachePrintTemplate(printTemplate) }, [printTemplate])
   const printerOnline = agents.some((a) => a.status === 'online')
-  const canOpenNewBill = isLocalMachine || (isOnline && printerOnline) || !isOnline
+  const canOpenNewBill = agentsLoading || isLocalMachine || (isOnline && printerOnline)
 
   const [mobileView, setMobileView] = useState<'panel' | 'canvas'>('panel')
   useEffect(() => { if (activeBillId) setMobileView('canvas') }, [activeBillId])
