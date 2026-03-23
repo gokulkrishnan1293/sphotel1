@@ -3,7 +3,8 @@ import { PrintTemplateConfig } from '../api/printSettings'
 export function ReceiptPreview({ template, type }: { template: PrintTemplateConfig, type: 'receipt' | 'kot' | 'eod' }) {
   const rawW = type === 'receipt' ? template.receipt_width : type === 'eod' ? template.receipt_width : template.kot_width
   const fontSize = type === 'receipt' ? (template.receipt_font_size ?? 1) : type === 'eod' ? (template.eod_font_size ?? 1) : (template.kot_font_size ?? 1)
-  const W = Math.max(1, Math.floor(rawW / Math.max(1, fontSize)))
+  // W is always the full paper width — font scaling is height-only, so chars per line never changes.
+  const W = Math.max(1, rawW)
   const previewPx = 8 + (fontSize - 1) * 2
 
   const center = (text: string) => {

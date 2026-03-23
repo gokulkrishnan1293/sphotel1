@@ -61,8 +61,9 @@ def _bold(text: str, enabled: bool) -> str:
 
 def format_receipt(payload: dict) -> str:
     tmpl = payload.get("print_template", {})
-    font_size = max(1, tmpl.get("receipt_font_size", 1))
-    W = max(1, tmpl.get("receipt_width", 42) // font_size)
+    # W is always the full receipt width — font scaling is height-only so
+    # the number of characters per line never changes.
+    W = max(1, tmpl.get("receipt_width", 42))
     top_pad = tmpl.get("top_padding", 2)
     bot_pad = tmpl.get("bottom_padding", 5)
 
@@ -188,8 +189,8 @@ def format_receipt(payload: dict) -> str:
 
 def format_kot(payload: dict) -> str:
     tmpl = payload.get("print_template", {})
-    font_size = max(1, tmpl.get("kot_font_size", 1))
-    W = max(1, tmpl.get("kot_width", 32) // font_size)
+    # W is always the full KOT width — height-only scaling, chars per line unchanged.
+    W = max(1, tmpl.get("kot_width", 32))
     top_pad = tmpl.get("top_padding", 2)
     bot_pad = tmpl.get("bottom_padding", 5)
 
@@ -237,8 +238,8 @@ def format_eod(payload: dict) -> str:
     summary = payload.get("summary", {})
     waiter_rows = payload.get("waiter_rows", [])
 
-    font_size = max(1, tmpl.get("eod_font_size", 1))
-    W = max(1, tmpl.get("eod_width", tmpl.get("receipt_width", 42)) // font_size)
+    # W is always the full EOD width — height-only scaling, chars per line unchanged.
+    W = max(1, tmpl.get("eod_width", tmpl.get("receipt_width", 42)))
     top_pad = tmpl.get("top_padding", 2)
     bot_pad = tmpl.get("bottom_padding", 2)
 

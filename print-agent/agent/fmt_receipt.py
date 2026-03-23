@@ -6,8 +6,9 @@ from agent.fmt_helpers import bold, center, divider, row, rs, ist
 
 def format_receipt(payload):
     tmpl = payload.get("print_template") or {}
-    fs   = max(1, tmpl.get("receipt_font_size", 1))
-    W    = max(1, tmpl.get("receipt_width", 42) // fs)
+    # W is always the full receipt width — font scaling is height-only in the
+    # printer, so the number of characters per line never changes.
+    W    = max(1, tmpl.get("receipt_width", 42))
     bh   = tmpl.get("bold_header", False)
     bt   = tmpl.get("bold_total", False)
 
