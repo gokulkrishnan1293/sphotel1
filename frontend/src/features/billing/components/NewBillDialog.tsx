@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { tablesApi } from '../../admin/api/tables'
-import { staffApi } from '../../admin/api/staff'
+import { waitersListWithCache } from '../../../lib/db/waitersCache'
 import type { BillType } from '../types/bills'
 
 const INPUT = 'bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-sphotel-accent w-full'
@@ -16,7 +16,7 @@ export function NewBillDialog({ onOpen, onCancel, isLoading }: { onOpen: OnOpen;
   const [waiterId, setWaiterId] = useState('')
 
   const { data: sections = [] } = useQuery({ queryKey: ['sections'], queryFn: tablesApi.listSections, enabled: type === 'table' })
-  const { data: waiters = [] } = useQuery({ queryKey: ['waiters'], queryFn: staffApi.listWaiters })
+  const { data: waiters = [] } = useQuery({ queryKey: ['waiters'], queryFn: waitersListWithCache })
 
   function submit() {
     const wid = waiterId || null
