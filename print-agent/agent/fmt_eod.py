@@ -8,8 +8,8 @@ def format_eod(payload):
     tmpl    = payload.get("print_template") or {}
     summary = payload.get("summary", {})
     waiters = payload.get("waiter_rows", [])
-    fs      = max(1, tmpl.get("eod_font_size", 1))
-    W       = max(1, tmpl.get("eod_width", tmpl.get("receipt_width", 42)) // fs)
+    # W is always the full EOD width — height-only scaling, chars per line unchanged.
+    W       = max(1, tmpl.get("eod_width", tmpl.get("receipt_width", 42)))
     beh     = tmpl.get("bold_eod_headers", False)
 
     lines = [""] * tmpl.get("top_padding", 2)

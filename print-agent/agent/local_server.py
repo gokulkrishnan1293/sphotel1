@@ -7,6 +7,7 @@ Compatible with websockets 9.x (Python 3.6).
 import asyncio
 import json
 import logging
+import functools
 
 try:
     import websockets
@@ -38,7 +39,8 @@ async def _handler(ws, path):
                 continue
         try:
             from agent.printer import print_receipt
-            print_receipt(payload)
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(None, functools.partial(print_receipt, payload))
             log.info("Local WS job printed: %s", payload.get("job_type", "receipt"))
             await ws.send(json.dumps({"ok": True}))
         except Exception as exc:

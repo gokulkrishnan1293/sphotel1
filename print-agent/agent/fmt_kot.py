@@ -6,8 +6,8 @@ from agent.fmt_helpers import bold, divider, ist
 
 def format_kot(payload):
     tmpl = payload.get("print_template") or {}
-    fs   = max(1, tmpl.get("kot_font_size", 1))
-    W    = max(1, tmpl.get("kot_width", 32) // fs)
+    # W is always the full KOT width — height-only scaling, chars per line unchanged.
+    W    = max(1, tmpl.get("kot_width", 32))
 
     bill_type  = payload.get("bill_type", "")
     type_label = {"table": "Dine In", "parcel": "Pick Up", "pickup": "Pick Up"}.get(
