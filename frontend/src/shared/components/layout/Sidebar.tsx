@@ -100,6 +100,16 @@ export function Sidebar() {
           className="w-10 h-10 flex items-center justify-center rounded-lg text-text-muted hover:bg-bg-base hover:text-status-error transition-colors">
           <LogOut size={18} />
         </button>
+        <div className="relative group flex items-center">
+          <span className="text-[10px] text-text-muted/50 select-none cursor-default">
+            v{__APP_VERSION__}
+          </span>
+          <div className="absolute left-full ml-3 px-2 py-1.5 bg-bg-elevated border border-sphotel-border text-text-primary text-xs font-medium rounded shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+            App version {__APP_VERSION__}
+            <div className="absolute left-0 top-1/2 -ml-1 -mt-1 border-t-4 border-b-4 border-r-4 border-t-transparent border-b-transparent border-r-bg-elevated"></div>
+            <div className="absolute left-0 top-1/2 -ml-[5px] -mt-1 border-t-4 border-b-4 border-r-4 border-t-transparent border-b-transparent border-r-sphotel-border -z-10"></div>
+          </div>
+        </div>
       </div>
     </aside>
   )
