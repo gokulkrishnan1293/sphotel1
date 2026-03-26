@@ -81,6 +81,12 @@ async def update_menu_item(db: AsyncSession, tenant_id: str, item_id: uuid.UUID,
     item = await _get(db, tenant_id, item_id)
     for field, value in data.model_dump(exclude_unset=True, exclude={"variants", "vendor_prices"}).items():
         setattr(item, field, value)
+    vd = data.model_dump(exclude_unset=True)
+    if "variants" in vd:
+        item.variants = []
+    if "vendor_prices" in vd:
+        item.vendor_prices = []
+    await db.flush()  # issue DELETEs before re-inserting to avoid uq_vendor_price_item violation
     try:
         _apply_relations(item, data)
         await db.commit()
