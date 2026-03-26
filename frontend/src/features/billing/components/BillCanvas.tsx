@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Flame, Plus, CreditCard, Ban, UtensilsCrossed, Printer } from 'lucide-react'
+import { UtensilsCrossed } from 'lucide-react'
+import { BillFooter } from './BillFooter'
 import { billsApi } from '../api/bills'
 import { useBillingStore } from '../stores/billingStore'
 import { CommandPalette } from './CommandPalette'
@@ -13,7 +14,7 @@ import { useShortcutStore, matchKey } from '@/lib/shortcutStore'
 import { useFeatureFlagStore } from '@/lib/featureFlagStore'
 import { toast } from '@/lib/toast'
 import { localPrint } from '@/lib/localPrint'
-const fmt = (p: number) => `₹${(p / 100).toFixed(2)}`; const defaultMethod = (billType: string): PaymentMethod => billType === 'online' ? 'online' : 'cash'
+const defaultMethod = (billType: string): PaymentMethod => billType === 'online' ? 'online' : 'cash'
 
 export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
   const qc = useQueryClient()
@@ -39,10 +40,9 @@ export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
   const removeItem = useMutation({ mutationFn: (id: string) => billsApi.removeItem(activeBillId!, id), onSuccess: inv })
   const updateQty = useMutation({ mutationFn: ({ itemId, quantity }: { itemId: string; quantity: number }) => billsApi.updateItem(activeBillId!, itemId, { quantity }), onSuccess: inv })
   const updatePrice = useMutation({ mutationFn: ({ itemId, override_price_paise }: { itemId: string; override_price_paise: number }) => billsApi.updateItem(activeBillId!, itemId, { override_price_paise }), onSuccess: inv })
-  const voidBill = useMutation({
-    mutationFn: () => billsApi.void(activeBillId!),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['bill', activeBillId] }); qc.invalidateQueries({ queryKey: ['bills', 'open'] }); qc.invalidateQueries({ queryKey: ['bills', 'recent'] }) },
-  })
+  const invBill = () => { qc.invalidateQueries({ queryKey: ['bill', activeBillId] }); qc.invalidateQueries({ queryKey: ['bills', 'open'] }); qc.invalidateQueries({ queryKey: ['bills', 'recent'] }) }
+  const voidBill = useMutation({ mutationFn: () => billsApi.void(activeBillId!), onSuccess: invBill })
+  const unvoidBill = useMutation({ mutationFn: () => billsApi.unvoid(activeBillId!), onSuccess: invBill })
   const printBill = useMutation({ mutationFn: () => billsApi.print(activeBillId!).catch(() => bill ? localPrint(bill) : Promise.reject(new Error('no bill'))) })
   const updateMethod = useMutation({ mutationFn: (m: PaymentMethod) => billsApi.updatePaymentMethod(activeBillId!, m), onSuccess: inv })
 
@@ -82,37 +82,13 @@ export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
         {sent.map((item) => <ItemRow key={item.id} item={item} disabled={isClosed} onRemove={() => {}} onQtyChange={() => {}} readOnly fontSizeIdx={fontSizeIdx} />)}
         {bill.items.length === 0 && <div className="flex flex-col items-center justify-center py-16"><p className="text-text-muted text-sm">Bill is empty</p><button onClick={openCommandPalette} className="mt-2 text-sm text-sphotel-accent">Press Space to add items</button></div>}
       </div>
-
-      {!isClosed && (
-        <div className="px-4 py-3 md:px-6 md:py-4 border-t border-sphotel-border flex flex-col gap-3">
-          <div className="flex justify-between text-sm"><span className="text-text-secondary">Subtotal</span><span className="font-medium text-text-primary">{fmt(bill.subtotal_paise)}</span></div>
-          <div className="flex gap-2">
-            <button onClick={openCommandPalette} className="flex-1 py-3 md:py-2.5 bg-bg-elevated border border-sphotel-border rounded-xl text-sm text-text-secondary hover:text-text-primary flex items-center justify-center gap-1.5"><Plus size={14} />Add<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">Space</kbd></button>
-            {pending.length > 0 && bill.bill_type === 'table' && <button onClick={() => fireKot.mutate()} disabled={fireKot.isPending} className="flex-1 py-3 md:py-2.5 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-1.5"><Flame size={14} />Fire KOT<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">⌘K</kbd></button>}
-            <button onClick={() => setSettleOpen(true)} disabled={!hasItems || closeBill.isPending} className="flex-1 py-3 md:py-2.5 bg-sphotel-accent text-sphotel-accent-fg rounded-xl text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-1.5"><CreditCard size={14} />Generate Bill<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">G</kbd><span className="hidden md:inline text-xs opacity-50">·</span><kbd className="hidden md:inline text-xs opacity-50 font-mono">↵</kbd></button>
-          </div>
-          {isBiller && <button onClick={() => { if (confirm('Void this bill?')) voidBill.mutate() }} className="flex items-center justify-center gap-1.5 text-xs text-status-error hover:opacity-80 py-1"><Ban size={12} />Void bill</button>}
-        </div>
-      )}
-      {isClosed && (
-        <div className="px-4 py-3 md:px-6 md:py-4 border-t border-sphotel-border flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          {bill.status === 'billed' ? (
-            <span className="text-sm font-medium text-sphotel-accent flex items-center gap-1.5">
-              Settled · {fmt(bill.total_paise)} via
-              <select value={bill.payment_method ?? 'cash'} onChange={(e) => updateMethod.mutate(e.target.value as PaymentMethod)} className="bg-transparent text-sphotel-accent font-medium text-sm border-0 outline-none cursor-pointer">
-                {(['cash','card','upi','online'] as PaymentMethod[]).map(m => <option key={m} value={m} className="bg-bg-surface text-text-primary">{m}</option>)}
-              </select>
-            </span>
-          ) : (
-            <p className="text-sm font-medium text-status-error">This bill has been voided</p>
-          )}
-          <div className="flex items-center gap-3">
-            {isBiller && bill.status === 'billed' && <button onClick={() => { if (confirm('Void this bill?')) voidBill.mutate() }} className="flex items-center gap-1.5 text-xs text-status-error hover:opacity-80 py-1"><Ban size={12} />Void bill</button>}
-            {bill.status === 'billed' && <button onClick={() => printBill.mutate()} disabled={printBill.isPending} className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary disabled:opacity-50"><Printer size={13} />{printQueued ? 'Printing…' : printBill.isPending ? 'Queued…' : 'Reprint'}</button>}
-          </div>
-        </div>
-      )}
-
+      <BillFooter bill={bill} isBiller={isBiller} hasItems={hasItems}
+        pendingCount={pending.length} printQueued={printQueued}
+        fireKotPending={fireKot.isPending} closeBillPending={closeBill.isPending} printPending={printBill.isPending}
+        onAddItem={openCommandPalette} onFireKot={() => fireKot.mutate()} onSettle={() => setSettleOpen(true)}
+        onVoid={() => { if (confirm('Void this bill?')) voidBill.mutate() }}
+        onUnvoid={() => { if (confirm('Restore this bill?')) unvoidBill.mutate() }}
+        onPrint={() => printBill.mutate()} onUpdateMethod={(m) => updateMethod.mutate(m)} />
       {commandPaletteOpen && <CommandPalette billId={activeBillId} billType={bill.bill_type} platform={bill.platform} />}
       {settleOpen && <SettleDialog bill={bill} onClose={() => setSettleOpen(false)} onSettle={(m, d) => closeBill.mutate({ method: m, discount: d })} isLoading={closeBill.isPending} />}
     </div>

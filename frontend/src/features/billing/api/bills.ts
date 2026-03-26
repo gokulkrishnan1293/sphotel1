@@ -16,6 +16,8 @@ export const billsApi = {
     apiClient.get<BillSummaryResponse[]>('/api/v1/bills').then((r) => { writeBillSummaries(r.data).catch(() => {}); return r.data }).catch(() => readOpenBills()),
   listRecent: (): Promise<BillSummaryResponse[]> =>
     apiClient.get<BillSummaryResponse[]>('/api/v1/bills/recent').then((r) => r.data),
+  listHistory: (q?: string, status?: string, limit = 50, offset = 0): Promise<BillSummaryResponse[]> =>
+    apiClient.get<BillSummaryResponse[]>('/api/v1/bills/history', { params: { q, status, limit, offset } }).then((r) => r.data),
 
   open: async (data: OpenBillRequest): Promise<BillResponse> => {
     if (!offline()) return apiClient.post<BillResponse>('/api/v1/bills', data).then((r) => { writeBill(r.data).catch(() => {}); return r.data })
@@ -86,14 +88,10 @@ export const billsApi = {
       .then((r) => { writeBill(r.data).catch(() => {}); return r.data })
   },
 
-  void: async (billId: string): Promise<BillResponse> => {
-    if (offline()) { await enqueue('voidBill', { billId }); throw Object.assign(new Error('Queued offline'), { queued: true }) }
-    return apiClient.post<BillResponse>(`/api/v1/bills/${billId}/void`).then((r) => r.data)
-  },
-
+  void: async (billId: string): Promise<BillResponse> => { if (offline()) { await enqueue('voidBill', { billId }); throw Object.assign(new Error('Queued offline'), { queued: true }) }; return apiClient.post<BillResponse>(`/api/v1/bills/${billId}/void`).then((r) => r.data) },
+  unvoid: async (billId: string): Promise<BillResponse> => { if (offline()) { await enqueue('unvoidBill', { billId }); throw Object.assign(new Error('Queued offline'), { queued: true }) }; return apiClient.post<BillResponse>(`/api/v1/bills/${billId}/unvoid`).then((r) => r.data) },
   print: (billId: string, jobType: 'receipt' | 'kot' = 'receipt'): Promise<void> =>
     apiClient.post('/api/v1/print-jobs', { bill_id: billId, job_type: jobType }).then(() => undefined),
-
   updatePaymentMethod: (billId: string, payment_method: PaymentMethod): Promise<BillResponse> =>
     apiClient.patch<BillResponse>(`/api/v1/bills/${billId}/payment-method`, { payment_method }).then((r) => r.data),
 }

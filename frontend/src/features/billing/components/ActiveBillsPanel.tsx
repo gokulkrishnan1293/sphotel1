@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, ShoppingBag, Laptop, UtensilsCrossed, ChevronDown, ChevronRight } from 'lucide-react'
+import { Plus, ShoppingBag, Laptop, UtensilsCrossed, ChevronDown, ChevronRight, Clock } from 'lucide-react'
 import { billsApi } from '../api/bills'
 import { useBillingStore } from '../stores/billingStore'
 import { tablesApi } from '../../admin/api/tables'
@@ -8,6 +8,7 @@ import type { BillSummaryResponse, BillStatus, BillType, OpenBillRequest } from 
 import { QuickBillBar } from './QuickBillBar'
 import { useShortcutStore, matchKey } from '@/lib/shortcutStore'
 import { toast } from '@/lib/toast'
+import { PastBillsModal } from './PastBillsModal'
 
 const STATUS_DOT: Record<BillStatus, string> = { draft: 'bg-text-muted', kot_sent: 'bg-status-success', partially_sent: 'bg-amber-400', billed: 'bg-sphotel-accent', void: 'bg-status-error' }
 const TYPE_ICON: Record<BillType, React.ElementType> = { table: UtensilsCrossed, parcel: ShoppingBag, online: Laptop }
@@ -17,6 +18,7 @@ export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect
   const { activeBillId, setActiveBill } = useBillingStore()
   const [showNew, setShowNew] = useState(false)
   const [showPast, setShowPast] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
   const { data: bills = [], isLoading } = useQuery({ queryKey: ['bills', 'open'], queryFn: billsApi.listOpen, refetchInterval: 15_000 })
   const { data: recentBills = [] } = useQuery({ queryKey: ['bills', 'recent'], queryFn: billsApi.listRecent, enabled: showPast, refetchInterval: 30_000 })
   const { data: sections = [] } = useQuery({ queryKey: ['sections'], queryFn: tablesApi.listSections })
@@ -31,9 +33,7 @@ export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect
     function onKey(e: KeyboardEvent) {
       const tag = (document.activeElement as HTMLElement)?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
-      if (matchKey(e, useShortcutStore.getState().shortcuts.new_bill)) { e.preventDefault(); 
-        if (canOpenNewBill) setShowNew(true) 
-            else toast('Printer is offline — cannot open new bills from this device'); }
+      if (matchKey(e, useShortcutStore.getState().shortcuts.new_bill)) { e.preventDefault(); if (canOpenNewBill) setShowNew(true); else toast('Printer is offline — cannot open new bills from this device') }
     }
     window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey)
   }, [])
@@ -80,10 +80,13 @@ export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect
         )}
         {bills.map((bill) => <BillRow key={bill.id} bill={bill} />)}
       </div>
-      <div className="shrink-0 border-t border-sphotel-border">
-        <button onClick={() => setShowPast((v) => !v)} className="w-full flex items-center gap-2 px-3 py-3 md:py-2 text-xs font-medium text-text-muted hover:text-text-primary transition-colors">
-          {showPast ? <ChevronDown size={12} /> : <ChevronRight size={12} />} Past Bills
-        </button>
+      <div className="shrink-0 border-t border-sphotel-border flex flex-col">
+        <div className="flex items-center">
+          <button onClick={() => setShowPast((v) => !v)} className="flex-1 flex items-center gap-2 px-3 py-3 md:py-2 text-xs font-medium text-text-muted hover:text-text-primary transition-colors">
+            {showPast ? <ChevronDown size={12} /> : <ChevronRight size={12} />} Past Bills
+          </button>
+          <button onClick={() => setShowHistory(true)} className="hidden md:flex items-center px-3 py-2 text-text-muted hover:text-text-primary" title="Browse all history"><Clock size={12} /></button>
+        </div>
         {showPast && (
           <div className="px-2 pb-2 flex flex-col gap-0.5 max-h-[40vh] md:max-h-48 overflow-y-auto">
             {recentBills.length === 0 ? <p className="text-xs text-text-muted px-2 py-2">No past bills</p> : recentBills.map((bill) => <BillRow key={bill.id} bill={bill} dim />)}
@@ -91,6 +94,7 @@ export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect
         )}
       </div>
       {showNew && <QuickBillBar onOpen={(data) => openBill.mutate(data)} onClose={() => setShowNew(false)} isLoading={openBill.isPending} />}
+      {showHistory && <PastBillsModal onClose={() => setShowHistory(false)} />}
     </aside>
   )
 }

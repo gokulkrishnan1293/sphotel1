@@ -1,6 +1,6 @@
 import { getDb } from './schema'
 
-export type OpName = 'openBill' | 'addItem' | 'removeItem' | 'updateItem' | 'closeBill' | 'voidBill' | 'fireKot'
+export type OpName = 'openBill' | 'addItem' | 'removeItem' | 'updateItem' | 'closeBill' | 'voidBill' | 'unvoidBill' | 'fireKot'
 
 export interface QueueEntry {
   op: OpName
