@@ -49,7 +49,7 @@ export async function localPrintKot(bill: BillResponse, pendingItemIds: string[]
     job_type: 'kot',
     bill_number: bill.bill_number,
     bill_type: bill.bill_type,
-    ticket_number: bill.kot_tickets.length + 1,
+    kot_number: bill.kot_tickets.length + 1,
     printed_at: new Date().toISOString(),
     print_template: loadTemplate() ?? {},
     items: kotItems.map((i) => ({ name: i.name, qty: i.quantity })),
