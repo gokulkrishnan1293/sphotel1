@@ -24,6 +24,26 @@ services:
       - "5173:5173"
     env_file:
       - .env
+    environment:
+      VITE_APP_TYPE: admin
+
+  print-agent:
+    build:
+      context: ./print-agent
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./print-agent:/app
+      - print_agent_key:/root/.sphotel-agent
+    environment:
+      SPHOTEL_API_URL: http://backend:8000
+      PRINTER_TYPE: file
+      PRINTER_FILE: /tmp/agent_print.bin
+    command: sh -c "while true; do python -m agent; echo 'Agent exited, retrying in 5s...'; sleep 5; done"
+    ports:
+      - "8765:8765"
+      - "8766:8766"
+    depends_on:
+      - backend
 
   db:
     ports:
@@ -32,3 +52,6 @@ services:
   valkey:
     ports:
       - "6379:6379"
+
+volumes:
+  print_agent_key:
