@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { X, Search, ShoppingBag, Laptop, UtensilsCrossed } from 'lucide-react'
 import { billsApi } from '../api/bills'
 import { useBillingStore } from '../stores/billingStore'
-import type { BillSummaryResponse, BillStatus, BillType } from '../types/bills'
+import type { BillStatus, BillType } from '../types/bills'
 
 const DOT: Record<BillStatus, string> = { draft: 'bg-text-muted', kot_sent: 'bg-status-success', partially_sent: 'bg-amber-400', billed: 'bg-sphotel-accent', void: 'bg-status-error' }
 const ICON: Record<BillType, React.ElementType> = { table: UtensilsCrossed, parcel: ShoppingBag, online: Laptop }
