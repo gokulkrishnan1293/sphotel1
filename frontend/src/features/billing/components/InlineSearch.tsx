@@ -130,7 +130,7 @@ export const InlineSearch = forwardRef<InlineSearchHandle, Props>(
             className="flex-1 bg-transparent text-sm text-text-primary placeholder-text-muted outline-none py-1"
           />
           {qty > 1 && <span className="text-xs bg-sphotel-accent-subtle text-sphotel-accent px-2 py-0.5 rounded-full font-medium shrink-0">×{qty}</span>}
-          <span className="hidden md:inline text-xs text-text-muted shrink-0 select-none">F8 bill</span>
+          <span className="hidden md:inline text-xs text-text-muted shrink-0 select-none">F8 quick bill</span>
           {isBatch(query) && <span className="text-xs text-sphotel-accent shrink-0">batch</span>}
         </div>
         {showResults && filtered.length > 0 && (
@@ -148,7 +148,7 @@ export const InlineSearch = forwardRef<InlineSearchHandle, Props>(
               </button>
             ))}
             <div className="hidden md:flex px-4 py-1.5 border-t border-sphotel-border text-xs text-text-muted gap-4">
-              <span>↑↓ navigate</span><span>Enter add</span><span>F8 generate bill</span>
+              <span>↑↓ navigate</span><span>Enter add</span><span>F8 quick bill (no dialog)</span>
             </div>
           </div>
         )}
