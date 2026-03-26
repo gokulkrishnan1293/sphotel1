@@ -27,6 +27,7 @@ async function replayOp(entry: QueueEntry, idMap: Record<string, string>): Promi
   if (entry.op === 'updateItem') return billsApi.updateItem(billId, p.itemId, p.data).then(() => undefined)
   if (entry.op === 'closeBill')  return billsApi.close(billId, p.data).then(() => undefined)
   if (entry.op === 'voidBill')   return billsApi.void(billId).then(() => undefined)
+  if (entry.op === 'unvoidBill') return billsApi.unvoid(billId).then(() => undefined)
   if (entry.op === 'fireKot')    return billsApi.fireKot(billId).then(() => undefined)
   throw new Error('Unknown queued op: ' + entry.op)
 }

@@ -7,6 +7,7 @@ from app.api.v1.routes import (
     fixed_report_configs,
     keyboard_shortcuts,
     telegram,
+    bill_actions,
     bill_items,
     bills,
     expenses,
@@ -40,6 +41,7 @@ api_router.include_router(health.router)
 # Resource domain routers — each declares its own prefix
 api_router.include_router(auth.router)
 api_router.include_router(bills.router)
+api_router.include_router(bill_actions.router)
 api_router.include_router(bill_items.router)
 api_router.include_router(kot.router)
 api_router.include_router(kot_actions.router)

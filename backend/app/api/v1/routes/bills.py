@@ -2,7 +2,7 @@
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select, update as sa_update
+from sqlalchemy import cast, select, String, update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import CurrentUser, require_role
@@ -18,6 +18,19 @@ from .bill_helpers import build_response, enrich_summaries, fetch_user_names
 
 router = APIRouter(prefix="/bills", tags=["bills"])
 _BILLING = (UserRole.BILLER, UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+
+@router.get("/history", response_model=DataResponse[list[BillSummaryResponse]])
+async def list_bill_history(
+    q: str | None = None, status: str | None = None, limit: int = 50, offset: int = 0,
+    current_user: CurrentUser = Depends(require_role(*_BILLING)),
+    db: AsyncSession = Depends(get_db),
+) -> DataResponse[list[BillSummaryResponse]]:
+    statuses = [BillStatus.BILLED, BillStatus.VOID] if not status else [BillStatus(status)]
+    stmt = select(Bill).where(Bill.tenant_id == current_user["tenant_id"], Bill.status.in_(statuses))
+    if q: stmt = stmt.where(cast(Bill.bill_number, String).ilike(f'%{q}%'))
+    r = await db.execute(stmt.order_by(Bill.updated_at.desc()).limit(limit).offset(offset))
+    return DataResponse(data=await enrich_summaries(db, current_user["tenant_id"], list(r.scalars().all())))
+
 
 @router.get("/recent", response_model=DataResponse[list[BillSummaryResponse]])
 async def list_recent_bills(
@@ -82,18 +95,6 @@ async def update_payment_method(
     if result.first() is None:
         raise HTTPException(400, "Bill not found or not in billed state")
     await db.commit()
-    bill, items, kots = await bill_service.get_bill_with_items(db, current_user["tenant_id"], bill_id)
-    names = await fetch_user_names(db, current_user["tenant_id"], bill.created_by, bill.waiter_id)
-    return DataResponse(data=build_response(bill, items, kots, names))
-
-
-@router.post("/{bill_id}/void", response_model=DataResponse)
-async def void_bill(
-    bill_id: uuid.UUID,
-    current_user: CurrentUser = Depends(require_role(*_BILLING)),
-    db: AsyncSession = Depends(get_db),
-) -> DataResponse:
-    await bill_service.void_bill(db, current_user["tenant_id"], bill_id)
     bill, items, kots = await bill_service.get_bill_with_items(db, current_user["tenant_id"], bill_id)
     names = await fetch_user_names(db, current_user["tenant_id"], bill.created_by, bill.waiter_id)
     return DataResponse(data=build_response(bill, items, kots, names))
