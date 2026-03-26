@@ -42,7 +42,8 @@ export async function optimisticUpdateItem(billId: string, itemId: string, patch
   if (!bill) return null
   const items = bill.items.map((i) => i.id === itemId ? { ...i, ...patch } : i)
   const subtotal = items.filter((i) => i.status !== 'voided').reduce((s, i) => s + (i.override_price_paise ?? i.price_paise) * i.quantity, 0)
-  await writeBill({ ...bill, items, subtotal_paise: subtotal, total_paise: subtotal, updated_at: new Date().toISOString() })
+  const total = Math.max(0, subtotal - bill.discount_paise + bill.gst_paise)
+  await writeBill({ ...bill, items, subtotal_paise: subtotal, total_paise: total, updated_at: new Date().toISOString() })
   return items.find((i) => i.id === itemId) ?? null
 }
 
