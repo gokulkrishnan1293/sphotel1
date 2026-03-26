@@ -1,6 +1,6 @@
 import { apiClient } from '../../../lib/api'
 import { writeBill, writeBillSummaries, readBill, readOpenBills, optimisticAddItem, optimisticRemoveItem, optimisticUpdateItem, optimisticFireKot } from '../../../lib/db/billsCache'
-import { localPrintKot } from '../../../lib/localPrint'
+import { localPrintKot, cacheDailyBillNumber, loadDailyBillNumber } from '../../../lib/localPrint'
 import { enqueue } from '../../../lib/db/offlineQueue'
 import { useNetworkStore } from '../../../lib/networkStatus'
 import type {
@@ -20,9 +20,8 @@ export const billsApi = {
     apiClient.get<BillSummaryResponse[]>('/api/v1/bills/history', { params: { q, status, limit, offset } }).then((r) => r.data),
 
   open: async (data: OpenBillRequest): Promise<BillResponse> => {
-    if (!offline()) return apiClient.post<BillResponse>('/api/v1/bills', data).then((r) => { writeBill(r.data).catch(() => {}); return r.data })
-    const cached = await readOpenBills()
-    const maxNum = cached.reduce((m, b) => Math.max(m, b.bill_number), 0)
+    if (!offline()) return apiClient.post<BillResponse>('/api/v1/bills', data).then((r) => { cacheDailyBillNumber(r.data.bill_number); writeBill(r.data).catch(() => {}); return r.data })
+    const maxNum = loadDailyBillNumber()
     const tempId = 'offline_' + Date.now()
     const tempBill: BillResponse = {
       id: tempId, bill_number: maxNum + 1, bill_type: data.bill_type, status: 'draft',
