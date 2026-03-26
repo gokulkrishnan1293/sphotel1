@@ -53,8 +53,8 @@ export function BillCanvas({ fontSizeIdx = 1, canOpenNewBill = true }: { fontSiz
     const handle = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName
       const sc = useShortcutStore.getState().shortcuts
-      // F8 always generates bill regardless of which input is focused
-      if (e.key === 'F8') { e.preventDefault(); if (bill && bill.status !== 'billed' && bill.status !== 'void') setSettleOpen(true); return }
+      // F8 = one-click bill close (no dialog, default payment method)
+      if (e.key === 'F8') { e.preventDefault(); if (bill && bill.status !== 'billed' && bill.status !== 'void' && bill.items.some((i) => i.status !== 'voided') && !closeBill.isPending) closeBill.mutate({ method: defaultMethod(bill.bill_type), discount: 0 }); return }
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return
       if (matchKey(e, sc.open_search)) { e.preventDefault(); searchRef.current?.focus() }
       if (matchKey(e, sc.fire_kot)) { e.preventDefault(); if (bill?.items.some((i) => i.status === 'pending')) fireKot.mutate() }
