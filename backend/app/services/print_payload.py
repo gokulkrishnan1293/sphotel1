@@ -60,7 +60,8 @@ async def build_receipt_payload(db: AsyncSession, tenant_id: str, bill_id: uuid.
         "cashier": names.get(bill.created_by),
         "waiter_name": names.get(bill.waiter_id) if bill.waiter_id else None,
         "customer_name": None,
-        "items": [{"name": i.name, "qty": i.quantity, "price_paise": i.price_paise,
+        "items": [{"name": i.name, "qty": i.quantity,
+                   "price_paise": i.override_price_paise if i.override_price_paise is not None else i.price_paise,
                    "special_note": getattr(i, "special_note", None), "food_type": i.food_type}
                   for i in items],
         "subtotal_paise": bill.subtotal_paise, "discount_paise": bill.discount_paise,
