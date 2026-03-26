@@ -139,10 +139,10 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
   return (
     <div className="flex-1 flex flex-col p-4 md:p-6">
       <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-4">New Bill</p>
-      <div className="flex gap-2 flex-wrap md:flex-nowrap">
+      <div className="flex flex-col md:flex-row gap-2">
 
         {/* Box 1: Order type */}
-        <div className="relative min-w-[130px] flex-1">
+        <div className="relative w-full md:flex-1">
           <input
             ref={typeRef}
             value={typeQ}
@@ -161,7 +161,7 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
               else if (e.key === 'Enter') { e.preventDefault(); const o = filteredTypes[typeIdx]; if (o) pickType(o) }
             }}
             placeholder="1 Dine In · 2 Parcel · 3…"
-            className="w-full bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder-text-muted outline-none focus:border-sphotel-accent transition-colors pr-7"
+            className="w-full bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-3 md:py-2.5 text-sm text-text-primary placeholder-text-muted outline-none focus:border-sphotel-accent transition-colors pr-7"
           />
           {selType && <Check size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-status-success pointer-events-none" />}
           {typeOpen && filteredTypes.length > 0 && (
@@ -179,7 +179,7 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
 
         {/* Box 2: Table (dine-in) or order ref (online) */}
         {selType && selType.type !== 'parcel' && (
-          <div className="relative min-w-[130px] flex-1">
+          <div className="relative w-full md:flex-1">
             <input
               ref={ctxRef}
               value={ctxQ}
@@ -199,7 +199,7 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
                 }
               }}
               placeholder={selType.type === 'table' ? 'Table…' : 'Order ref…'}
-              className="w-full bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder-text-muted outline-none focus:border-sphotel-accent transition-colors pr-7"
+              className="w-full bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-3 md:py-2.5 text-sm text-text-primary placeholder-text-muted outline-none focus:border-sphotel-accent transition-colors pr-7"
             />
             {selTable && <Check size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-status-success pointer-events-none" />}
             {ctxOpen && selType.type === 'table' && filteredTables.length > 0 && (
@@ -216,7 +216,7 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
         )}
 
         {/* Box 3: Waiter */}
-        <div className="relative min-w-[130px] flex-1">
+        <div className="relative w-full md:flex-1">
           <input
             ref={waiterRef}
             value={waiterQ}
@@ -236,7 +236,7 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
               }
             }}
             placeholder="Waiter…"
-            className="w-full bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder-text-muted outline-none focus:border-sphotel-accent transition-colors pr-7"
+            className="w-full bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-3 md:py-2.5 text-sm text-text-primary placeholder-text-muted outline-none focus:border-sphotel-accent transition-colors pr-7"
           />
           {selWaiter && <Check size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-status-success pointer-events-none" />}
           {waiterOpen && filteredWaiters.length > 0 && (
@@ -256,11 +256,11 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
         <button
           onClick={submit}
           disabled={openBill.isPending || !selType || (selType.type === 'table' && !selTable)}
-          className="px-5 py-2 bg-sphotel-accent text-sphotel-accent-fg rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-40 transition-opacity"
+          className="px-5 py-3 md:py-2 bg-sphotel-accent text-sphotel-accent-fg rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-40 transition-opacity"
         >
           {openBill.isPending ? 'Opening…' : 'Open Bill'}
         </button>
-        <span className="text-xs text-text-muted">↑↓ navigate · Enter select · Enter on waiter opens bill</span>
+        <span className="hidden md:inline text-xs text-text-muted">↑↓ navigate · Enter select · Enter on waiter opens bill</span>
       </div>
     </div>
   )
