@@ -9,7 +9,7 @@ import { useBillingStore } from '../stores/billingStore'
 import { toast } from '@/lib/toast'
 import type { OpenBillRequest } from '../types/bills'
 
-type TypeOpt = { label: string; type: 'table' | 'parcel' | 'online'; vendor?: string }
+type TypeOpt = { label: string; type: 'table' | 'parcel' | 'online'; vendor?: string; shortcut: number }
 
 interface Props {
   canOpen: boolean
@@ -41,12 +41,14 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
     [sections]
   )
 
-  const typeOptions = useMemo<TypeOpt[]>(() => [
-    { label: 'Dine In', type: 'table' },
-    { label: 'Parcel', type: 'parcel' },
-    ...vendors.map((v) => ({ label: v.name, type: 'online' as const, vendor: v.slug })),
-    ...(vendors.length === 0 ? [{ label: 'Online', type: 'online' as const }] : []),
-  ], [vendors])
+  const typeOptions = useMemo<TypeOpt[]>(() => {
+    const vendorOpts = vendors.map((v, i) => ({ label: v.name, type: 'online' as const, vendor: v.slug, shortcut: 3 + i }))
+    return [
+      { label: 'Dine In', type: 'table', shortcut: 1 },
+      { label: 'Parcel', type: 'parcel', shortcut: 2 },
+      ...(vendors.length === 0 ? [{ label: 'Online', type: 'online' as const, shortcut: 3 }] : vendorOpts),
+    ]
+  }, [vendors])
 
   // Box 1: Type
   const [typeQ, setTypeQ] = useState('')
@@ -73,8 +75,8 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
 
   const filteredTypes = useMemo(() => {
     if (!typeQ.trim()) return typeOptions
-    const q = typeQ.toLowerCase()
-    return typeOptions.filter((o) => o.label.toLowerCase().includes(q))
+    const q = typeQ.trim().toLowerCase()
+    return typeOptions.filter((o) => o.label.toLowerCase().includes(q) || String(o.shortcut) === q)
   }, [typeOptions, typeQ])
 
   const filteredTables = useMemo(() => {
@@ -144,7 +146,13 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
           <input
             ref={typeRef}
             value={typeQ}
-            onChange={(e) => { setTypeQ(e.target.value); setSelType(null); setTypeOpen(true); setTypeIdx(0) }}
+            onChange={(e) => {
+              const v = e.target.value
+              setTypeQ(v); setSelType(null); setTypeOpen(true); setTypeIdx(0)
+              // Auto-select when user types the shortcut number (e.g. "1" → Dine In)
+              const exact = typeOptions.find((o) => String(o.shortcut) === v.trim())
+              if (exact) { pickType(exact) }
+            }}
             onFocus={() => setTypeOpen(true)}
             onBlur={() => setTimeout(() => setTypeOpen(false), 120)}
             onKeyDown={(e) => {
@@ -152,7 +160,7 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
               else if (e.key === 'ArrowUp') { e.preventDefault(); setTypeIdx((i) => Math.max(i - 1, 0)) }
               else if (e.key === 'Enter') { e.preventDefault(); const o = filteredTypes[typeIdx]; if (o) pickType(o) }
             }}
-            placeholder="Order type…"
+            placeholder="1 Dine In · 2 Parcel · 3…"
             className="w-full bg-bg-elevated border border-sphotel-border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder-text-muted outline-none focus:border-sphotel-accent transition-colors pr-7"
           />
           {selType && <Check size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-status-success pointer-events-none" />}
@@ -160,7 +168,8 @@ export function InlineBillCreator({ canOpen, onCreated }: Props) {
             <div className="absolute top-full mt-1 left-0 right-0 bg-bg-elevated border border-sphotel-border rounded-lg shadow-xl z-20 overflow-hidden max-h-52 overflow-y-auto">
               {filteredTypes.map((o, i) => (
                 <button key={o.label} type="button" onMouseDown={() => pickType(o)}
-                  className={`w-full text-left px-3 py-2 text-sm transition-colors ${i === typeIdx ? 'bg-sphotel-accent-subtle text-sphotel-accent' : 'hover:bg-bg-base text-text-primary'}`}>
+                  className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center gap-2 ${i === typeIdx ? 'bg-sphotel-accent-subtle text-sphotel-accent' : 'hover:bg-bg-base text-text-primary'}`}>
+                  <kbd className="text-[10px] font-mono bg-bg-base border border-sphotel-border px-1 rounded opacity-60 shrink-0">{o.shortcut}</kbd>
                   {o.label}
                 </button>
               ))}
