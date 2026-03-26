@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Plus, ShoppingBag, Laptop, UtensilsCrossed, ChevronDown, ChevronRight, Clock } from 'lucide-react'
 import { billsApi } from '../api/bills'
 import { useBillingStore } from '../stores/billingStore'
 import { tablesApi } from '../../admin/api/tables'
-import type { BillSummaryResponse, BillStatus, BillType, OpenBillRequest } from '../types/bills'
-import { QuickBillBar } from './QuickBillBar'
+import type { BillSummaryResponse, BillStatus, BillType } from '../types/bills'
 import { useShortcutStore, matchKey } from '@/lib/shortcutStore'
 import { toast } from '@/lib/toast'
 import { PastBillsModal } from './PastBillsModal'
@@ -14,9 +13,7 @@ const STATUS_DOT: Record<BillStatus, string> = { draft: 'bg-text-muted', kot_sen
 const TYPE_ICON: Record<BillType, React.ElementType> = { table: UtensilsCrossed, parcel: ShoppingBag, online: Laptop }
 
 export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect?: () => void; canOpenNewBill?: boolean }) {
-  const qc = useQueryClient()
   const { activeBillId, setActiveBill } = useBillingStore()
-  const [showNew, setShowNew] = useState(false)
   const [showPast, setShowPast] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const { data: bills = [], isLoading } = useQuery({ queryKey: ['bills', 'open'], queryFn: billsApi.listOpen, refetchInterval: 15_000 })
@@ -24,16 +21,18 @@ export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect
   const { data: sections = [] } = useQuery({ queryKey: ['sections'], queryFn: tablesApi.listSections })
   const tableMap: Record<string, string> = {}
   sections.forEach((s) => s.tables.forEach((t) => (tableMap[t.id] = t.name)))
-  const openBill = useMutation({
-    mutationFn: (data: OpenBillRequest) => billsApi.open(data),
-    onSuccess: (bill) => { qc.invalidateQueries({ queryKey: ['bills', 'open'] }); setActiveBill(bill.id); setShowNew(false); onSelect?.() },
-    onError: (err) => { if ((err as any).offline) toast('Cannot open a new bill while offline') },
-  })
+
+  function startNewBill() {
+    if (!canOpenNewBill) { toast('Printer is offline — cannot open new bills from this device'); return }
+    setActiveBill(null)
+    onSelect?.()
+  }
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const tag = (document.activeElement as HTMLElement)?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
-      if (matchKey(e, useShortcutStore.getState().shortcuts.new_bill)) { e.preventDefault(); if (canOpenNewBill) setShowNew(true); else toast('Printer is offline — cannot open new bills from this device') }
+      if (matchKey(e, useShortcutStore.getState().shortcuts.new_bill)) { e.preventDefault(); startNewBill() }
     }
     window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey)
   }, [])
@@ -68,14 +67,14 @@ export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect
     <aside className="w-full md:w-56 shrink-0 bg-bg-surface border-r border-sphotel-border flex flex-col h-full overflow-hidden">
       <div className="px-3 pt-4 pb-2 flex items-center justify-between shrink-0 gap-2">
         <span className="text-xs font-medium text-text-muted uppercase tracking-wide truncate">Open Bills</span>
-        <button onClick={() => canOpenNewBill ? setShowNew(true) : toast('Printer is offline — cannot open new bills from this device')} disabled={!canOpenNewBill} className="w-9 h-9 md:w-6 md:h-6 shrink-0 flex items-center justify-center rounded-md bg-sphotel-accent text-sphotel-accent-fg hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed" title={canOpenNewBill ? 'New Bill (N)' : 'Printer offline'}><Plus size={16} /></button>
+        <button onClick={startNewBill} disabled={!canOpenNewBill} className="w-9 h-9 md:w-6 md:h-6 shrink-0 flex items-center justify-center rounded-md bg-sphotel-accent text-sphotel-accent-fg hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed" title={canOpenNewBill ? 'New Bill (N)' : 'Printer offline'}><Plus size={16} /></button>
       </div>
       <div className="flex-1 overflow-y-auto px-2 pb-2 flex flex-col gap-0.5 min-h-0 overflow-x-hidden">
         {isLoading && <p className="text-xs text-text-muted px-2 py-4">Loading…</p>}
         {!isLoading && bills.length === 0 && (
           <div className="text-center py-8 text-text-muted">
             <p className="text-xs">No open bills</p>
-            <button onClick={() => setShowNew(true)} className="mt-2 text-xs text-sphotel-accent hover:opacity-80">Start one <kbd className="ml-1 px-1 py-0.5 text-[10px] bg-sphotel-accent-subtle rounded font-mono">N</kbd></button>
+            <button onClick={startNewBill} className="mt-2 text-xs text-sphotel-accent hover:opacity-80">Start one <kbd className="ml-1 px-1 py-0.5 text-[10px] bg-sphotel-accent-subtle rounded font-mono">N</kbd></button>
           </div>
         )}
         {bills.map((bill) => <BillRow key={bill.id} bill={bill} />)}
@@ -93,7 +92,6 @@ export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect
           </div>
         )}
       </div>
-      {showNew && <QuickBillBar onOpen={(data) => openBill.mutate(data)} onClose={() => setShowNew(false)} isLoading={openBill.isPending} />}
       {showHistory && <PastBillsModal onClose={() => setShowHistory(false)} />}
     </aside>
   )
