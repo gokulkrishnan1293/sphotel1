@@ -92,7 +92,7 @@ export function BillingPage() {
             className="md:hidden shrink-0 flex items-center gap-1 px-4 py-2.5 text-sm text-text-secondary border-b border-sphotel-border bg-bg-surface">
             <ChevronLeft size={16} /> Back to Bills
           </button>
-          <BillCanvas fontSizeIdx={fontSizeIdx} />
+          <BillCanvas fontSizeIdx={fontSizeIdx} canOpenNewBill={canOpenNewBill} />
         </div>
       </div>
     </div>
