@@ -5,13 +5,21 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.menu import MenuItem, MenuItemVariant, MenuItemVendorPrice
 from app.schemas.menu import MenuItemCreate, MenuItemResponse, MenuItemUpdate
 
 
 async def _get(db: AsyncSession, tenant_id: str, item_id: uuid.UUID) -> MenuItem:
-    r = await db.execute(select(MenuItem).where(MenuItem.id == item_id, MenuItem.tenant_id == tenant_id))
+    r = await db.execute(
+        select(MenuItem)
+        .where(MenuItem.id == item_id, MenuItem.tenant_id == tenant_id)
+        .options(
+            selectinload(MenuItem.variants).selectinload(MenuItemVariant.vendor_prices),
+            selectinload(MenuItem.vendor_prices),
+        )
+    )
     item = r.scalar_one_or_none()
     if item is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"MenuItem {item_id} not found")
@@ -57,8 +65,8 @@ async def create_menu_item(db: AsyncSession, tenant_id: str, data: MenuItemCreat
     item.vendor_prices = []
     db.add(item)
     await db.flush()
-    _apply_relations(item, data)
     try:
+        _apply_relations(item, data)
         await db.commit()
         await db.refresh(item)
     except IntegrityError as exc:
@@ -73,8 +81,8 @@ async def update_menu_item(db: AsyncSession, tenant_id: str, item_id: uuid.UUID,
     item = await _get(db, tenant_id, item_id)
     for field, value in data.model_dump(exclude_unset=True, exclude={"variants", "vendor_prices"}).items():
         setattr(item, field, value)
-    _apply_relations(item, data)
     try:
+        _apply_relations(item, data)
         await db.commit()
         await db.refresh(item)
     except IntegrityError as exc:
