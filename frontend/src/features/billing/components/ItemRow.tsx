@@ -29,7 +29,7 @@ export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride
   const linePaise = effectivePaise * item.quantity
 
   function startEdit() {
-    if (readOnly || disabled || !onPriceOverride) return
+    if (disabled || !onPriceOverride) return
     setDraftRupees(String(effectivePaise / 100))
     setEditing(true)
   }
@@ -60,7 +60,7 @@ export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride
           ) : (
             <span
               onClick={startEdit}
-              className={`font-medium text-text-primary shrink-0 ${!readOnly && !disabled && onPriceOverride ? 'cursor-pointer hover:text-sphotel-accent' : ''}`}
+              className={`font-medium text-text-primary shrink-0 ${!disabled && onPriceOverride ? 'cursor-pointer hover:text-sphotel-accent' : ''}`}
               style={textStyle}
             >
               ₹{(linePaise / 100).toFixed(0)}
