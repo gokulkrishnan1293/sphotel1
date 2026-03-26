@@ -55,6 +55,11 @@ def _bold(text: str, enabled: bool) -> str:
     return f"«B»{text}«/B»" if enabled else text
 
 
+def _double_height(text: str) -> str:
+    """Wrap text in double-height markers. Agent prints this line at 2x height."""
+    return f"«DH»{text}«/DH»"
+
+
 # ---------------------------------------------------------------------------
 # Receipt
 # ---------------------------------------------------------------------------
@@ -171,7 +176,7 @@ def format_receipt(payload: dict) -> str:
 
     lines += [
         _divider("-", W),
-        _bold(_center(f"Grand Total  {_format_rupees(total)}", W), bold_total),
+        _double_height(_bold(_center(f"Grand Total  {_format_rupees(total)}", W), bold_total)),
         _divider("-", W),
     ]
 

@@ -2,12 +2,18 @@
 from datetime import datetime, timedelta, timezone
 
 _IST = timezone(timedelta(hours=5, minutes=30))
-_B  = "\u00abB\u00bb"
-_EB = "\u00ab/B\u00bb"
+_B   = "\u00abB\u00bb"
+_EB  = "\u00ab/B\u00bb"
+_DH  = "\u00abDH\u00bb"
+_EDH = "\u00ab/DH\u00bb"
 
 
 def bold(text, on):
     return "{}{}{}".format(_B, text, _EB) if on else text
+
+
+def double_height(text):
+    return "{}{}{}".format(_DH, text, _EDH)
 
 
 def center(text, width):

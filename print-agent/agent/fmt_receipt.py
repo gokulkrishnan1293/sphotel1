@@ -1,7 +1,7 @@
 """Receipt formatter. Python 3.6 compatible."""
 import sys
 sys.path.insert(0, ".")
-from agent.fmt_helpers import bold, center, divider, row, rs, ist
+from agent.fmt_helpers import bold, center, divider, double_height, row, rs, ist
 
 
 def format_receipt(payload):
@@ -59,7 +59,7 @@ def format_receipt(payload):
         lines.append("Discount -{}".format(rs(payload["discount_paise"])))
     lines += [
         divider("-", W),
-        bold(center("Grand Total  {}".format(rs(payload.get("total_paise", 0))), W), bt),
+        double_height(bold(center("Grand Total  {}".format(rs(payload.get("total_paise", 0))), W), bt)),
         divider("-", W),
     ]
     footer = tmpl.get("footer_message", "Thanks")
