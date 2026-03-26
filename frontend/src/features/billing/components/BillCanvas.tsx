@@ -79,7 +79,7 @@ export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
         {pending.length > 0 && sent.length > 0 && <p className="text-xs font-medium text-amber-400 uppercase tracking-wide mb-1">New (not sent)</p>}
         {pending.map((item) => <ItemRow key={item.id} item={item} disabled={isClosed} onRemove={() => removeItem.mutate(item.id)} onQtyChange={(q) => q < 1 ? removeItem.mutate(item.id) : updateQty.mutate({ itemId: item.id, quantity: q })} onPriceOverride={(p) => updatePrice.mutate({ itemId: item.id, override_price_paise: p })} fontSizeIdx={fontSizeIdx} />)}
         {sent.length > 0 && <p className={`text-xs font-medium uppercase tracking-wide mb-1 mt-2 ${pending.length > 0 ? 'text-status-success' : 'text-text-muted'}`}>{pending.length > 0 ? 'Sent to kitchen' : 'Items'}</p>}
-        {sent.map((item) => <ItemRow key={item.id} item={item} disabled={isClosed} onRemove={() => {}} onQtyChange={() => {}} readOnly fontSizeIdx={fontSizeIdx} />)}
+        {sent.map((item) => <ItemRow key={item.id} item={item} disabled={isClosed} onRemove={() => {}} onQtyChange={() => {}} readOnly onPriceOverride={(p) => updatePrice.mutate({ itemId: item.id, override_price_paise: p })} fontSizeIdx={fontSizeIdx} />)}
         {bill.items.length === 0 && <div className="flex flex-col items-center justify-center py-16"><p className="text-text-muted text-sm">Bill is empty</p><button onClick={openCommandPalette} className="mt-2 text-sm text-sphotel-accent">Press Space to add items</button></div>}
       </div>
       <BillFooter bill={bill} isBiller={isBiller} hasItems={hasItems}
