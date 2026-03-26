@@ -12,32 +12,51 @@ _BOLD_ON  = b"\x1b\x45\x01"
 _BOLD_OFF = b"\x1b\x45\x00"
 
 # Bold markers embedded by the backend formatter («B»...«/B»)
-_BSTART = "\u00abB\u00bb"   # «B»
-_BEND   = "\u00ab/B\u00bb"  # «/B»
+_BSTART  = "\u00abB\u00bb"    # «B»
+_BEND    = "\u00ab/B\u00bb"   # «/B»
+# Double-height markers («DH»...«/DH»)
+_DHSTART = "\u00abDH\u00bb"   # «DH»
+_DHEND   = "\u00ab/DH\u00bb"  # «/DH»
 
 
 def _parse_segments(text):
-    """Split text into list of (segment_text, is_bold) tuples."""
+    """Split text into (segment_text, is_bold, is_tall) tuples."""
     result = []
-    parts = text.split(_BSTART)
-    if parts[0]:
-        result.append((parts[0], False))
-    for part in parts[1:]:
-        sub = part.split(_BEND, 1)
-        result.append((sub[0], True))
+
+    def _split_bold(seg, is_tall):
+        parts = seg.split(_BSTART)
+        if parts[0]:
+            result.append((parts[0], False, is_tall))
+        for part in parts[1:]:
+            sub = part.split(_BEND, 1)
+            result.append((sub[0], True, is_tall))
+            if len(sub) > 1 and sub[1]:
+                result.append((sub[1], False, is_tall))
+
+    dh_parts = text.split(_DHSTART)
+    _split_bold(dh_parts[0], False)
+    for part in dh_parts[1:]:
+        sub = part.split(_DHEND, 1)
+        _split_bold(sub[0], True)
         if len(sub) > 1 and sub[1]:
-            result.append((sub[1], False))
+            _split_bold(sub[1], False)
+
     return result
 
 
-def _to_raw_bytes(text, font_cmd, encoding="cp437"):
-    """Encode print_text (with bold markers) into ESC/POS raw bytes."""
-    raw = font_cmd
-    for seg, bold in _parse_segments(text):
-        if bold:
-            raw += _BOLD_ON + seg.encode(encoding, errors="replace") + _BOLD_OFF
-        else:
-            raw += seg.encode(encoding, errors="replace")
+def _to_raw_bytes(text, base_font_cmd, encoding="cp437"):
+    """Encode print_text (with bold/double-height markers) into ESC/POS raw bytes."""
+    raw = base_font_cmd
+    for seg, is_bold, is_tall in _parse_segments(text):
+        if is_tall:
+            raw += _ESC_TALL
+        if is_bold:
+            raw += _BOLD_ON
+        raw += seg.encode(encoding, errors="replace")
+        if is_bold:
+            raw += _BOLD_OFF
+        if is_tall:
+            raw += base_font_cmd  # restore base font after tall segment
     return raw
 
 
@@ -75,10 +94,10 @@ def print_receipt(payload):
         else:
             from escpos.printer import Usb
             p = Usb(cfg.USB_VENDOR_ID, cfg.USB_PRODUCT_ID)
-        for seg, bold in _parse_segments(text):
-            # height=2 only: taller text, same width -> alignment preserved, crisp
-            h = 2 if font_size >= 2 else 1
-            p.set(align="left", font="a", bold=bold, width=1, height=h)
+        for seg, is_bold, is_tall in _parse_segments(text):
+            # height=2 for double-height segments or when whole job is font_size>=2
+            h = 2 if (is_tall or font_size >= 2) else 1
+            p.set(align="left", font="a", bold=is_bold, width=1, height=h)
             p.text(seg)
         p.cut()
         p.close()

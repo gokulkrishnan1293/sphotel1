@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.bill import Bill
 from app.models.bill_enums import BillType
+from app.models.kot import KotTicket
 from app.models.print_agent import PrintAgent
 from app.models.print_job import PrintJob
 from app.services.print_payload import build_receipt_payload, build_kot_payload
@@ -47,7 +48,12 @@ async def create_print_job(
     KOT printer agent (fallback to main if no KOT agent is online).
     """
     if job_type == "kot":
-        payload = await build_kot_payload(db, tenant_id, bill_id)
+        latest_kot = (await db.execute(
+            select(KotTicket).where(KotTicket.bill_id == bill_id, KotTicket.tenant_id == tenant_id)
+            .order_by(KotTicket.ticket_number.desc()).limit(1)
+        )).scalar_one_or_none()
+        kot_number = latest_kot.ticket_number if latest_kot else None
+        payload = await build_kot_payload(db, tenant_id, bill_id, kot_number=kot_number)
         job = _job(tenant_id, bill_id, "kot", payload, "kot", printer_name)
         db.add(job)
         await db.commit()
