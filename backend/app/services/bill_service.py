@@ -1,6 +1,7 @@
 """Core bill lifecycle — open, list, get, close, void."""
 
 import uuid
+from datetime import date, datetime, timezone
 from typing import Sequence
 
 from fastapi import HTTPException, status
@@ -48,7 +49,13 @@ async def recalc_totals(db: AsyncSession, bill: Bill) -> None:
 async def open_bill(
     db: AsyncSession, tenant_id: str, created_by: uuid.UUID, data: OpenBillRequest
 ) -> Bill:
-    bill = Bill(tenant_id=tenant_id, created_by=created_by, **data.model_dump())
+    today_start = datetime.combine(date.today(), datetime.min.time()).replace(tzinfo=timezone.utc)
+    max_num = (await db.execute(
+        select(func.coalesce(func.max(Bill.bill_number), 0)).where(
+            Bill.tenant_id == tenant_id, Bill.created_at >= today_start
+        )
+    )).scalar_one()
+    bill = Bill(tenant_id=tenant_id, created_by=created_by, bill_number=int(max_num) + 1, **data.model_dump())
     db.add(bill)
     await db.commit()
     await db.refresh(bill)

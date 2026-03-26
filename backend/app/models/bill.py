@@ -34,7 +34,7 @@ class Bill(Base, TenantMixin, TimestampMixin):
         sa_enum(PaymentMethod, "payment_method"), nullable=True
     )
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    bill_number: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("nextval('bills_bill_number_seq')"))
+    bill_number: Mapped[int] = mapped_column(Integer, nullable=False)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_by: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("tenant_users.id", ondelete="RESTRICT"), nullable=False
