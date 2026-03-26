@@ -35,7 +35,7 @@ export function BillCanvas({ fontSizeIdx = 1 }: { fontSizeIdx?: number }) {
   const closeBill = useMutation({
     mutationFn: ({ method, discount }: { method: PaymentMethod; discount: number }) =>
       billsApi.close(activeBillId!, { payment_method: method, discount_paise: discount }),
-    onSuccess: (closedBill) => { inv(); setSettleOpen(false); billsApi.print(activeBillId!).catch(() => localPrint(closedBill).catch(() => {})); if (useFeatureFlagStore.getState().billCloseUx) { toast('Bill settled ✓  Printing…'); setPrintQueued(true); setTimeout(() => setPrintQueued(false), 5000) } else useBillingStore.getState().setActiveBill(null) },
+    onSuccess: (closedBill) => { inv(); setSettleOpen(false); billsApi.print(activeBillId!).catch(() => localPrint(closedBill).catch(() => {})); if (useFeatureFlagStore.getState().billCloseUx) { toast('Bill settled ✓  Printing…'); setPrintQueued(true); setTimeout(() => { setPrintQueued(false); useBillingStore.getState().setActiveBill(null) }, 5000) } else useBillingStore.getState().setActiveBill(null) },
   })
   const removeItem = useMutation({ mutationFn: (id: string) => billsApi.removeItem(activeBillId!, id), onSuccess: inv })
   const updateQty = useMutation({ mutationFn: ({ itemId, quantity }: { itemId: string; quantity: number }) => billsApi.updateItem(activeBillId!, itemId, { quantity }), onSuccess: inv })
