@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir --root-user-action=ignore -e ".[dev]"
 FROM base AS production
 COPY --from=deps /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=deps /usr/local/bin /usr/local/bin
+RUN apt-get update && apt-get install -y --no-install-recommends fonts-dejavu-core && rm -rf /var/lib/apt/lists/*
 COPY . .
 ENV PYTHONPATH=/app
 RUN groupadd -r app && useradd -r -g app app
