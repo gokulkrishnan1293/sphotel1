@@ -61,7 +61,7 @@ export function BillCanvas({ fontSizeIdx = 1, canOpenNewBill = true }: { fontSiz
       <BillTabBar canOpenNewBill={canOpenNewBill} onNewBill={() => setActiveBill(null)} />
       <div className="grid grid-rows-[auto_1fr] md:grid-rows-[1fr] md:grid-cols-[1fr_1fr] flex-1 min-h-0 overflow-hidden">
         <div className="flex flex-col min-h-0 border-r border-sphotel-border overflow-hidden">
-          <BillLeftPane activeBillId={activeBillId} bill={bill} canOpenNewBill={canOpenNewBill} isClosed={isClosed} searchRef={searchRef} onGenerateBill={() => setSettleOpen(true)} onReset={handleReset} />
+          <BillLeftPane activeBillId={activeBillId} bill={bill} canOpenNewBill={canOpenNewBill} isClosed={isClosed} searchRef={searchRef} fontSizeIdx={fontSizeIdx} onGenerateBill={() => setSettleOpen(true)} onReset={handleReset} />
         </div>
         <div className="flex flex-col min-h-0 overflow-hidden">
           <BillRightPane bill={bill} activeBillId={activeBillId} isBiller={isBiller} pending={pending} sent={sent} hasItems={hasItems} fontSizeIdx={fontSizeIdx} printQueued={printQueued}

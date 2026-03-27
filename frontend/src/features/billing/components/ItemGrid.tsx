@@ -8,9 +8,9 @@ import { ItemCard, pickCardPrice } from './ItemCard'
 import { recordItemOrder, getFavouriteIds } from './useFavourites'
 import { VariantPicker } from './VariantPicker'
 
-interface Props { billId: string; billType: BillType; platform?: string | null }
+interface Props { billId: string; billType: BillType; platform?: string | null; fontSizeIdx?: number }
 
-export function ItemGrid({ billId, billType, platform }: Props) {
+export function ItemGrid({ billId, billType, platform, fontSizeIdx = 2 }: Props) {
   const [tab, setTab] = useState('Favourites')
   const [variantItem, setVariantItem] = useState<MenuItemResponse | null>(null)
   const qc = useQueryClient()
@@ -49,7 +49,7 @@ export function ItemGrid({ billId, billType, platform }: Props) {
       </div>
       <div className="flex-1 overflow-y-auto p-3 grid grid-cols-3 xl:grid-cols-4 gap-2 content-start">
         {displayed.map((item) => (
-          <ItemCard key={item.id} item={item} billType={billType} platform={platform}
+          <ItemCard key={item.id} item={item} billType={billType} platform={platform} fontSizeIdx={fontSizeIdx}
             onClick={() => item.variants?.length ? setVariantItem(item) : add.mutate({ item })} />
         ))}
         {displayed.length === 0 && tab === 'Favourites' && (
