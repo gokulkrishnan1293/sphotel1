@@ -32,7 +32,7 @@ export function BillContextBar({ bill, onDone, onReset }: Props) {
   const filteredTypes = useMemo(() => { const q = typeQ.toLowerCase(); return q ? typeOpts.filter((o) => o.label.toLowerCase().includes(q)) : typeOpts }, [typeOpts, typeQ])
   const filteredTables = useMemo(() => { const q = tableQ.toLowerCase(); return q ? allTables.filter((t) => t.name.toLowerCase().includes(q) || t.sectionName.toLowerCase().includes(q)) : allTables.slice(0, 14) }, [allTables, tableQ])
   const isClosed = bill.status === 'billed' || bill.status === 'void'
-  const ic = 'bg-bg-elevated border border-sphotel-border rounded-md px-2.5 py-1 text-sm text-text-primary placeholder-text-muted outline-none focus:border-sphotel-accent transition-colors w-28'
+  const ic = 'bg-bg-elevated border border-sphotel-border rounded-md px-2 py-1 text-sm text-text-primary placeholder-text-muted outline-none focus:border-sphotel-accent transition-colors w-16 md:w-28'
   const icReq = (empty: boolean) => ic + (empty ? ' border-amber-500/60' : '')
   const waiterIc = 'w-full bg-bg-elevated border border-sphotel-border rounded-md px-2.5 py-1 text-sm text-text-primary placeholder-text-muted outline-none focus:border-sphotel-accent transition-colors'
   function pickType(o: TOption) {
@@ -46,7 +46,7 @@ export function BillContextBar({ bill, onDone, onReset }: Props) {
   }
   function pickTable(t: typeof allTables[0]) { setTableQ(t.name); setTableOpen(false); update.mutate({ table_id: t.id }); waiterRef.current?.focus() }
   return (
-    <div className="px-4 py-2 md:px-6 border-b border-sphotel-border flex items-center gap-2 flex-wrap">
+    <div className="px-4 py-2 md:px-6 border-b border-sphotel-border flex items-center gap-2 flex-nowrap">
       <span className="text-xs text-text-muted font-mono shrink-0">{bill.bill_number != null ? `#${bill.bill_number}` : 'Draft'}</span>
       {!isClosed ? (
         <>
@@ -69,7 +69,7 @@ export function BillContextBar({ bill, onDone, onReset }: Props) {
               {tableOpen && filteredTables.length > 0 && <InlineDropdown activeIdx={tableIdx} onSelect={(k) => { const t = filteredTables.find((x) => x.name === k); if (t) pickTable(t) }} items={filteredTables.map((t) => ({ key: t.name, label: <>{t.name} <span className="text-xs text-text-muted">· {t.sectionName}</span></> }))} />}
             </div>
           )}
-          {showTable && <WaiterSelect ref={waiterRef} required initialName={bill.waiter_name ?? ''} containerClassName="relative w-28" inputClassName={waiterIc + (!bill.waiter_id ? ' border-amber-500/60' : '')} onDone={(wid) => { if (wid) { update.mutate({ waiter_id: wid }); onDone?.() } }} />}
+          {showTable && <WaiterSelect ref={waiterRef} required initialName={bill.waiter_name ?? ''} containerClassName="relative w-16 md:w-28" inputClassName={waiterIc + (!bill.waiter_id ? ' border-amber-500/60' : '')} onDone={(wid) => { if (wid) { update.mutate({ waiter_id: wid }); onDone?.() } }} />}
         </>
       ) : (
         [initLabel(), bill.table_id ? tableMap[bill.table_id] : null, bill.waiter_name, bill.reference_no].filter(Boolean).map((label) => (
@@ -80,7 +80,7 @@ export function BillContextBar({ bill, onDone, onReset }: Props) {
       )}
       {onReset && !isClosed && (
         <button onClick={onReset} className="ml-auto flex items-center gap-1 px-2.5 py-1 text-xs text-text-muted hover:text-status-error rounded-md transition-colors border border-transparent hover:border-status-error/30">
-          <X size={12} /> Cancel
+          <X size={12} /><span className="hidden md:inline">Cancel</span>
         </button>
       )}
     </div>
