@@ -38,3 +38,11 @@ class CloseBillRequest(BaseModel):
 
 class UpdatePaymentRequest(BaseModel):
     payment_method: PaymentMethod
+
+
+class UpdateBillRequest(BaseModel):
+    bill_type: BillType | None = None
+    platform: str | None = None
+    waiter_id: uuid.UUID | None = None
+    table_id: uuid.UUID | None = None
+    reference_no: str | None = None

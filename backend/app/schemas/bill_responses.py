@@ -36,7 +36,7 @@ class BillResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: uuid.UUID
-    bill_number: int
+    bill_number: int | None
     bill_type: BillType
     status: BillStatus
     table_id: uuid.UUID | None
@@ -66,7 +66,7 @@ class BillSummaryResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: uuid.UUID
-    bill_number: int
+    bill_number: int | None
     bill_type: BillType
     status: BillStatus
     table_id: uuid.UUID | None

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
 import { menuListWithCache } from '@/lib/db/menuCache'
 import { billsApi } from '../api/bills'
+import { recordItemOrder } from './useFavourites'
 import type { MenuItemResponse } from '../../admin/types/menu'
 import type { BillType } from '../types/bills'
 import { VariantPicker } from './VariantPicker'
@@ -54,7 +55,7 @@ export const InlineSearch = forwardRef<InlineSearchHandle, Props>(
     const [queue, setQueue] = useState<Array<{ item: MenuItemResponse; qty: number }>>([])
     const inputRef = useRef<HTMLInputElement>(null)
 
-    useImperativeHandle(ref, () => ({ focus: () => { inputRef.current?.focus(); setShowResults(true) } }))
+    useImperativeHandle(ref, () => ({ focus: () => { inputRef.current?.focus() } }))
 
     const { qty, searchQuery } = useMemo(() => parse(query), [query])
     const { data: items = [] } = useQuery({ queryKey: ['menu-items'], queryFn: menuListWithCache })
@@ -78,7 +79,7 @@ export const InlineSearch = forwardRef<InlineSearchHandle, Props>(
     const add = useMutation({
       mutationFn: ({ item, vName, vPrice, qtyOverride }: { item: MenuItemResponse; vName?: string; vPrice?: number; qtyOverride?: number }) =>
         billsApi.addItem(billId, { menu_item_id: item.id, name: vName ? `${item.name} (${vName})` : item.name, category: item.category, price_paise: vPrice ?? pickPrice(item, billType, platform), food_type: item.food_type as 'veg' | 'egg' | 'non_veg', quantity: qtyOverride ?? qty }),
-      onSuccess: (_, vars) => { qc.invalidateQueries({ queryKey: ['bill', billId] }); qc.invalidateQueries({ queryKey: ['bills', 'open'] }); setQuery(''); if (vars.vName != null) setVariantItem(null); inputRef.current?.focus() },
+      onSuccess: (_, vars) => { recordItemOrder(vars.item.id); qc.invalidateQueries({ queryKey: ['bill', billId] }); qc.invalidateQueries({ queryKey: ['bills', 'open'] }); setQuery(''); setShowResults(false); if (vars.vName != null) setVariantItem(null); inputRef.current?.focus() },
     })
 
     useEffect(() => { inputRef.current?.focus() }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -96,7 +97,6 @@ export const InlineSearch = forwardRef<InlineSearchHandle, Props>(
     }
 
     function onKey(e: React.KeyboardEvent) {
-      if (e.key === 'F8') { e.preventDefault(); onGenerateBill(); return }
       if (e.key === 'ArrowDown') { e.preventDefault(); setIdx((i) => Math.min(i + 1, filtered.length - 1)) }
       else if (e.key === 'ArrowUp') { e.preventDefault(); setIdx((i) => Math.max(i - 1, 0)) }
       else if (e.key === 'Enter') {
@@ -123,14 +123,14 @@ export const InlineSearch = forwardRef<InlineSearchHandle, Props>(
             ref={inputRef}
             value={query}
             onChange={(e) => { setQuery(e.target.value); setShowResults(true) }}
-            onFocus={() => setShowResults(true)}
+            onFocus={() => { if (query.length > 0) setShowResults(true) }}
             onBlur={() => setTimeout(() => setShowResults(false), 150)}
             onKeyDown={onKey}
             placeholder="Search items… or 412 2 453 1 (batch)"
             className="flex-1 bg-transparent text-sm text-text-primary placeholder-text-muted outline-none py-1"
           />
           {qty > 1 && <span className="text-xs bg-sphotel-accent-subtle text-sphotel-accent px-2 py-0.5 rounded-full font-medium shrink-0">×{qty}</span>}
-          <span className="hidden md:inline text-xs text-text-muted shrink-0 select-none">F8 quick bill</span>
+          <span className="hidden md:inline text-xs text-text-muted shrink-0 select-none">F8 close · G bill dialog</span>
           {isBatch(query) && <span className="text-xs text-sphotel-accent shrink-0">batch</span>}
         </div>
         {showResults && filtered.length > 0 && (
@@ -148,7 +148,7 @@ export const InlineSearch = forwardRef<InlineSearchHandle, Props>(
               </button>
             ))}
             <div className="hidden md:flex px-4 py-1.5 border-t border-sphotel-border text-xs text-text-muted gap-4">
-              <span>↑↓ navigate</span><span>Enter add</span><span>F8 quick bill (no dialog)</span>
+              <span>↑↓ navigate</span><span>Enter add</span><span>F8 close · G bill dialog</span>
             </div>
           </div>
         )}

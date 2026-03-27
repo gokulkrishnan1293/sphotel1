@@ -32,7 +32,7 @@ export function BillHeader({ bill }: { bill: BillResponse }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-semibold text-text-primary">{title}</span>
-          <span className="text-xs text-text-muted font-mono">#{bill.bill_number}</span>
+          {bill.bill_number != null && <span className="text-xs text-text-muted font-mono">#{bill.bill_number}</span>}
           {bill.reference_no && <span className="text-xs text-text-muted">· {bill.reference_no}</span>}
           {bill.covers != null && <span className="text-xs text-text-muted">{bill.covers} guests</span>}
         </div>

@@ -20,11 +20,10 @@ export const billsApi = {
     apiClient.get<BillSummaryResponse[]>('/api/v1/bills/history', { params: { q, status, limit, offset } }).then((r) => r.data),
 
   open: async (data: OpenBillRequest): Promise<BillResponse> => {
-    if (!offline()) return apiClient.post<BillResponse>('/api/v1/bills', data).then((r) => { cacheDailyBillNumber(r.data.bill_number); writeBill(r.data).catch(() => {}); return r.data })
-    const maxNum = loadDailyBillNumber()
+    if (!offline()) return apiClient.post<BillResponse>('/api/v1/bills', data).then((r) => { writeBill(r.data).catch(() => {}); return r.data })
     const tempId = 'offline_' + Date.now()
     const tempBill: BillResponse = {
-      id: tempId, bill_number: maxNum + 1, bill_type: data.bill_type, status: 'draft',
+      id: tempId, bill_number: null, bill_type: data.bill_type, status: 'draft',
       table_id: data.table_id ?? null, covers: data.covers ?? null,
       reference_no: data.reference_no ?? null, platform: data.platform ?? null,
       subtotal_paise: 0, discount_paise: 0, gst_paise: 0, total_paise: 0,
@@ -89,8 +88,11 @@ export const billsApi = {
 
   void: async (billId: string): Promise<BillResponse> => { if (offline()) { await enqueue('voidBill', { billId }); throw Object.assign(new Error('Queued offline'), { queued: true }) }; return apiClient.post<BillResponse>(`/api/v1/bills/${billId}/void`).then((r) => r.data) },
   unvoid: async (billId: string): Promise<BillResponse> => { if (offline()) { await enqueue('unvoidBill', { billId }); throw Object.assign(new Error('Queued offline'), { queued: true }) }; return apiClient.post<BillResponse>(`/api/v1/bills/${billId}/unvoid`).then((r) => r.data) },
+  cancel: async (billId: string): Promise<BillResponse> => { if (offline()) { await enqueue('cancelBill', { billId }); throw Object.assign(new Error('Queued offline'), { queued: true }) }; return apiClient.post<BillResponse>(`/api/v1/bills/${billId}/cancel`).then((r) => r.data) },
   print: (billId: string, jobType: 'receipt' | 'kot' = 'receipt'): Promise<void> =>
     apiClient.post('/api/v1/print-jobs', { bill_id: billId, job_type: jobType }).then(() => undefined),
   updatePaymentMethod: (billId: string, payment_method: PaymentMethod): Promise<BillResponse> =>
     apiClient.patch<BillResponse>(`/api/v1/bills/${billId}/payment-method`, { payment_method }).then((r) => r.data),
+  updateBill: (billId: string, data: { bill_type?: string | null; platform?: string | null; waiter_id?: string | null; table_id?: string | null; reference_no?: string | null }): Promise<BillResponse> =>
+    apiClient.patch<BillResponse>(`/api/v1/bills/${billId}`, data).then((r) => r.data),
 }

@@ -38,29 +38,57 @@ BillingPage
 [ Order type… ]  [ Table… / Order ref… ]  [ Waiter… ]
 [ Open Bill button ]
 ```
-- On **desktop**: 3 inputs in a horizontal row
-- On **mobile**: 3 inputs stacked vertically (full width)
+- On **desktop**: inputs in a horizontal row
+- On **mobile**: inputs stacked vertically (full width)
+- No "Open Bill" button — the bill opens instantly on selection
 
 **Keyboard flow:**
-1. Type `1` → auto-selects "Dine In" → focus jumps to Table box
-2. Type `2` → auto-selects "Parcel" → skips Table box, focus jumps to Waiter
-3. Type `3`, `4`… → selects vendor (Swiggy, Zomato etc.) → focus jumps to Ref box
-4. In each box: ↑↓ navigate dropdown, Enter selects
-5. Enter in Waiter box (when waiter is selected or box is empty) → submits / opens bill
+1. Type `1` → auto-selects "Dine In" → focus jumps to Table box; selecting a table immediately opens the bill
+2. Type `2` → auto-selects "Parcel" → bill opens immediately (no extra step, no waiter needed)
+3. Type `3`, `4`… → selects vendor → focus jumps to Ref box; press Enter to open
+4. In Table box: ↑↓ navigate dropdown, Enter selects and opens bill
+
+**No waiter field** — removed to reduce friction. Waiter can be added after the bill is open if needed in future.
+
+**Deferred bill number** — bills are created without a `bill_number` (null). The number is assigned lazily:
+- On KOT fire (`fire_kot` in `bill_item_service.py::_assign_bill_number`)
+- On settle/close (`close_bill` in `bill_service.py`)
+- Draft/voided bills with no KOT/close will have `bill_number = null` (shown as blank in UI)
 
 **Number shortcuts for order type:**
 - Numbers are assigned in order: 1=Dine In, 2=Parcel, 3+=vendors
-- Typing the exact number immediately auto-selects and moves focus (no Enter needed)
-- Numbers are shown as `kbd` badges in the dropdown
+- Typing the exact number immediately auto-selects and triggers bill open
+- Numbers shown as `kbd` badges via `InlineDropdown` component
 
 **State owned here:**
-- All 3 input values and their selected states
-- `openBill` mutation (was previously in `ActiveBillsPanel`)
-- On success: calls `setActiveBill(bill.id)` → BillCanvas switches to bill view
+- Type and table input values and selected states
+- `openBill` mutation; on success: `setActiveBill(bill.id)` → canvas switches to bill view
 
-**To add a new order type:** Add an entry to `typeOptions` in the `useMemo` block with a `label`, `type` ('table'|'parcel'|'online'), optional `vendor` slug, and a `shortcut` number.
+**To add a new order type:** Add to `typeOptions` useMemo with `label`, `type`, optional `vendor`, and `shortcut`.
 
-**To change the flow between boxes:** Edit the `pickType`, `pickTable`, `pickWaiter` functions and the `onKeyDown` handlers.
+**To change the open-bill flow:** Edit `pickType`, `pickTable`, and `onKeyDown` handlers.
+
+---
+
+## Future design vision (sketch — 2026-03-26)
+
+Goal: merge bill-creator and item-search into a single always-visible bar so the operator never switches modes.
+
+```
+[ Online 1 ]  [ Table 2 ]  [ Parcel 3 ]      ← order type tabs
+┌──────────────────────────────────────────────────────────┐
+│  Table…  │  Waiter (dine-in only)  │  🔍 Search items…  │
+└──────────────────────────────────────────────────────────┘
+   Item 1 · 2                         ← items added inline below
+   Item 2 · 1
+```
+
+Key ideas:
+- Order type as tabs at top (not a dropdown)
+- Table, waiter (dine-in only), and item search **all in one bar**
+- Type → press Enter → item added to the bill inline; no modal
+- Bill created lazily on first KOT or settle — no explicit "open" step at all
+- Left sidebar (open bills list) unchanged
 
 ---
 

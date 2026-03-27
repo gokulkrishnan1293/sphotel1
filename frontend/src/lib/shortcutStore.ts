@@ -12,7 +12,7 @@ export const DEFAULT_SHORTCUTS: ShortcutMap = {
   open_search: 'Space',
   fire_kot: 'ctrl+k',
   generate_bill: 'g',
-  close_bill: 'Enter',
+  close_bill: 'f8',
   new_bill: 'n',
 }
 

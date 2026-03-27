@@ -27,3 +27,15 @@ async def unvoid_bill(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID) -> B
     await db.commit()
     await db.refresh(bill)
     return bill
+
+
+async def cancel_bill(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID) -> Bill:
+    bill = await _get_bill(db, tenant_id, bill_id)
+    if bill.status == BillStatus.BILLED:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Cannot cancel a settled bill — use void instead")
+    if bill.status in (BillStatus.CANCELLED, BillStatus.VOID):
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Bill is already {bill.status}")
+    bill.status = BillStatus.CANCELLED
+    await db.commit()
+    await db.refresh(bill)
+    return bill

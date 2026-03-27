@@ -46,16 +46,16 @@ async def recalc_totals(db: AsyncSession, bill: Bill) -> None:
     bill.total_paise = max(0, subtotal - bill.discount_paise + bill.gst_paise)
 
 
+async def _assign_bill_number(db: AsyncSession, bill: Bill) -> None:
+    today = datetime.combine(date.today(), datetime.min.time()).replace(tzinfo=timezone.utc)
+    mx = (await db.execute(select(func.coalesce(func.max(Bill.bill_number), 0)).where(Bill.tenant_id == bill.tenant_id, Bill.created_at >= today))).scalar_one()
+    bill.bill_number = int(mx) + 1
+
+
 async def open_bill(
     db: AsyncSession, tenant_id: str, created_by: uuid.UUID, data: OpenBillRequest
 ) -> Bill:
-    today_start = datetime.combine(date.today(), datetime.min.time()).replace(tzinfo=timezone.utc)
-    max_num = (await db.execute(
-        select(func.coalesce(func.max(Bill.bill_number), 0)).where(
-            Bill.tenant_id == tenant_id, Bill.created_at >= today_start
-        )
-    )).scalar_one()
-    bill = Bill(tenant_id=tenant_id, created_by=created_by, bill_number=int(max_num) + 1, **data.model_dump())
+    bill = Bill(tenant_id=tenant_id, created_by=created_by, **data.model_dump())
     db.add(bill)
     await db.commit()
     await db.refresh(bill)
@@ -65,7 +65,7 @@ async def open_bill(
 async def list_open_bills(db: AsyncSession, tenant_id: str) -> Sequence[Bill]:
     result = await db.execute(
         select(Bill)
-        .where(Bill.tenant_id == tenant_id, Bill.status.notin_([BillStatus.BILLED, BillStatus.VOID]))
+        .where(Bill.tenant_id == tenant_id, Bill.status.notin_([BillStatus.BILLED, BillStatus.VOID, BillStatus.CANCELLED]))
         .order_by(Bill.created_at)
     )
     return result.scalars().all()
@@ -85,9 +85,10 @@ async def get_bill_with_items(
 
 
 async def close_bill(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID, data: CloseBillRequest) -> Bill:
-    from datetime import datetime, timezone
     bill = await _get_bill(db, tenant_id, bill_id)
     assert_active(bill)
+    if bill.bill_number is None:
+        await _assign_bill_number(db, bill)
     bill.discount_paise = data.discount_paise
     await recalc_totals(db, bill)
     bill.payment_method = data.payment_method

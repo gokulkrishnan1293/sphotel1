@@ -1,5 +1,6 @@
-import { Flame, Plus, CreditCard, Ban, RotateCcw, Printer } from 'lucide-react'
+import { Flame, CreditCard, Ban, RotateCcw, Printer } from 'lucide-react'
 import type { BillResponse, PaymentMethod } from '../types/bills'
+import { useShortcutStore } from '@/lib/shortcutStore'
 
 const fmt = (p: number) => `₹${(p / 100).toFixed(2)}`
 
@@ -12,7 +13,6 @@ interface Props {
   fireKotPending: boolean
   closeBillPending: boolean
   printPending: boolean
-  onAddItem: () => void
   onFireKot: () => void
   onSettle: () => void
   onVoid: () => void
@@ -21,23 +21,25 @@ interface Props {
   onUpdateMethod: (m: PaymentMethod) => void
 }
 
-export function BillFooter({ bill, isBiller, hasItems, pendingCount, printQueued, fireKotPending, closeBillPending, printPending, onAddItem, onFireKot, onSettle, onVoid, onUnvoid, onPrint, onUpdateMethod }: Props) {
+export function BillFooter({ bill, isBiller, hasItems, pendingCount, printQueued, fireKotPending, closeBillPending, printPending, onFireKot, onSettle, onVoid, onUnvoid, onPrint, onUpdateMethod }: Props) {
+  const sc = useShortcutStore((s) => s.shortcuts)
   const isClosed = bill.status === 'billed' || bill.status === 'void'
   return (
     <>
       {!isClosed && (
-        <div className="px-4 py-3 md:px-6 md:py-4 border-t border-sphotel-border flex flex-col gap-3">
-          <div className="flex justify-between text-sm"><span className="text-text-secondary">Subtotal</span><span className="font-medium text-text-primary">{fmt(bill.subtotal_paise)}</span></div>
-          <div className="flex gap-2">
-            <button onClick={onAddItem} className="flex-1 py-3 md:py-2.5 bg-bg-elevated border border-sphotel-border rounded-xl text-sm text-text-secondary hover:text-text-primary flex items-center justify-center gap-1.5"><Plus size={14} />Add<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">Space</kbd></button>
-            {pendingCount > 0 && bill.bill_type === 'table' && <button onClick={onFireKot} disabled={fireKotPending} className="flex-1 py-3 md:py-2.5 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-1.5"><Flame size={14} />Fire KOT<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">⌘K</kbd></button>}
-            <button onClick={onSettle} disabled={!hasItems || closeBillPending} className="flex-1 py-3 md:py-2.5 bg-sphotel-accent text-sphotel-accent-fg rounded-xl text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-1.5"><CreditCard size={14} />Generate Bill<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">G</kbd><span className="hidden md:inline text-xs opacity-50">·</span><kbd className="hidden md:inline text-xs opacity-50 font-mono">↵</kbd></button>
+        <div className="px-4 py-3 md:px-6 md:py-4 border-b border-sphotel-border flex flex-col gap-3">
+          <div className="flex justify-between text-sm">
+            <span className="text-text-secondary">Subtotal <span className="text-text-muted text-xs">· {bill.items.length} items</span></span>
+            <span className="font-medium text-text-primary">{fmt(bill.subtotal_paise)}</span>
           </div>
-          {isBiller && <button onClick={onVoid} className="flex items-center justify-center gap-1.5 text-xs text-status-error hover:opacity-80 py-1"><Ban size={12} />Void bill</button>}
+          <div className="flex gap-2">
+            {pendingCount > 0 && bill.bill_type === 'table' && <button onClick={onFireKot} disabled={fireKotPending} className="flex-1 py-3 md:py-2.5 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-1.5"><Flame size={14} />Fire KOT<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">⌘K</kbd></button>}
+            <button onClick={onSettle} disabled={!hasItems || closeBillPending} className="flex-1 py-3 md:py-2.5 bg-sphotel-accent text-sphotel-accent-fg rounded-xl text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-1.5"><CreditCard size={14} />Generate Bill<kbd className="hidden md:inline text-xs opacity-50 font-mono ml-1">{sc.generate_bill.toUpperCase()}</kbd><span className="hidden md:inline text-xs opacity-50">·</span><kbd className="hidden md:inline text-xs opacity-50 font-mono">{sc.close_bill.toUpperCase()}</kbd></button>
+          </div>
         </div>
       )}
       {isClosed && (
-        <div className="px-4 py-3 md:px-6 md:py-4 border-t border-sphotel-border flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div className="px-4 py-3 md:px-6 md:py-4 border-b border-sphotel-border flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           {bill.status === 'billed' ? (
             <span className="text-sm font-medium text-sphotel-accent flex items-center gap-1.5">
               Settled · {fmt(bill.total_paise)} via

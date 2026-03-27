@@ -2,7 +2,7 @@
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import cast, select, String, update as sa_update
+from sqlalchemy import cast, func, select, String, update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import CurrentUser, require_role
@@ -25,10 +25,11 @@ async def list_bill_history(
     current_user: CurrentUser = Depends(require_role(*_BILLING)),
     db: AsyncSession = Depends(get_db),
 ) -> DataResponse[list[BillSummaryResponse]]:
-    statuses = [BillStatus.BILLED, BillStatus.VOID] if not status else [BillStatus(status)]
-    stmt = select(Bill).where(Bill.tenant_id == current_user["tenant_id"], Bill.status.in_(statuses))
+    statuses = [BillStatus.BILLED, BillStatus.VOID, BillStatus.CANCELLED] if not status else [BillStatus(status)]
+    today_start = func.date_trunc('day', func.now())
+    stmt = select(Bill).where(Bill.tenant_id == current_user["tenant_id"], Bill.status.in_(statuses), Bill.created_at >= today_start)
     if q: stmt = stmt.where(cast(Bill.bill_number, String).ilike(f'%{q}%'))
-    r = await db.execute(stmt.order_by(Bill.updated_at.desc()).limit(limit).offset(offset))
+    r = await db.execute(stmt.order_by(Bill.created_at.desc()).limit(limit).offset(offset))
     return DataResponse(data=await enrich_summaries(db, current_user["tenant_id"], list(r.scalars().all())))
 
 

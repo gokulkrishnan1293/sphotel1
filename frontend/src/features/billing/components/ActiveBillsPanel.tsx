@@ -9,7 +9,7 @@ import { useShortcutStore, matchKey } from '@/lib/shortcutStore'
 import { toast } from '@/lib/toast'
 import { PastBillsModal } from './PastBillsModal'
 
-const STATUS_DOT: Record<BillStatus, string> = { draft: 'bg-text-muted', kot_sent: 'bg-status-success', partially_sent: 'bg-amber-400', billed: 'bg-sphotel-accent', void: 'bg-status-error' }
+const STATUS_DOT: Record<BillStatus, string> = { draft: 'bg-text-muted', kot_sent: 'bg-status-success', partially_sent: 'bg-amber-400', billed: 'bg-sphotel-accent', void: 'bg-status-error', cancelled: 'bg-text-muted/50' }
 const TYPE_ICON: Record<BillType, React.ElementType> = { table: UtensilsCrossed, parcel: ShoppingBag, online: Laptop }
 
 export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect?: () => void; canOpenNewBill?: boolean }) {
@@ -50,7 +50,7 @@ export function ActiveBillsPanel({ onSelect, canOpenNewBill = true }: { onSelect
           <Icon size={13} className="shrink-0 opacity-60 mt-0.5" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-1">
-              <p className="text-sm font-medium truncate">{label(bill)} <span className="text-xs font-normal opacity-50">#{bill.bill_number}</span></p>
+              <p className="text-sm font-medium truncate">{label(bill)} {bill.bill_number != null && <span className="text-xs font-normal opacity-50">#{bill.bill_number}</span>}</p>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="text-sm font-semibold">₹{(bill.total_paise / 100).toFixed(0)}</span>
                 <span className={`w-2 h-2 rounded-full ${STATUS_DOT[bill.status]}`} />

@@ -18,9 +18,10 @@ interface Props {
   onPriceOverride?: (paise: number) => void
   readOnly?: boolean
   fontSizeIdx?: number
+  index?: number
 }
 
-export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride, readOnly, fontSizeIdx = 2 }: Props) {
+export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride, readOnly, fontSizeIdx = 2, index }: Props) {
   const fs = FONT_SIZES[fontSizeIdx] ?? 16
   const textStyle = { fontSize: fs }
   const [editing, setEditing] = useState(false)
@@ -44,9 +45,8 @@ export function ItemRow({ item, disabled, onRemove, onQtyChange, onPriceOverride
     <div className={`flex items-start gap-2.5 py-2.5 px-3 rounded-xl ${readOnly ? 'opacity-70' : 'hover:bg-bg-surface'}`}>
       <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${FOOD_DOT[item.food_type]}`} />
       <div className="flex-1 min-w-0">
-        {/* Row 1: name + line total */}
         <div className="flex items-start gap-2">
-          <p className="flex-1 min-w-0 text-text-primary leading-snug" style={textStyle}>{item.name}</p>
+          <p className="flex-1 min-w-0 text-text-primary leading-snug" style={textStyle}>{index != null && <span className="text-text-muted text-xs mr-1 font-mono">{index}.</span>}{item.name}</p>
           {editing ? (
             <input
               autoFocus

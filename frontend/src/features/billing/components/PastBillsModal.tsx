@@ -2,15 +2,15 @@ import { useState, useDeferredValue } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { X, Search, ShoppingBag, Laptop, UtensilsCrossed } from 'lucide-react'
 import { billsApi } from '../api/bills'
-import { useBillingStore } from '../stores/billingStore'
+import { BillDetailModal } from './BillDetailModal'
 import type { BillStatus, BillType } from '../types/bills'
 
-const DOT: Record<BillStatus, string> = { draft: 'bg-text-muted', kot_sent: 'bg-status-success', partially_sent: 'bg-amber-400', billed: 'bg-sphotel-accent', void: 'bg-status-error' }
+const DOT: Record<BillStatus, string> = { draft: 'bg-text-muted', kot_sent: 'bg-status-success', partially_sent: 'bg-amber-400', billed: 'bg-sphotel-accent', void: 'bg-status-error', cancelled: 'bg-text-muted/50' }
 const ICON: Record<BillType, React.ElementType> = { table: UtensilsCrossed, parcel: ShoppingBag, online: Laptop }
 
 export function PastBillsModal({ onClose }: { onClose: () => void }) {
-  const { setActiveBill } = useBillingStore()
   const [q, setQ] = useState('')
+  const [detailBillId, setDetailBillId] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<string | undefined>()
   const dq = useDeferredValue(q)
   const { data: bills = [], isFetching } = useQuery({
@@ -19,6 +19,7 @@ export function PastBillsModal({ onClose }: { onClose: () => void }) {
     staleTime: 15_000,
   })
   return (
+    <>
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/50" onClick={onClose}>
       <div className="w-full md:w-[480px] bg-bg-surface rounded-t-2xl md:rounded-2xl flex flex-col max-h-[85vh] md:max-h-[75vh]" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-4 py-3 border-b border-sphotel-border shrink-0">
@@ -31,9 +32,9 @@ export function PastBillsModal({ onClose }: { onClose: () => void }) {
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by bill number…" className="flex-1 bg-transparent text-sm text-text-primary placeholder-text-muted outline-none" autoFocus />
           </div>
           <div className="flex gap-1.5">
-            {([undefined, 'billed', 'void'] as const).map((s) => (
+            {([undefined, 'billed', 'void', 'cancelled'] as const).map((s) => (
               <button key={s ?? 'all'} onClick={() => setStatusFilter(s)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${statusFilter === s ? 'bg-sphotel-accent text-sphotel-accent-fg' : 'bg-bg-elevated text-text-muted hover:text-text-primary'}`}>
-                {s == null ? 'All' : s === 'billed' ? 'Settled' : 'Void'}
+                {s == null ? 'All' : s === 'billed' ? 'Settled' : s === 'void' ? 'Void' : 'Cancelled'}
               </button>
             ))}
           </div>
@@ -44,7 +45,7 @@ export function PastBillsModal({ onClose }: { onClose: () => void }) {
           {bills.map((bill) => {
             const Icon = ICON[bill.bill_type]
             return (
-              <button key={bill.id} onClick={() => { setActiveBill(bill.id); onClose() }} className="w-full px-3 py-2.5 rounded-lg hover:bg-bg-base text-left transition-colors">
+              <button key={bill.id} onClick={() => setDetailBillId(bill.id)} className="w-full px-3 py-2.5 rounded-lg hover:bg-bg-base text-left transition-colors">
                 <div className="flex items-start gap-2">
                   <Icon size={13} className="shrink-0 opacity-60 mt-0.5" />
                   <div className="flex-1 min-w-0">
@@ -65,5 +66,7 @@ export function PastBillsModal({ onClose }: { onClose: () => void }) {
         </div>
       </div>
     </div>
+    {detailBillId && <BillDetailModal billId={detailBillId} onClose={() => setDetailBillId(null)} />}
+    </>
   )
 }

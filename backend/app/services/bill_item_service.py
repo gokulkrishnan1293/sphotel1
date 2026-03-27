@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.bill_enums import BillStatus, ItemStatus
 from app.models.kot import BillItem, KotTicket
 from app.schemas.bills import AddItemRequest, UpdateItemRequest
-from app.services.bill_service import _get_bill, assert_active, recalc_totals
+from app.services.bill_service import _assign_bill_number, _get_bill, assert_active, recalc_totals
 
 
 async def add_item(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID, data: AddItemRequest) -> BillItem:
@@ -81,12 +81,10 @@ async def fire_kot(db: AsyncSession, tenant_id: str, bill_id: uuid.UUID) -> KotT
     if not pending:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="No pending items to fire")
 
+    if bill.bill_number is None:
+        await _assign_bill_number(db, bill)
     today_start = datetime.combine(date.today(), datetime.min.time()).replace(tzinfo=timezone.utc)
-    max_num = (await db.execute(
-        select(func.coalesce(func.max(KotTicket.ticket_number), 0)).where(
-            KotTicket.tenant_id == tenant_id, KotTicket.fired_at >= today_start
-        )
-    )).scalar_one()
+    max_num = (await db.execute(select(func.coalesce(func.max(KotTicket.ticket_number), 0)).where(KotTicket.tenant_id == tenant_id, KotTicket.fired_at >= today_start))).scalar_one()
     kot = KotTicket(tenant_id=tenant_id, bill_id=bill_id, ticket_number=int(max_num) + 1)
     db.add(kot)
     await db.flush()

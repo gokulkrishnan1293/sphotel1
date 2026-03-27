@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { ChevronLeft, Printer } from 'lucide-react'
+import { Printer } from 'lucide-react'
 import { useTenantName } from '@/shared/hooks/useTenantName'
 import { useBillingStore } from '../stores/billingStore'
 import { useAutoSave } from '../hooks/useAutoSave'
 import { useOfflineSync } from '../hooks/useOfflineSync'
-import { ActiveBillsPanel } from '../components/ActiveBillsPanel'
 import { BillCanvas } from '../components/BillCanvas'
 import { PrinterOfflineBanner } from '../components/PrinterOfflineBanner'
 import { printApi } from '../../settings/api/printSettings'
@@ -29,10 +28,6 @@ export function BillingPage() {
   useEffect(() => { if (printTemplate) cachePrintTemplate(printTemplate) }, [printTemplate])
   const printerOnline = agents.some((a) => a.status === 'online')
   const canOpenNewBill = agentsLoading || isLocalMachine || (isOnline && printerOnline)
-
-  const [mobileView, setMobileView] = useState<'panel' | 'canvas'>('panel')
-  useEffect(() => { if (activeBillId) setMobileView('canvas') }, [activeBillId])
-
   const tenantName = useTenantName()
 
   const [fontSizeIdx, setFontSizeIdx] = useState<number>(() => {
@@ -82,18 +77,8 @@ export function BillingPage() {
         </div>
       </header>
       <PrinterOfflineBanner printerOnline={printerOnline} isLocalMachine={isLocalMachine} />
-
       <div className="flex flex-1 min-h-0 min-w-0">
-        <div className={`${mobileView === 'canvas' ? 'hidden md:flex' : 'flex'} w-full md:w-auto md:flex-none flex-col min-h-0 min-w-0`}>
-          <ActiveBillsPanel onSelect={() => setMobileView('canvas')} canOpenNewBill={canOpenNewBill} />
-        </div>
-        <div className={`${mobileView === 'panel' ? 'hidden md:flex' : 'flex'} flex-1 flex-col min-h-0 min-w-0`}>
-          <button onClick={() => setMobileView('panel')}
-            className="md:hidden shrink-0 flex items-center gap-1 px-4 py-2.5 text-sm text-text-secondary border-b border-sphotel-border bg-bg-surface">
-            <ChevronLeft size={16} /> Back to Bills
-          </button>
-          <BillCanvas fontSizeIdx={fontSizeIdx} canOpenNewBill={canOpenNewBill} />
-        </div>
+        <BillCanvas fontSizeIdx={fontSizeIdx} canOpenNewBill={canOpenNewBill} />
       </div>
     </div>
     <Toast />

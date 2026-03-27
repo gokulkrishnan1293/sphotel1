@@ -15,6 +15,7 @@ class BillStatus(enum.StrEnum):
     PARTIALLY_SENT = "partially_sent"
     BILLED = "billed"
     VOID = "void"
+    CANCELLED = "cancelled"
 
 
 class ItemStatus(enum.StrEnum):
