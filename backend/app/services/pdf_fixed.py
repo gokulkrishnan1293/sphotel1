@@ -8,15 +8,20 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+
+pdfmetrics.registerFont(TTFont('DejaVuSans', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'))
+pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'))
 
 _IST = timezone(timedelta(hours=5, minutes=30))
 _STYLES = getSampleStyleSheet()
 _TBL = TableStyle([
     ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a1a2e')),
     ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-    ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+    ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
+    ('FONTNAME', (0, 1), (-1, -1), 'DejaVuSans'),
     ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f7f7f7')]),
     ('GRID', (0, 0), (-1, -1), 0.4, colors.HexColor('#dddddd')),
     ('LEFTPADDING', (0, 0), (-1, -1), 8),
